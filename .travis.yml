@@ -1,28 +1,35 @@
 language: android
 jdk: oraclejdk8
 sudo: false
-
-
 android:
   components:
-    - platform-tools
-    - tools
-    - build-tools-25.0.0
-    - android-21
-    - android-25
-    - sys-img-armeabi-v7a-android-21
-    - extra-android-m2repository
-
+  - platform-tools
+  - tools
+  - build-tools-25.0.0
+  - android-21
+  - android-25
+  - sys-img-armeabi-v7a-android-21
+  - extra-android-m2repository
 before_install:
-  - mkdir "$ANDROID_HOME/licenses" || true
-  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
-  
+- mkdir "$ANDROID_HOME/licenses" || true
+- echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+- echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
 before_script:
-  # Create and start emulator
-  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+- echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
+- emulator -avd test -no-skin -no-audio -no-window &
+- android-wait-for-emulator
+- adb shell input keyevent 82 &
+script: "./gradlew connectedAndroidTest"
+deploy:
+  provider: releases
+  api_key:
+    secure: Z9qUrS4pSqOHvRlD3Cv+ZJkLB8YrnLKNe4wbkg49D1x5LvQBu80tvPBVTfdedEfzWGhV5JTehHafYo06NkUTxHz9CciyFcomlmDa4fQY3F2WkT92g2z95mPa3mhPtS4FfBZh7pZVJ7ozhAoY8Y0cwgK5L20lHdLxv5Q1TF2nt4enP6ZCPcHp8XW5wuEq5NggW7IeH2nT4Nk1D5G+t4vhzOVtetdFxcUqIs86IFzfdyNoIzGU53/VeGoHVYg75iIgh1w4gbgBo224KN6vMUlBF78hwNqTEMVFvFUNakjlnCu/UOdyga2ultwK3btkjpUSxa0WZpEg+gaM6oc5E7h8RToslK6LqD0BXFQUixWrDc6tlyEMrB0r0u2yVproUD8HnTRZXJzjPtoU4KbVb7j3qTM563++WmTPHUOUhgVIydTVeRvz9rMrzfNqLWzpBXn9uSkSgPC7GN3A0DLAm54g+c30y8gGr4tHmOc3ptlNSnlZ+jtqjv2UwCeSJ8SR5GUowI2SUkH8cF+adL+AzfXYBxTb4Wdk6EoyhGiHcTntMCNxMxNDTKDaj12KSvpUWi8F7wf3poNnpoc3eolaa867kRrtFncarbjOw0gJ8RBSiz8nyWnQ2FzlkfUJjjpbVcuC5U64uD6xcrpEm/o3SRXI3R9wdJB3fe+CSvpYZL2iKW0=
+  file: app\build\outsputs\apk\cardsagainsthumanities*release*.apk
+  file_glob: "true"
+  skip_cleanup: true
+  on:
+    branch: master
+    repo: mlonn/EDA397-Team-9
 
-script: ./gradlew connectedAndroidTest
+after_success:
+- sh set_tags.sh
