@@ -1,1 +1,6 @@
-# EDA397_VT2017_TEAM_9
+# EDA397 Agile Development Processes
+
+Cards Against Humanity App
+
+
+
