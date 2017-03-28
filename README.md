@@ -4,5 +4,7 @@
 
 Cards Against Humanity App
 
+[Code style guide](http://source.android.com/source/code-style.html)
+
 
 
