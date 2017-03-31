@@ -5,4 +5,18 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
  */
 
 public class WhiteCard {
+    public WhiteCard(){
+        sentence = this.sentence;
+    }
+
+    public String sentence = "";
+
+    //fetch random new white card
+    //Invoked from Player
+    public WhiteCard getNewWhiteCard()  {
+
+        return new WhiteCard();
+    }
+
+
 }
