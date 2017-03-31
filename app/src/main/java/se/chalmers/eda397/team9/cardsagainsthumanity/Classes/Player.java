@@ -1,5 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
+import android.content.SharedPreferences;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +10,6 @@ import java.util.List;
  */
 
 public class Player {
-
     public Player(){
         username = this.username;
         currentScore= this.currentScore = 0;
@@ -17,15 +18,19 @@ public class Player {
         whiteCards = this.whiteCards;
     }
 
-
     public String username = "";
     public int currentScore = 0;
     public boolean isKing;
+
     private List<WhiteCard> whiteCards = new ArrayList<>();
     //Do we need this?
     private String ip_adress = "";
 
     public WhiteCard playCard(){
+
+        //When played a card get a new one-> always 10 cards on the hand
+        WhiteCard whiteCard = new WhiteCard();
+        whiteCards.add(whiteCard.getNewWhiteCard());
 
         return new WhiteCard();
     }
@@ -34,10 +39,8 @@ public class Player {
         username = chosenUserName;
         //TODO
         //Store username in db or similar
+
     }
-
-    
-
 
 
 }
