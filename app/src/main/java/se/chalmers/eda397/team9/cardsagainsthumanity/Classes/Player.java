@@ -10,33 +10,31 @@ import java.util.List;
  */
 
 public class Player {
-    public Player(){
-        username = this.username;
-        currentScore= this.currentScore = 0;
-        ip_adress = this.ip_adress = "";
-        isKing = this.isKing;
-        whiteCards = this.whiteCards;
-    }
 
     public String username = "";
     public int currentScore = 0;
     public boolean isKing;
-
     private List<WhiteCard> whiteCards = new ArrayList<>();
     //Do we need this?
     private String ip_adress = "";
 
-    public WhiteCard playCard(){
+    public Player(String username) {
+        this.username = username;
+        this.ip_adress = ip_adress = "";
+        this.isKing = isKing;
+    }
+
+    public WhiteCard playCard() {
 
         //When played a card get a new one-> always 10 cards on the hand
         WhiteCard whiteCard = new WhiteCard();
         whiteCards.add(whiteCard.getNewWhiteCard());
-
         return new WhiteCard();
+
     }
 
-    public void setUsername(String chosenUserName){
-        username = chosenUserName;
+    public void setUsername() {
+
         //TODO
         //Store username in db or similar
 
