@@ -22,6 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".PeerToPeerActivity">
+
+        </activity>
         <activity android:name=".CreateTableActivity">
 
         </activity>
