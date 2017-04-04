@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +22,7 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager wifiManager;
     private WifiP2pManager.Channel channel;
-    private PeerToPeerActivity activity;
+    private AppCompatActivity activity;
     private WifiP2pManager.PeerListListener myPeerListListener;
     private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
 
@@ -47,7 +48,7 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
         }
     };
 
-    public WiFiBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, PeerToPeerActivity activity) {
+    public WiFiBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, AppCompatActivity activity) {
         this.wifiManager = manager;
         this.channel = channel;
         this.activity = activity;
