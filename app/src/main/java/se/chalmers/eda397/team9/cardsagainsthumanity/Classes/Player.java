@@ -1,7 +1,10 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +21,6 @@ public class Player {
     //Do we need this?
     private String ip_adress = "";
 
-    public Player(String username) {
-        this.username = username;
-        this.ip_adress = ip_adress = "";
-        this.isKing = isKing;
-    }
-
     public WhiteCard playCard() {
 
         //When played a card get a new one-> always 10 cards on the hand
@@ -33,13 +30,10 @@ public class Player {
 
     }
 
-    public void setUsername() {
-
-        //TODO
-        //Store username in db or similar
-
+    //Returns the username which is stored in SharedPreferences
+    public String getUsername(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        return prefs.getString("name", null);
     }
-
-
 }
 
