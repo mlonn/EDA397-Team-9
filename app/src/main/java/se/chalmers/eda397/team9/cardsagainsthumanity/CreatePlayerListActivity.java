@@ -3,7 +3,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class CreatePlayerList extends AppCompatActivity {
+public class CreatePlayerListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
