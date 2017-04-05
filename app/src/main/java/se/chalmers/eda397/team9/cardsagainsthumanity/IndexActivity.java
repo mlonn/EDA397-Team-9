@@ -26,7 +26,7 @@ public class IndexActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
         final Context context = this;
-        final Player player = new Player();
+        final Player player = new Player("");
 
         //Check if the application has a Shared Preferences file containing a username already
         if(fileExists()){
