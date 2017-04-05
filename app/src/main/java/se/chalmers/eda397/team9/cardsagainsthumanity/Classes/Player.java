@@ -21,6 +21,10 @@ public class Player {
     //Do we need this?
     private String ip_adress = "";
 
+    public Player(String username){
+        this.username = username;
+    }
+
     public WhiteCard playCard() {
 
         //When played a card get a new one-> always 10 cards on the hand
@@ -28,6 +32,10 @@ public class Player {
         whiteCards.add(whiteCard.getNewWhiteCard());
         return new WhiteCard();
 
+    }
+
+    public String getUsername(){
+        return username;
     }
 
     //Returns the username which is stored in SharedPreferences
