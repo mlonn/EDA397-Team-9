@@ -19,7 +19,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 
-
+//Consider refactoring this class. I.e divide into several classes
 public class CreateTableActivity extends AppCompatActivity {
 
 
@@ -28,6 +28,7 @@ public class CreateTableActivity extends AppCompatActivity {
     private WiFiBroadcastReceiver receiver;
     private IntentFilter mIntentFilter;
     private Map<String, Table> tables;
+    private Intent createTableIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,15 @@ public class CreateTableActivity extends AppCompatActivity {
                 tables.put(tableName.getText().toString(), table);
                 Intent intent = new Intent(v.getContext(), CreateRuleActivity.class);
                 startActivity(intent);
+
+                //Creates an intent with table information
+                createTableIntent = new Intent("WIFI_NEW_TABLE_INFO");
+                createTableIntent.addCategory("CARDS_AGAINST_HUMANITY");
+                createTableIntent.putExtra("TABLE_NAME", table.getName());
+                createTableIntent.putExtra("HOST_NAME", table.getHost());
+                createTableIntent.putExtra("TABLE_SIZE", table.getSize());
+                //Broadcasts this intent
+                sendBroadcast(createTableIntent);
             }
         });
 
@@ -65,6 +75,10 @@ public class CreateTableActivity extends AppCompatActivity {
         receiver = new WiFiBroadcastReceiver(wifiManager, channel, this);
 
         mIntentFilter = new IntentFilter();
+
+        mIntentFilter.addCategory("CARDS_AGAINST_HUMANITY");
+        mIntentFilter.addAction("WIFI_NEW_TABLE_INFO");
+
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +21,7 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager wifiManager;
     private WifiP2pManager.Channel channel;
-    private AppCompatActivity activity;
+    private PeerToPeerActivity activity;
     private WifiP2pManager.PeerListListener myPeerListListener;
     private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
 
@@ -48,7 +47,7 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
         }
     };
 
-    public WiFiBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, AppCompatActivity activity) {
+    public WiFiBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, PeerToPeerActivity activity) {
         this.wifiManager = manager;
         this.channel = channel;
         this.activity = activity;
@@ -58,6 +57,16 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+
+        if(intent.hasCategory("CARDS_AGAINST_HUMANITY")){
+            if(intent.getAction() == "WIFI_NEW_TABLE_INFO"){
+                //Currently only prints out the table information
+                System.out.println("Table: " + intent.getStringExtra("TABLE_NAME") +
+                        "Host: " + intent.getStringExtra("HOST_NAME") +
+                        "TableSize: " + intent.getStringExtra("TABLE_SIZE")
+                );
+            }
+        }
 
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
@@ -70,6 +79,8 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
             if (wifiManager != null) {
                 wifiManager.requestPeers(channel, peerListListener);
             }
+            //Whenever peers changed we need to broadcast the table.
+
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
             // Respond to new connection or disconnections
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
