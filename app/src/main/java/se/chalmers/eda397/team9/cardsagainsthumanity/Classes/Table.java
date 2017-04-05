@@ -9,7 +9,7 @@ public class Table {
     public String tableName = "";
     private List<Player> playerList = new ArrayList<>();
     public BlackCard blackCard;
-    private Player host = null;
+    private Player host = new Player("TestPlayer");
 
     /**
      * constructor
@@ -26,6 +26,20 @@ public class Table {
      *
      * @param player: player added to the list of players
      */
+
+    public String getHost(){
+        //Get username requires context????
+        return host.getUsername();
+    }
+
+    public String getName(){
+        return tableName;
+    }
+
+    public int getSize(){
+        return playerList.size();
+    }
+
     public void newPlayer(Player player) {
 
         playerList.add(player);
