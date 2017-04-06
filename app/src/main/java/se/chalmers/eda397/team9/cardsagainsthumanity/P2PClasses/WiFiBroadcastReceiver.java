@@ -23,42 +23,7 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
     private WifiP2pManager wifiManager;
     private WifiP2pManager.Channel channel;
     private CreateTableActivity activity;
-    private WifiP2pManager.PeerListListener myPeerListListener;
-    private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
 
-    //Listener that currently prints the devices it can detect
-    private WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
-        @Override
-        public void onPeersAvailable(WifiP2pDeviceList peerList) {
-            Collection<WifiP2pDevice> refreshedPeers = peerList.getDeviceList();
-
-            if(!refreshedPeers.equals(peers)){
-                peers.clear();
-                peers.addAll(refreshedPeers);
-                //Trigger update
-            }
-
-            if (peers.size() == 0){
-                System.out.println("No devices found");
-                return;
-            }
-
-            for(final WifiP2pDevice device : peers){
-                WifiP2pConfig config = new WifiP2pConfig();
-                config.deviceAddress = device.deviceAddress;
-                wifiManager.connect(channel, config, new WifiP2pManager.ActionListener() {
-                    @Override
-                    public void onSuccess() {
-                        System.out.println("connected to " + device.deviceName.toString());
-                    }
-                    @Override
-                    public void onFailure(int reason) {
-                        System.out.println("failed to connect");
-                    }
-                });
-            }
-        }
-    };
 
     public WiFiBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, CreateTableActivity activity) {
         this.wifiManager = manager;
@@ -69,8 +34,8 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
     //Whenever a broadcast is received, do something depending on the broadcast type
     @Override
     public void onReceive(Context context, Intent intent) {
+        System.out.println("onrecieve");
         String action = intent.getAction();
-        System.out.println(action);
         if(intent.hasCategory("CARDS_AGAINST_HUMANITY")){
             if(intent.getAction() == "WIFI_NEW_TABLE_INFO"){
                 //Currently only prints out the table information
@@ -88,7 +53,7 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
             }
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             if (wifiManager != null) {
-                wifiManager.requestPeers(channel, peerListListener);
+                wifiManager.requestPeers(channel, activity);
             }
             //Whenever peers changed we need to broadcast the table.
 
