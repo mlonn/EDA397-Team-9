@@ -1,10 +1,11 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Table {
+public class Table implements Serializable {
 
     public String tableName = "";
     private List<Player> playerList = new ArrayList<>();
@@ -54,6 +55,6 @@ public class Table {
 
     @Override
     public String toString(){
-        return getHost() + "_" + getName() + "_" + getSize();
+        return getHost() + " - " + getName() + " - " + getSize();
     }
 }

@@ -77,19 +77,21 @@ public class CreateTableActivity extends AppCompatActivity {
 
         createTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 Table table = new Table(tableName.getText().toString());
                 tables.put(tableName.getText().toString(), table);
                 Intent intent = new Intent(v.getContext(), CreateRuleActivity.class);
+                new MulticastSender().execute(s, group, table, port);
+
                 // startActivity(intent);
             }
         });
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new MulticastReceiver().execute(s, tables, tableList, getApplicationContext(), multicastLock);;
+                new MulticastReceiver().execute(s, tables, tableList, CreateTableActivity.this, multicastLock);;
             }
         });
+
 
         joinTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
