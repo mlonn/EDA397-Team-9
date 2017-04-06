@@ -51,4 +51,9 @@ public class Table {
     public void getBlackCard() {
         //retrieve from DB the blackCard
     }
+
+    @Override
+    public String toString(){
+        return getHost() + "_" + getName() + "_" + getSize();
+    }
 }
