@@ -1,6 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -12,14 +13,8 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
-import se.chalmers.eda397.team9.cardsagainsthumanity.R;
-
-/**
- * Created by SAMSUNG on 2017-04-05.
- */
 
 public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table>> {
 
@@ -27,21 +22,22 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
     private Map<String, Table> tables;
     private Spinner tableList;
     private Context applicationContext;
-    private List<Table> list;
+    private WifiManager.MulticastLock mcLock;
 
     @Override
     protected Map<String, Table> doInBackground(Object... objects) {
-        list = new ArrayList<Table>();
 
         for(Object current : objects){
             if(current instanceof MulticastSocket)
                 s = (MulticastSocket) current;
             if(current instanceof Map)
-                tables = (Map) current;
+                tables = (Map<String, Table>) current;
             if(current instanceof Spinner)
                 tableList = (Spinner) current;
             if(current instanceof Context)
                 applicationContext = (Context) current;
+            if(current instanceof WifiManager.MulticastLock)
+                mcLock = (WifiManager.MulticastLock) current;
         }
         receiveAndRegisterTable();
         return tables;
@@ -54,6 +50,7 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
         boolean keepGoing = true;
         int counter = 0;
         int marginOfError = 2;
+        startMulticastLock();
 
         try {
             s.setSoTimeout(1000);
@@ -68,7 +65,7 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
                 msg = new String(recv.getData(), recv.getOffset(), recv.getLength()).split("_");
             } catch (IOException e) {
                 msg = new String[]{};
-                System.out.println("Trying to receive datagram again (try " + new Integer(counter+1) + ")");
+                System.out.println("Trying to receive datagram again (try " + counter + ")");
                 counter++;
             }
 
@@ -94,15 +91,30 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
         }
     }
 
+    private void startMulticastLock(){
+        if(!mcLock.isHeld()) {
+            mcLock.setReferenceCounted(true);
+            mcLock.acquire();
+        }
+
+    }
+
+    private void endMulticastLock(){
+        if(mcLock != null && mcLock.isHeld()){
+            mcLock.release();
+        }
+    }
 
     @Override
     protected void onPostExecute(Map<String, Table> tables) {
-        List<Table> list = new ArrayList<Table>();
+        endMulticastLock();
+
+        List<Table> list = new ArrayList<>();
         for(Map.Entry<String,Table> current : tables.entrySet()){
             list.add(current.getValue());
         }
 
-        ArrayAdapter<Table> spinnerAdapter = new ArrayAdapter<Table>(applicationContext, android.R.layout.simple_spinner_item, list);
+        ArrayAdapter<Table> spinnerAdapter = new ArrayAdapter<>(applicationContext, android.R.layout.simple_spinner_item, list);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tableList.setAdapter(spinnerAdapter);
     }

@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +33,7 @@ public class CreateTableActivity extends AppCompatActivity {
     private IntentFilter mIntentFilter;
     private Map<String, Table> tables;
     private Intent createTableIntent;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private WifiManager wifi;
     private WifiManager.MulticastLock multicastLock;
@@ -60,10 +62,18 @@ public class CreateTableActivity extends AppCompatActivity {
 
         //Broadcast
         initMulticast();
-        startMulticastLock();
 
         //Initialzie p2p
         initP2p();
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_to_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initP2p();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         createTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -71,14 +81,13 @@ public class CreateTableActivity extends AppCompatActivity {
                 Table table = new Table(tableName.getText().toString());
                 tables.put(tableName.getText().toString(), table);
                 Intent intent = new Intent(v.getContext(), CreateRuleActivity.class);
-                String tableInfo = table.getName() + "_" + table.getHost() + "_" + table.getSize();
                 // startActivity(intent);
             }
         });
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new MulticastReceiver().execute(s, tables, tableList, getApplicationContext());;
+                new MulticastReceiver().execute(s, tables, tableList, getApplicationContext(), multicastLock);;
             }
         });
 
@@ -88,20 +97,6 @@ public class CreateTableActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    private void startMulticastLock(){
-        if(!multicastLock.isHeld()) {
-            multicastLock.setReferenceCounted(true);
-            multicastLock.acquire();
-        }
-
-    }
-
-    private void endMulticastLock(){
-       if(multicastLock != null && multicastLock.isHeld()){
-                multicastLock.release();
-        }
     }
 
     private void initMulticast(){
@@ -121,10 +116,10 @@ public class CreateTableActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        registerReceiver(receiver, mIntentFilter);
         try {
             if(!s.isBound())
                 s.joinGroup(group);
-            startMulticastLock();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -132,16 +127,16 @@ public class CreateTableActivity extends AppCompatActivity {
 
     public void onPause(){
         super.onPause();
+        unregisterReceiver(receiver);
         try {
             if(s.isBound())
                 s.leaveGroup(group);
-            endMulticastLock();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void initP2p(){
+    private void initP2p() {
 
         wifiManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = wifiManager.initialize(this, getMainLooper(), null);
@@ -149,29 +144,26 @@ public class CreateTableActivity extends AppCompatActivity {
 
         mIntentFilter = new IntentFilter();
 
-        mIntentFilter.addCategory("CARDS_AGAINST_HUMANITY");
-        mIntentFilter.addAction("WIFI_NEW_TABLE_INFO");
-
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
-        discoverPeers();
-
-    }
-
-    private void discoverPeers(){
-        wifiManager.discoverPeers(channel, new WifiP2pManager.ActionListener(){
+        wifiManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
 
             @Override
             public void onSuccess() {
                 System.out.println("Discovery successful");
             }
+
             @Override
             public void onFailure(int reason) {
-                System.out.println("Discovery failed, " + reason );
+                System.out.println("Discovery failed, " + reason);
             }
         });
+
     }
+
+    
+
 }
