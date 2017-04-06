@@ -137,17 +137,17 @@ public class CreateTableActivity extends AppCompatActivity {
     }
 
     private void initP2p() {
-
         wifiManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = wifiManager.initialize(this, getMainLooper(), null);
         receiver = new WiFiBroadcastReceiver(wifiManager, channel, this);
 
         mIntentFilter = new IntentFilter();
-
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+        registerReceiver(receiver, mIntentFilter);
 
         wifiManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
 
