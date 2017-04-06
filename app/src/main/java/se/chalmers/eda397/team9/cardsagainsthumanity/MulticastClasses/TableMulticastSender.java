@@ -1,4 +1,4 @@
-package se.chalmers.eda397.team9.cardsagainsthumanity;
+package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
 import android.os.AsyncTask;
 
@@ -12,17 +12,19 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Serializer;
 
 /**
  * Created by SAMSUNG on 2017-04-06.
  */
 
-public class MulticastSender extends AsyncTask<Object, Void, Void> {
+public class TableMulticastSender extends AsyncTask<Object, Void, Void> {
 
     private MulticastSocket s = null;
     InetAddress group = null;
     int port;
     Table table;
+
 
     @Override
     protected Void doInBackground(Object... objects) {
@@ -38,6 +40,7 @@ public class MulticastSender extends AsyncTask<Object, Void, Void> {
                 table = (Table) current;
             }
         }
+
         sendMulticast(table);
         System.out.println("Sent!");
         cancel(true);
@@ -45,7 +48,7 @@ public class MulticastSender extends AsyncTask<Object, Void, Void> {
     }
 
     private void sendMulticast(Table table){
-        byte[] msg = serialize(table);
+        byte[] msg = Serializer.serialize(table);
         DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, port);
         try {
             s.send(datagramMsg);
@@ -53,27 +56,5 @@ public class MulticastSender extends AsyncTask<Object, Void, Void> {
             e.printStackTrace();
         }
     }
-
-    private byte[] serialize(Object object){
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput out = null;
-        byte[] array = {};
-        try {
-            out = new ObjectOutputStream(bos);
-            out.writeObject(object);
-            out.flush();
-            array = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                bos.close();
-            } catch (IOException ex) {
-                // ignore close exception
-            }
-        }
-        return array;
-    }
-
 }
 

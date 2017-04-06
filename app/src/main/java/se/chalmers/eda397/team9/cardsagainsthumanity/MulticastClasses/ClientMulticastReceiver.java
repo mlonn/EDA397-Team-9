@@ -1,4 +1,4 @@
-package se.chalmers.eda397.team9.cardsagainsthumanity;
+package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Serializer;
 
-public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table>> {
+public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map<String, Table>>{
 
     private MulticastSocket s = null;
     private Map<String, Table> tables;
@@ -28,9 +29,12 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
     private AppCompatActivity activity;
     private WifiManager.MulticastLock mcLock;
 
+    public ClientMulticastReceiver(WifiManager.MulticastLock mcLock) {
+        super(mcLock);
+    }
+
     @Override
     protected Map<String, Table> doInBackground(Object... objects) {
-
         for(Object current : objects){
             if(current instanceof MulticastSocket)
                 s = (MulticastSocket) current;
@@ -43,7 +47,9 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
             if(current instanceof WifiManager.MulticastLock)
                 mcLock = (WifiManager.MulticastLock) current;
         }
+
         receiveAndRegisterTable();
+        cancel(true);
         return tables;
     }
 
@@ -51,6 +57,7 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
     private void receiveAndRegisterTable(){
         byte[] buf = new byte[1000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
+
         boolean keepGoing = true;
         int counter = 0;
         int marginOfError = 2;
@@ -63,76 +70,31 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
         }
 
         while(keepGoing) {
-            Table msg;
+            Object msg;
             try {
                 s.receive(recv);
-                msg = (Table)deserialize(recv.getData());
+                msg = Serializer.deserialize(recv.getData());
             } catch (IOException e) {
                 msg = null;
                 System.out.println("Trying to receive datagram again (try " + counter + ")");
                 counter++;
             }
 
-
             if(counter > marginOfError) {
                 keepGoing = false;
                 System.out.println("Done");
             }
 
-            if (msg != null) {
-                String hostName = msg.getHost();
-                String tableName = msg.getName();
-                String tableSize = "" + msg.getSize();
-
-                System.out.println("Host: " + hostName +
-                        "\nTable: " + tableName +
-                        "\nSize: " + tableSize);
-
-                tables.put(tableName, msg);
-                System.out.println(tables.size());
+            if (msg instanceof Table) {
+                System.out.println(msg);
+                tables.put(((Table) msg).getName(), (Table)msg);
             }
-        }
-    }
-
-    private Object deserialize(byte[] serializedObject) {
-        ByteArrayInputStream bis = new ByteArrayInputStream(serializedObject);
-        ObjectInput in = null;
-        Object o = null;
-        try {
-            in = new ObjectInputStream(bis);
-            o = in.readObject();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                // ignore close exception
-            }
-        }
-        return o;
-    }
-
-    private void startMulticastLock(){
-        if(!mcLock.isHeld()) {
-            mcLock.setReferenceCounted(true);
-            mcLock.acquire();
-        }
-    }
-
-    private void endMulticastLock(){
-        if(mcLock != null && mcLock.isHeld()){
-            mcLock.release();
         }
     }
 
     @Override
     protected void onPostExecute(Map<String, Table> tables) {
-        endMulticastLock();
+        super.onPostExecute(tables);
 
         List<Table> list = new ArrayList<>();
         for(Map.Entry<String,Table> current : tables.entrySet()){
