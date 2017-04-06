@@ -1,21 +1,24 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 
@@ -30,33 +33,52 @@ public class CreateTableActivity extends AppCompatActivity {
     private Map<String, Table> tables;
     private Intent createTableIntent;
 
+    private WifiManager wifi;
+    private WifiManager.MulticastLock multicastLock;
+    private MulticastSocket s = null;
+    InetAddress group = null;
+
+    //Temporary
+    String ipAdress = "224.1.1.1";
+    int port = 9879;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tables = new HashMap<String, Table>();
         setContentView(R.layout.activity_createtable);
-        initP2p();
-        Intent intent = getIntent();
-        final Button createTableButton = (Button) findViewById(R.id.createTable_button);
-        Button joinTableButton = (Button) findViewById(R.id.joinTable_button);
 
+        final Button createTableButton = (Button) findViewById(R.id.createTable_button);
         final EditText tableName = (EditText)findViewById(R.id.tablename);
+        final Button joinTableButton = (Button) findViewById(R.id.joinTable_button);
+        final Button refreshButton = (Button) findViewById(R.id.refresh_button);
+        final Intent intent = getIntent();
+        final Spinner tableList = (Spinner) findViewById(R.id.table_list);
+
+        wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        multicastLock = wifi.createMulticastLock("multicastLock");
+        tables = new HashMap<String, Table>();
+
+        //Broadcast
+        initMulticast();
+        startMulticastLock();
+
+        //Initialzie p2p
+        initP2p();
 
         createTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
                 Table table = new Table(tableName.getText().toString());
                 tables.put(tableName.getText().toString(), table);
                 Intent intent = new Intent(v.getContext(), CreateRuleActivity.class);
-                startActivity(intent);
+                String tableInfo = table.getName() + "_" + table.getHost() + "_" + table.getSize();
+                // startActivity(intent);
+            }
+        });
 
-                //Creates an intent with table information
-                createTableIntent = new Intent("WIFI_NEW_TABLE_INFO");
-                createTableIntent.addCategory("CARDS_AGAINST_HUMANITY");
-                createTableIntent.putExtra("TABLE_NAME", table.getName());
-                createTableIntent.putExtra("HOST_NAME", table.getHost());
-                createTableIntent.putExtra("TABLE_SIZE", table.getSize());
-                //Broadcasts this intent
-                sendBroadcast(createTableIntent);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                new MulticastReceiver().execute(s, tables, tableList, getApplicationContext());;
             }
         });
 
@@ -66,6 +88,57 @@ public class CreateTableActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void startMulticastLock(){
+        if(!multicastLock.isHeld()) {
+            multicastLock.setReferenceCounted(true);
+            multicastLock.acquire();
+        }
+
+    }
+
+    private void endMulticastLock(){
+       if(multicastLock != null && multicastLock.isHeld()){
+                multicastLock.release();
+        }
+    }
+
+    private void initMulticast(){
+        try {
+            group = InetAddress.getByName(ipAdress);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        try {
+            s = new MulticastSocket(port);
+            s.joinGroup(group);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        try {
+            if(!s.isBound())
+                s.joinGroup(group);
+            startMulticastLock();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onPause(){
+        super.onPause();
+        try {
+            if(s.isBound())
+                s.leaveGroup(group);
+            endMulticastLock();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initP2p(){
