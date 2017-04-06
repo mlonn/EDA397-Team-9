@@ -4,13 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -19,35 +17,38 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ClientMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GreetingMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 
 //Consider refactoring this class. I.e divide into several classes
-public class CreateTableActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener {
-    private WifiP2pManager wifiManager;
+public class CreateTableActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener, PropertyChangeListener{
+
+    private WifiP2pManager wifiP2pManager;
     private WifiP2pManager.Channel channel;
     private WiFiBroadcastReceiver receiver;
     private IntentFilter mIntentFilter;
+    private P2pManager p2pManager;
+    private List<WifiP2pDevice> peers;
+
     private Map<String, Table> tables;
     private Intent createTableIntent;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
     private Spinner tableList;
 
     private WifiManager wifi;
@@ -75,7 +76,6 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         multicastLock = wifi.createMulticastLock("multicastLock");
         tables = new HashMap<String, Table>();
-
         //Broadcast
         initMulticast();
 
@@ -86,8 +86,8 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                discoverPeers();
-                connect2Peers();
+                p2pManager.discoverPeers();
+                p2pManager.connect2Peers(peers);
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -176,65 +176,30 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
     /* Peer to peer functions*/
 
     private void initP2p() {
-        wifiManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        channel = wifiManager.initialize(this, getMainLooper(), null);
-        receiver = new WiFiBroadcastReceiver(wifiManager, channel, this);
-
-        mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        p2pManager = new P2pManager(this);
+        mIntentFilter = p2pManager.getIntentFilter();
+        receiver = p2pManager.getReceiver();
+        peers = new ArrayList<WifiP2pDevice>();
 
         registerReceiver(receiver, mIntentFilter);
-        discoverPeers();
+        p2pManager.discoverPeers();
     }
-
 
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peerList) {
         peers.clear();
         peers.addAll(peerList.getDeviceList());
         if (peers.size() == 0) {
-            Toast.makeText(CreateTableActivity.this, "No peers available",Toast.LENGTH_SHORT);
+            Toast.makeText(CreateTableActivity.this, "No peers available",Toast.LENGTH_SHORT).show();
             return;
         }
     }
-    private void discoverPeers() {
-        wifiManager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
 
-            @Override
-            public void onSuccess() {
-                Toast.makeText(CreateTableActivity.this, "Discovery Initiated",
-                        Toast.LENGTH_SHORT).show();
-            }
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        if(propertyChangeEvent.getPropertyName().equals("DISCOVERY_STATUS"))
+            Toast.makeText(CreateTableActivity.this, propertyChangeEvent.getNewValue().toString(),
+                    Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void onFailure(int reasonCode) {
-                Toast.makeText(CreateTableActivity.this, "Discovery Failed : " + reasonCode,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void connect2Peers() {
-        for(final WifiP2pDevice device : peers) {
-            WifiP2pConfig config = new WifiP2pConfig();
-            config.deviceAddress = device.deviceAddress;
-
-            wifiManager.connect(channel, config, new WifiP2pManager.ActionListener() {
-                @Override
-                public void onSuccess() {
-                    String toastText = "Connected to " + device.deviceName;
-                    System.out.println(toastText);
-                }
-
-                @Override
-                public void onFailure(int reason) {
-                    String toastText = "Failed to connect to  " + device.deviceName + " for reason " + reason;
-                    System.out.println(toastText);
-                }
-            });
-        }
     }
 }

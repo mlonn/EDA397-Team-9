@@ -74,8 +74,9 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
             }
 
             if(inMsg != null) {
-                if (inMsg.toString().equals("CARDS_AGAINST_HUMANITY.GREETING"))
-                    new TableMulticastSender().execute(s, group, port, table);
+                if (inMsg.toString().equals("CARDS_AGAINST_HUMANITY.GREETING")) {
+                    new TableMulticastSender().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, s,group,port, table);
+                }
             }
         }
     }
