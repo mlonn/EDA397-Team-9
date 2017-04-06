@@ -2,11 +2,16 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.os.AsyncTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
 
 /**
  * Created by SAMSUNG on 2017-04-06.
@@ -17,7 +22,7 @@ public class MulticastSender extends AsyncTask<Object, Void, Void> {
     private MulticastSocket s = null;
     InetAddress group = null;
     int port;
-    String tableInfo;
+    Table table;
 
     @Override
     protected Void doInBackground(Object... objects) {
@@ -29,18 +34,19 @@ public class MulticastSender extends AsyncTask<Object, Void, Void> {
                 group = (InetAddress) current;
             if (current instanceof Integer)
                 port = (Integer) current;
-            if(current instanceof String){
-                tableInfo = (String) current;
+            if(current instanceof Table){
+                table = (Table) current;
             }
         }
-        sendMulticast(tableInfo);
+        sendMulticast(table);
         System.out.println("Sent!");
         cancel(true);
         return null;
     }
 
-    private void sendMulticast(String msg){
-        DatagramPacket datagramMsg = new DatagramPacket(msg.getBytes(), msg.length(), group, port);
+    private void sendMulticast(Table table){
+        byte[] msg = serialize(table);
+        DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, port);
         try {
             s.send(datagramMsg);
         } catch (IOException e) {
@@ -48,4 +54,26 @@ public class MulticastSender extends AsyncTask<Object, Void, Void> {
         }
     }
 
+    private byte[] serialize(Object object){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        byte[] array = {};
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(object);
+            out.flush();
+            array = bos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bos.close();
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+        }
+        return array;
+    }
+
 }
+

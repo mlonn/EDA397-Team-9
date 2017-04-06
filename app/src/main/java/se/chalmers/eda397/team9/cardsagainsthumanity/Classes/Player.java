@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * Created by axel_ on 2017-03-31.
  */
 
-public class Player {
+public class Player implements Serializable {
 
     public String username = "";
     public int currentScore = 0;

@@ -1,5 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
 
-public class BlackCard {
+import java.io.Serializable;
+
+public class BlackCard implements Serializable {
 }

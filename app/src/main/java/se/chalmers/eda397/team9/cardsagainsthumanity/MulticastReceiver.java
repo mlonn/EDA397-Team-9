@@ -3,10 +3,14 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 import java.net.SocketException;
@@ -21,7 +25,7 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
     private MulticastSocket s = null;
     private Map<String, Table> tables;
     private Spinner tableList;
-    private Context applicationContext;
+    private AppCompatActivity activity;
     private WifiManager.MulticastLock mcLock;
 
     @Override
@@ -34,8 +38,8 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
                 tables = (Map<String, Table>) current;
             if(current instanceof Spinner)
                 tableList = (Spinner) current;
-            if(current instanceof Context)
-                applicationContext = (Context) current;
+            if(current instanceof AppCompatActivity)
+                activity = (AppCompatActivity) current;
             if(current instanceof WifiManager.MulticastLock)
                 mcLock = (WifiManager.MulticastLock) current;
         }
@@ -59,12 +63,12 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
         }
 
         while(keepGoing) {
-            String[] msg;
+            Table msg;
             try {
                 s.receive(recv);
-                msg = new String(recv.getData(), recv.getOffset(), recv.getLength()).split("_");
+                msg = (Table)deserialize(recv.getData());
             } catch (IOException e) {
-                msg = new String[]{};
+                msg = null;
                 System.out.println("Trying to receive datagram again (try " + counter + ")");
                 counter++;
             }
@@ -75,20 +79,42 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
                 System.out.println("Done");
             }
 
-            if (msg.length == 3) {
-                String hostName = msg[0];
-                String tableName = msg[1];
-                String tableSize = msg[2];
+            if (msg != null) {
+                String hostName = msg.getHost();
+                String tableName = msg.getName();
+                String tableSize = "" + msg.getSize();
 
                 System.out.println("Host: " + hostName +
                         "\nTable: " + tableName +
                         "\nSize: " + tableSize);
 
-                Table newTable = new Table(tableName);
-                tables.put(tableName, newTable);
+                tables.put(tableName, msg);
                 System.out.println(tables.size());
             }
         }
+    }
+
+    private Object deserialize(byte[] serializedObject) {
+        ByteArrayInputStream bis = new ByteArrayInputStream(serializedObject);
+        ObjectInput in = null;
+        Object o = null;
+        try {
+            in = new ObjectInputStream(bis);
+            o = in.readObject();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+        }
+        return o;
     }
 
     private void startMulticastLock(){
@@ -96,7 +122,6 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
             mcLock.setReferenceCounted(true);
             mcLock.acquire();
         }
-
     }
 
     private void endMulticastLock(){
@@ -114,7 +139,7 @@ public class MulticastReceiver extends AsyncTask<Object, Void, Map<String, Table
             list.add(current.getValue());
         }
 
-        ArrayAdapter<Table> spinnerAdapter = new ArrayAdapter<>(applicationContext, android.R.layout.simple_spinner_item, list);
+        ArrayAdapter<Table> spinnerAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, list);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tableList.setAdapter(spinnerAdapter);
     }
