@@ -34,7 +34,6 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
     //Whenever a broadcast is received, do something depending on the broadcast type
     @Override
     public void onReceive(Context context, Intent intent) {
-        System.out.println("onrecieve");
         String action = intent.getAction();
         if(intent.hasCategory("CARDS_AGAINST_HUMANITY")){
             if(intent.getAction() == "WIFI_NEW_TABLE_INFO"){
