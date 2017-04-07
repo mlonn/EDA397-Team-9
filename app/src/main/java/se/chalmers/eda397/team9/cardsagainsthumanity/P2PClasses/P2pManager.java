@@ -60,6 +60,7 @@ public class P2pManager {
             public void onFailure(int reasonCode) {
                 Toast.makeText(activity, "Discovery failed: " + reasonCode, Toast.LENGTH_SHORT).show();
             }
+
         });
     }
 
@@ -83,6 +84,4 @@ public class P2pManager {
             });
         }
     }
-
-
 }
