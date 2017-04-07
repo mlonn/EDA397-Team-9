@@ -10,9 +10,12 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GreetingMulticastSender;
 
 //Only used for testing
 
@@ -21,15 +24,23 @@ public class ReceiveMulticast {
     InetAddress group = null;
     String ipAdress = "224.1.1.1";
     int port = 9879;
+    Map<String, Table> tables;
+    Map<String, Table> oldTables;
 
     public ReceiveMulticast(){
         initMulticast();
+        tables = new HashMap<>();
+        oldTables = new HashMap<>();
+
         try {
             TimeUnit.SECONDS.sleep(0);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        send();
+
+        for(int i = 0; i < 100; i++) {
+            send();
+        }
         receive();
     }
 
@@ -47,16 +58,16 @@ public class ReceiveMulticast {
         byte[] buf = new byte[1000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
         boolean keepGoing = true;
-        int counter = 0;
-        int marginOfError = 2;
+        int counter = 1;
+        int marginOfError = 3;
 
         try {
-            s.setSoTimeout(1000);
+            s.setSoTimeout(500);
         } catch (SocketException e) {
             counter++;
         }
 
-            while(keepGoing) {
+        while(keepGoing) {
             Object msg;
             try {
                 s.receive(recv);
@@ -64,6 +75,10 @@ public class ReceiveMulticast {
                 System.out.println("Message: " + msg);
             } catch (IOException e) {
                 msg = null;
+                if(oldTables.equals(tables) && counter < marginOfError){
+                    send();
+                }
+
                 System.out.println("Trying to receive datagram again (try " + counter + ")");
                 counter++;
             }
@@ -82,8 +97,10 @@ public class ReceiveMulticast {
                 System.out.println("Host: " + hostName +
                         "\nTable: " + tableName +
                         "\nSize: " + tableSize);
+                oldTables.clear();
+                oldTables.putAll(tables);
+                tables.put(((Table) msg).getName(),(Table) msg);
             }
-
         }
     }
 

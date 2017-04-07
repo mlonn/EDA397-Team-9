@@ -22,18 +22,14 @@ public class GreetingMulticastSender extends AsyncTask<Object, Void, Void> {
 
     private MulticastSocket s = null;
     InetAddress group = null;
-    int port;
 
     @Override
     protected Void doInBackground(Object... objects) {
-
         for(Object current : objects) {
             if (current instanceof MulticastSocket)
                 s = (MulticastSocket) current;
             if (current instanceof InetAddress)
                 group = (InetAddress) current;
-            if (current instanceof Integer)
-                port = (Integer) current;
         }
 
         sendMulticast("CARDS_AGAINST_HUMANITY.GREETING");
@@ -43,12 +39,18 @@ public class GreetingMulticastSender extends AsyncTask<Object, Void, Void> {
 
     private void sendMulticast(String greeting){
         byte[] msg = Serializer.serialize(greeting);
-        DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, port);
+        DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, s.getLocalPort());
         try {
             s.send(datagramMsg);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        cancel(true);
     }
 }
 

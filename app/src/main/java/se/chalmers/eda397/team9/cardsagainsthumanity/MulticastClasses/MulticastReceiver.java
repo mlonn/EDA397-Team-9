@@ -4,6 +4,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Map;
 
@@ -18,7 +19,6 @@ public abstract class MulticastReceiver<A, B, C> extends AsyncTask<A, B, C> {
 
 
     private WifiManager.MulticastLock mcLock;
-    private MulticastSocket s;
 
     public MulticastReceiver(WifiManager.MulticastLock mcLock){
         this.mcLock = mcLock;

@@ -22,7 +22,6 @@ public class TableMulticastSender extends AsyncTask<Object, Void, Void> {
 
     private MulticastSocket s = null;
     InetAddress group = null;
-    int port;
     Table table;
 
 
@@ -34,8 +33,6 @@ public class TableMulticastSender extends AsyncTask<Object, Void, Void> {
                 s = (MulticastSocket) current;
             if (current instanceof InetAddress)
                 group = (InetAddress) current;
-            if (current instanceof Integer)
-                port = (Integer) current;
             if(current instanceof Table){
                 table = (Table) current;
             }
@@ -49,12 +46,17 @@ public class TableMulticastSender extends AsyncTask<Object, Void, Void> {
 
     private void sendMulticast(Table table){
         byte[] msg = Serializer.serialize(table);
-        DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, port);
+        DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, s.getLocalPort());
         try {
             s.send(datagramMsg);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onPostExecute(Void v){
+        cancel(true);
     }
 }
 

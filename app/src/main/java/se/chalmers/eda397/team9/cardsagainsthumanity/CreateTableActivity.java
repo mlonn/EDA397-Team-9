@@ -37,8 +37,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 
 //Consider refactoring this class. I.e divide into several classes
-public class CreateTableActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener, PropertyChangeListener{
-
+public class CreateTableActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
     private WifiP2pManager wifiP2pManager;
     private WifiP2pManager.Channel channel;
     private WiFiBroadcastReceiver receiver;
@@ -54,7 +53,8 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
     private WifiManager wifi;
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s = null;
-    InetAddress group = null;
+    private InetAddress group = null;
+    private List<AsyncTask> threadList = new ArrayList<>();
 
     //Temporary
     String ipAdress = "224.1.1.1";
@@ -89,6 +89,9 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
                 p2pManager.discoverPeers();
                 p2pManager.connect2Peers(peers);
                 swipeRefreshLayout.setRefreshing(false);
+                for (AsyncTask current : threadList) {
+                    System.out.println(current.getClass().getSimpleName() + ": isCancelled - " + current.isCancelled() );
+                }
             }
         });
 
@@ -97,9 +100,17 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
                 Table table = new Table(tableName.getText().toString());
                 tables.put(tableName.getText().toString(), table);
                 Intent intent = new Intent(v.getContext(), CreateRuleActivity.class);
-                AsyncTask test = new TableMulticastSender().execute(s, group, table, port);
+                threadList.add(new TableMulticastSender().execute(s, group, table, port));
 
-                new HostMulticastReceiver(multicastLock).execute(s, group, table, port);
+                try {
+                    MulticastSocket s2;
+                    s2 = new MulticastSocket(port);
+                    s2.joinGroup(group);
+                    threadList.add(new HostMulticastReceiver(multicastLock, s2, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 //startActivity(intent);
             }
         });
@@ -129,6 +140,7 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         try {
             s = new MulticastSocket(port);
             s.joinGroup(group);
+            System.out.println("LASDASD: " + s.getLocalSocketAddress());
             greetAndReceive();
         } catch (IOException e) {
             e.printStackTrace();
@@ -136,8 +148,7 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
     }
 
     private void greetAndReceive(){
-        new GreetingMulticastSender().execute(s,port,group);
-        new ClientMulticastReceiver(multicastLock).execute(s, tables, tableList, this, multicastLock);
+        threadList.add(new ClientMulticastReceiver(multicastLock, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, tables, tableList, this));
     }
 
     private void joinGroup(MulticastSocket s, InetAddress group){
@@ -156,6 +167,10 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         } catch (IOException e) {
             e.printStackTrace();
         }
+        for(AsyncTask current : threadList){
+            current.cancel(true);
+        }
+
     }
 
     /* Activity overrides*/
@@ -193,13 +208,5 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
             Toast.makeText(CreateTableActivity.this, "No peers available",Toast.LENGTH_SHORT).show();
             return;
         }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals("DISCOVERY_STATUS"))
-            Toast.makeText(CreateTableActivity.this, propertyChangeEvent.getNewValue().toString(),
-                    Toast.LENGTH_SHORT).show();
-
     }
 }
