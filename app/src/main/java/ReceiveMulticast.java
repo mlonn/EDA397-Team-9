@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GreetingMulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
+
 
 //Only used for testing
 
@@ -24,8 +24,8 @@ public class ReceiveMulticast {
     InetAddress group = null;
     String ipAdress = "224.1.1.1";
     int port = 9879;
-    Map<String, Table> tables;
-    Map<String, Table> oldTables;
+    Map<String, TableInfo> tables;
+    Map<String, TableInfo> oldTables;
 
     public ReceiveMulticast(){
         initMulticast();
@@ -59,10 +59,11 @@ public class ReceiveMulticast {
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
         boolean keepGoing = true;
         int counter = 1;
+        int counter2 = 0;
         int marginOfError = 3;
 
         try {
-            s.setSoTimeout(500);
+            s.setSoTimeout(3000);
         } catch (SocketException e) {
             counter++;
         }
@@ -89,17 +90,13 @@ public class ReceiveMulticast {
                 System.out.println("Done");
             }
 
-            if (msg instanceof Table) {
-                String hostName = ((Table) msg).getHost();
-                String tableName = ((Table) msg).getName();
-                String tableSize = "" + ((Table) msg).getSize();
-
-                System.out.println("Host: " + hostName +
-                        "\nTable: " + tableName +
-                        "\nSize: " + tableSize);
-                oldTables.clear();
-                oldTables.putAll(tables);
-                tables.put(((Table) msg).getName(),(Table) msg);
+            if (msg instanceof TableInfo) {
+                String hostName = ((TableInfo) msg).getHost();
+                String tableName = ((TableInfo) msg).getName();
+                int tableSize = ((TableInfo) msg).getSize();
+                tables.put(tableName, new TableInfo(tableName, hostName, tableSize));
+                counter2++;
+                System.out.println("Received : " + counter2);
             }
         }
     }
