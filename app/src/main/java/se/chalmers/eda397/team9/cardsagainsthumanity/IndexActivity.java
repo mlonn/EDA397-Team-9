@@ -29,18 +29,18 @@ public class IndexActivity extends Activity {
         final Player player = new Player("");
 
         //Check if the application has a Shared Preferences file containing a username already
-        if(fileExists()){
-            player.username = player.getUsername(context);
-            Intent intent = new Intent(this, CreateTableActivity.class);
-            startActivity(intent);
-            finish();
-        }
+//        if(fileExists()){
+//            player.username = player.getUsername(context);
+//            Intent intent = new Intent(this, CreateTableActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
 
         final Button button = (Button) findViewById(R.id.btn_submitUsername);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 EditText usernameInput = (EditText) findViewById(R.id.txt_username);
-                createUsernameFile(usernameInput.toString());
+                createUsernameFile(usernameInput.getText().toString());
                 player.username = player.getUsername(context);
                 gotoCreateTable(v);
             }

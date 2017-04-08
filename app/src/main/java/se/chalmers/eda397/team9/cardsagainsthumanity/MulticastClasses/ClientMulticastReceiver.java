@@ -1,16 +1,11 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
-import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -20,36 +15,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Serializer;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
-public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map<String, Table>>{
+public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map<String, TableInfo>>{
 
-    private MulticastSocket s;
-    private Map<String, Table> tables;
+    private Map<String, TableInfo> tables;
     private Spinner tableList;
     private AppCompatActivity activity;
-    private InetAddress group;
-    private Map<String, Table> newTables;
+    private Map<String, TableInfo> newTables;
+    private TablePresenter tablePresenter;
 
-    public ClientMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s, InetAddress group) {
-        super(mcLock);
-        this.s = s;
-        this.group = group;
+    public ClientMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s, InetAddress group, TablePresenter tablePresenter) {
+        super(mcLock, s, group);
+        this.tablePresenter = tablePresenter;
     }
 
     @Override
-    protected Map<String, Table> doInBackground(Object... objects) {
+    protected Map<String, TableInfo> doInBackground(Object... objects) {
         for(Object current : objects){
             if(current instanceof Map)
-                tables = (Map<String, Table>) current;
+                tables = (Map<String, TableInfo>) current;
             if(current instanceof Spinner)
                 tableList = (Spinner) current;
             if(current instanceof AppCompatActivity)
                 activity = (AppCompatActivity) current;
             }
 
-        newTables = new HashMap<>();
+        newTables = new HashMap<>(tables);
         receiveAndRegisterTable();
         return tables;
     }
@@ -63,9 +57,10 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
         int counter = 1;
         int marginOfError = 3;
         startMulticastLock();
+        newTables.clear();
 
         try {
-            s.setSoTimeout(2000);
+            getSocket().setSoTimeout(2000);
         } catch (SocketException e) {
             counter++;
         }
@@ -73,11 +68,11 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
         while(keepGoing && !isCancelled()) {
             Object msg = null;
             try {
-                s.receive(recv);
+                getSocket().receive(recv);
                 msg = Serializer.deserialize(recv.getData());
             } catch (IOException e) {
                 if(newTables.equals(tables) && counter < marginOfError){
-                    new GreetingMulticastSender().execute(s, group);
+                    new GreetingMulticastSender().execute(getSocket(), getGroup());
                 }
                 System.out.println("Trying to receive datagram again (try " + counter + ")");
                 counter++;
@@ -88,37 +83,40 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
                 System.out.println("Done");
             }
 
-            if (msg instanceof Table) {
+            if (msg instanceof TableInfo) {
                 System.out.println(msg);
-                newTables.put(((Table) msg).getName(), (Table)msg);
+                newTables.put(((TableInfo) msg).getName(), (TableInfo)msg);
             }
         }
     }
 
     @Override
-    protected void onPostExecute(Map<String, Table> tables) {
+    protected void onPostExecute(Map<String, TableInfo> tables) {
         super.onPostExecute(tables);
         updateTable();
     }
 
 
     private void updateTable(){
+        tablePresenter.clearTables();
+        tablePresenter.insertAll(newTables);
+
         tables.clear();
         tables.putAll(newTables);
 
-        List<Table> list = new ArrayList<>();
-        for(Map.Entry<String,Table> current : tables.entrySet()){
+        List<TableInfo> list = new ArrayList<>();
+        for(Map.Entry<String,TableInfo> current : tables.entrySet()){
             list.add(current.getValue());
         }
 
-        ArrayAdapter<Table> spinnerAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, list);
+        ArrayAdapter<TableInfo> spinnerAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, list);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tableList.setAdapter(spinnerAdapter);
     }
 
     @Override
     protected void onPreExecute() {
-        new GreetingMulticastSender().execute(s, group);
+        new GreetingMulticastSender().execute(getSocket(), getGroup());
         super.onPreExecute();
     }
 }

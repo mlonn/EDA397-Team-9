@@ -3,13 +3,8 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Map;
-
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Serializer;
 
 /**
  * Created by SAMSUNG on 2017-04-06.
@@ -19,9 +14,22 @@ public abstract class MulticastReceiver<A, B, C> extends AsyncTask<A, B, C> {
 
 
     private WifiManager.MulticastLock mcLock;
+    private MulticastSocket s;
+    private InetAddress group;
 
-    public MulticastReceiver(WifiManager.MulticastLock mcLock){
+
+    public MulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s, InetAddress group){
         this.mcLock = mcLock;
+        this.s = s;
+        this.group = group;
+    }
+
+    public InetAddress getGroup(){
+        return group;
+    }
+
+    public MulticastSocket getSocket(){
+        return s;
     }
 
     protected void startMulticastLock() {
