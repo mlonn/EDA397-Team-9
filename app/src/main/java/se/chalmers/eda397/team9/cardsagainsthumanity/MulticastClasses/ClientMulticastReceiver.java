@@ -4,6 +4,7 @@ import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -43,7 +44,7 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
                 activity = (AppCompatActivity) current;
             }
 
-        newTables = new HashMap<>(tables);
+        newTables = new HashMap<>();
         receiveAndRegisterTable();
         return tables;
     }
@@ -52,12 +53,12 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
     private void receiveAndRegisterTable(){
         byte[] buf = new byte[1000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
+        Toast.makeText(activity, "Searching for tables...", Toast.LENGTH_SHORT).show();
 
         boolean keepGoing = true;
         int counter = 1;
         int marginOfError = 3;
         startMulticastLock();
-        newTables.clear();
 
         try {
             getSocket().setSoTimeout(2000);

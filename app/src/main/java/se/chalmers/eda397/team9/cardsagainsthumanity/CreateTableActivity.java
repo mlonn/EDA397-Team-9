@@ -22,39 +22,33 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ClientMulticastReceiver;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
-//Consider refactoring this class. I.e divide into several classes
 public class CreateTableActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
-    private WifiP2pManager wifiP2pManager;
-    private WifiP2pManager.Channel channel;
     private WiFiBroadcastReceiver receiver;
     private IntentFilter mIntentFilter;
     private P2pManager p2pManager;
     private List<WifiP2pDevice> peers;
 
     private Map<String, TableInfo> tables;
-    private Intent createTableIntent;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Spinner tableList;
-
     private String username;
 
-    private WifiManager wifi;
     private WifiManager.MulticastLock multicastLock;
-    private MulticastSocket s = null;
-    private InetAddress group = null;
+    private MulticastSocket s;
+    private InetAddress group;
     private List<AsyncTask> threadList = new ArrayList<>();
     private TablePresenter tpresenter;
     //Temporary
@@ -64,24 +58,24 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_createtable);
 
         SharedPreferences prefs = this.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         username = prefs.getString("name", null);
 
         tables = new HashMap<String, TableInfo>();
-        setContentView(R.layout.activity_createtable);
 
         tpresenter = new TablePresenter(this);
         final Button createTableButton = (Button) findViewById(R.id.createTable_button);
         final EditText tableName = (EditText)findViewById(R.id.tablename);
         final Button joinTableButton = (Button) findViewById(R.id.joinTable_button);
         final Button refreshButton = (Button) findViewById(R.id.refresh_button);
-        final Intent intent = getIntent();
         tableList = (Spinner) findViewById(R.id.table_list);
 
-        wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         multicastLock = wifi.createMulticastLock("multicastLock");
         tables = new HashMap<String, TableInfo>();
+
         //Broadcast
         initMulticast();
 
@@ -104,20 +98,9 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         createTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 TableInfo table = tpresenter.createTable(tableName.getText().toString(), username);
-                tables.put(tableName.getText().toString(), table);
                 Intent intent = new Intent(v.getContext(), CreateRuleActivity.class);
-                threadList.add(new TableMulticastSender().execute(s, group, table, port));
-
-                try {
-                    MulticastSocket s2;
-                    s2 = new MulticastSocket(port);
-                    s2.joinGroup(group);
-                    threadList.add(new HostMulticastReceiver(multicastLock, s2, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                //startActivity(intent);
+                intent.putExtra("THIS.TABLE", table);
+                startActivity(intent);
             }
         });
 
@@ -126,7 +109,6 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
                 greetAndReceive();
             }
         });
-
         joinTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), CreatePlayerListActivity.class);
@@ -146,11 +128,12 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         try {
             s = new MulticastSocket(port);
             s.joinGroup(group);
-            greetAndReceive();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        greetAndReceive();
     }
+
 
     private void greetAndReceive(){
         threadList.add(new ClientMulticastReceiver(multicastLock, s, group, tpresenter).execute(tables, tableList, this));
@@ -165,19 +148,6 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         }
     }
 
-    private void leaveGroup(MulticastSocket s, InetAddress group){
-        try {
-            if(s.isBound())
-                s.leaveGroup(group);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for(AsyncTask current : threadList){
-            current.cancel(true);
-        }
-
-    }
-
     /* Activity overrides*/
     @Override
     public void onResume(){
@@ -190,7 +160,11 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
     public void onPause(){
         super.onPause();
         unregisterReceiver(receiver);
-        leaveGroup(s, group);
+        try {
+            s.leaveGroup(group);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /* Peer to peer functions*/

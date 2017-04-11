@@ -16,7 +16,10 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 public class TablePresenter {
     private AppCompatActivity activity;
+
+    //Temporary, should exist in the game class.
     private Map<String, Table> tables;
+
     private PropertyChangeSupport pcs;
 
     public TablePresenter(AppCompatActivity app){
