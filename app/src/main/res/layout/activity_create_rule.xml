@@ -1,40 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="serif-monospace"
-        android:text="Create rule"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
 
-    <Button
-        android:id="@+id/btn_addRule"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add rule" />
+    android:background="@drawable/background_port"
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="serif-monospace"
-        android:text="Rule list"
-        android:textSize="20sp" />
+    android:baselineAligned="false"
+    android:orientation="vertical"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="25dp">
 
-    <ListView
-        android:id="@+id/ruleList"
-        android:layout_width="match_parent"
-        android:layout_height="105dp" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="344dp"
+        android:layout_height="551dp"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp">
 
-    <Button
-        android:id="@+id/btn_startTable"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif-monospace"
+            android:text="Create rule"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_addRule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add rule" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif-monospace"
+            android:text="Rule list"
+            android:textSize="20sp" />
+
+        <ListView
+            android:id="@+id/ruleList"
+            android:layout_width="match_parent"
+            android:layout_height="105dp" />
+
+        <Button
+            android:id="@+id/btn_startTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
