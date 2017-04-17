@@ -9,33 +9,46 @@ public class Table {
     public String tableName = "";
     private List<Player> playerList = new ArrayList<>();
     public BlackCard blackCard;
-    private Player host = null;
+    private Player host = new Player("TestPlayer");
 
     /**
      * constructor
-     * @param player: host of the new table
-     * @param tableName: name given by the host
-     *                 REQUIRE notNull
      *
+     * @param tableName: name given by the host
+     *                   REQUIRE notNull
      */
-    public Table(Player player, String tableName){
-        this.host = player;
+    public Table(String tableName) {
         this.tableName = tableName;
-        newPlayer(player);
     }
 
     /**
      * adds the Player that want to join the table
+     *
      * @param player: player added to the list of players
      */
-    public void newPlayer(Player player){
+
+    public String getHost(){
+        //Get username requires context????
+        return host.getUsername();
+    }
+
+    public String getName(){
+        return tableName;
+    }
+
+    public int getSize(){
+        return playerList.size();
+    }
+
+    public void newPlayer(Player player) {
+
         playerList.add(player);
     }
 
     /**
      * it gives a blackCard for the next round
      */
-    public void getBlackCard(){
+    public void getBlackCard() {
         //retrieve from DB the blackCard
     }
 }
