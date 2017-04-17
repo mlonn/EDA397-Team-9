@@ -16,9 +16,9 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="344dp"
-        android:layout_height="551dp"
-        tools:layout_editor_absoluteY="8dp"
-        tools:layout_editor_absoluteX="8dp">
+        android:layout_height="495dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
 
         <TextView
             android:id="@+id/textView5"
@@ -28,12 +28,16 @@
             android:text="Create rule"
             android:textAlignment="center"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginTop="50px"
+            android:layout_marginBottom="50px"/>
 
         <Button
             android:id="@+id/btn_addRule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20px"
+            android:fontFamily="sans-serif-smallcaps"
             android:text="Add rule" />
 
         <TextView
@@ -42,17 +46,20 @@
             android:layout_height="wrap_content"
             android:fontFamily="serif-monospace"
             android:text="Rule list"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:layout_marginBottom="20px"/>
 
         <ListView
             android:id="@+id/ruleList"
             android:layout_width="match_parent"
-            android:layout_height="105dp" />
+            android:layout_height="105dp"
+            android:layout_marginBottom="45px"/>
 
         <Button
             android:id="@+id/btn_startTable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-smallcaps"
             android:text="Start" />
     </LinearLayout>
 

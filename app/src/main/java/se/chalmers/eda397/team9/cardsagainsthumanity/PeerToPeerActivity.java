@@ -38,7 +38,7 @@ public class PeerToPeerActivity extends AppCompatActivity {
 
         discoverPeers();
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_index);
 
     }
 

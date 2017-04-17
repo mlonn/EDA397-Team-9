@@ -15,11 +15,18 @@ import java.io.File;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 /**
  * Created by axel_ on 2017-03-31.
  */
 
-public class IndexActivity extends Activity {
+public class IndexActivity extends Activity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,5 +83,37 @@ public class IndexActivity extends Activity {
         startActivity(intent);
     }
 
+
+    //Main menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Inflate the menu; this adds items to the action bar if it is present
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.changeName:
+                //Do something
+                return true;
+            case R.id.changeTable:
+                //Do something
+                return true;
+            case R.id.blackList:
+                //Do something
+                return true;
+            case R.id.settings:
+                //Do something
+                return true;
+            case R.id.help:
+                //Do something
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 }
