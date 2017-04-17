@@ -7,15 +7,8 @@
         android:id="@+id/action_settings"
         android:title="Settings"
         android:icon="@mipmap/ic_settings"/>
-    <!--
-        android:showAsAction="ifRoom"
-    -->
 
     <item
         android:id="@+id/action_help"
         android:title="Help"/>
-        <!--
-        android:icon="@mipmap/ic_help"
-        -->
-
 </menu>
