@@ -8,9 +8,12 @@ import android.content.SharedPreferences;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,5 +89,42 @@ public class CreateTableActivity extends AppCompatActivity {
                 System.out.println("Discovery failed, " + reason );
             }
         });
+    }
+
+
+    //Main menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Inflate the menu; this adds items to the action bar if it is present
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.changeName:
+                //Do something
+
+                //Example message (only for test)
+                Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_SHORT).show();
+
+                return true;
+            case R.id.changeTable:
+                //Do something
+                return true;
+            case R.id.blackList:
+                //Do something
+                return true;
+            case R.id.settings:
+                //Do something
+                return true;
+            case R.id.help:
+                //Do something
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

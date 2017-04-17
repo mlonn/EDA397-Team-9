@@ -14,22 +14,41 @@
     tools:layout_editor_absoluteY="25dp">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:orientation="vertical" android:layout_width="344dp"
+        android:layout_height="495dp"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp">
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20px"
+            android:layout_marginTop="50px"
+            android:fontFamily="serif-monospace"
+            android:text="Insert your username"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/txt_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20px"
             android:ems="10"
+            android:fontFamily="monospace"
+            android:hint="Username"
             android:inputType="textPersonName"
-            android:text="Name" />
+            android:textAlignment="textStart"
+            android:textStyle="italic" />
 
         <Button
             android:id="@+id/btn_submitUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Next" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
