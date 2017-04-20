@@ -59,7 +59,7 @@ public class CreateRuleActivity extends AppCompatActivity {
 
     public void clickNext(View view) {
         //just for testing
-        setContentView(R.layout.activity_createtable);
+        setContentView(R.layout.activity_game);
     }
 
     public void clickJoin(View view) {
