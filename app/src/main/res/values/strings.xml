@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CardsAgainstHumanity</string>
+    <string name="expansionName">expansion_name</string>
 </resources>

@@ -107,7 +107,7 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
                     e.printStackTrace();
                 }
 
-                //startActivity(intent);
+                startActivity(intent);
             }
         });
 
