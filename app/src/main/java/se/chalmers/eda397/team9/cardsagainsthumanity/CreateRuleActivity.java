@@ -1,7 +1,6 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +15,6 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
