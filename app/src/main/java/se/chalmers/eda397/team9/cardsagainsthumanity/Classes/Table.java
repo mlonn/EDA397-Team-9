@@ -1,16 +1,18 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
+import android.content.Context;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Table implements Serializable {
+public class Table {
 
     public String tableName = "";
     private List<Player> playerList = new ArrayList<>();
     public BlackCard blackCard;
-    private Player host = new Player("TestPlayer");
+    private Player host;
 
     /**
      * constructor
@@ -18,9 +20,16 @@ public class Table implements Serializable {
      * @param tableName: name given by the host
      *                   REQUIRE notNull
      */
-    public Table(String tableName) {
+    public Table(String tableName, Context context) {
         this.tableName = tableName;
+        host = new Player(context.getSharedPreferences("usernameFile", Context.MODE_PRIVATE).getString("name", null));
     }
+
+    public Table(String tableName, String hostName) {
+        this.tableName = tableName;
+        host = new Player(hostName);
+    }
+
 
     /**
      * adds the Player that want to join the table
@@ -53,9 +62,5 @@ public class Table implements Serializable {
         //retrieve from DB the blackCard
     }
 
-    @Override
-    public String toString(){
-        return getHost() + " - " + getName() + " - " + getSize();
-    }
 }
 

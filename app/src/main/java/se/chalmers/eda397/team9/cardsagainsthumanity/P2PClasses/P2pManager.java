@@ -1,6 +1,5 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -9,11 +8,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
 import java.util.List;
-
-import se.chalmers.eda397.team9.cardsagainsthumanity.CreateTableActivity;
 
 /**
  * Created by SAMSUNG on 2017-04-06.
@@ -30,8 +25,12 @@ public class P2pManager {
         this.activity = activity;
         manager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(activity, activity.getMainLooper(), null);
-        receiver = new WiFiBroadcastReceiver(manager, channel, (CreateTableActivity) activity);
 
+        if(activity instanceof WifiP2pManager.PeerListListener) {
+            receiver = new WiFiBroadcastReceiver(manager, channel, (WifiP2pManager.PeerListListener) activity);
+        }else{
+            throw new IllegalArgumentException("The input activity does not implement WifiP2pManager.PeerListListener");
+        }
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);

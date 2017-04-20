@@ -1,4 +1,4 @@
-package se.chalmers.eda397.team9.cardsagainsthumanity;
+package se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
