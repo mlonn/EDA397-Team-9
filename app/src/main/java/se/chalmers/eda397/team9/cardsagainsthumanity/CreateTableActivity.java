@@ -17,8 +17,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -30,7 +28,6 @@ import java.util.Map;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ClientMulticastReceiver;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GreetingMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
@@ -65,7 +62,6 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         super.onCreate(savedInstanceState);
         tables = new HashMap<String, Table>();
         setContentView(R.layout.activity_createtable);
-
         final Button createTableButton = (Button) findViewById(R.id.createTable_button);
         final EditText tableName = (EditText)findViewById(R.id.tablename);
         final Button joinTableButton = (Button) findViewById(R.id.joinTable_button);

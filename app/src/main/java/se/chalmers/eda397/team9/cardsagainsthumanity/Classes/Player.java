@@ -2,9 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +27,10 @@ public class Player implements Serializable {
     public WhiteCard playCard() {
 
         //When played a card get a new one-> always 10 cards on the hand
-        WhiteCard whiteCard = new WhiteCard();
-        whiteCards.add(whiteCard.getNewWhiteCard());
-        return new WhiteCard();
+        //WhiteCard whiteCard = new WhiteCard();
+        //whiteCards.add(whiteCard.getNewWhiteCard());
+        //return new WhiteCard();
+        return null;
 
     }
 
