@@ -49,7 +49,6 @@ public class IndexActivity extends Activity  {
                 EditText usernameInput = (EditText) findViewById(R.id.txt_username);
                 createUsernameFile(usernameInput.toString());
                 player.username = player.getUsername(context);
-
                 gotoCreateTable(v);
             }
         });
