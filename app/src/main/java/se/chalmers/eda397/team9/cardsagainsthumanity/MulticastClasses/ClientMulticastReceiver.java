@@ -53,7 +53,7 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
     private void receiveAndRegisterTable(){
         byte[] buf = new byte[1000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
-        Toast.makeText(activity, "Searching for tables...", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "Searching for tables...", Toast.LENGTH_SHORT).show();
 
         boolean keepGoing = true;
         int counter = 1;

@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 
-//Only used for testing
+//Only used for testing purposes
 
 public class ReceiveMulticast {
     private MulticastSocket s = null;

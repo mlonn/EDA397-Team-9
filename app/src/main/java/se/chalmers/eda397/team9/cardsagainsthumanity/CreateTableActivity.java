@@ -22,12 +22,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ClientMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
@@ -51,6 +49,7 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
     private InetAddress group;
     private List<AsyncTask> threadList = new ArrayList<>();
     private TablePresenter tpresenter;
+
     //Temporary
     String ipAdress = "224.1.1.1";
     int port = 9879;
