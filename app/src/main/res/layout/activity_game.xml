@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_port">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="344dp"
+    android:layout_height="495dp"
+    tools:layout_editor_absoluteY="8dp"
+    tools:layout_editor_absoluteX="8dp">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif-monospace"
+            android:text="Choose a white card"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="50px"/>
+
+        <ImageView
+        android:id="@+id/blackCard"
+        android:layout_width="141dp"
+        android:layout_height="211dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150px"
+        app:srcCompat="@drawable/black_card" />
+
+    <TextView
+        android:id="@+id/blackCardText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/blackCard"
+        android:layout_alignLeft="@id/blackCard"
+        android:layout_alignRight="@id/blackCard"
+        android:layout_alignTop="@id/blackCard"
+        android:layout_margin="1dp"
+        android:gravity="center"
+        android:text="black_card_text"
+        android:textColor="#FFFFFF" />
+
+    <HorizontalScrollView
+        android:id="@+id/whiteCardsScroll"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:gravity="center"
+        android:layout_marginTop="750px">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/firstCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginLeft="15px"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/first"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/firstCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/first"
+                        android:layout_alignLeft="@id/first"
+                        android:layout_alignRight="@id/first"
+                        android:layout_alignTop="@id/first"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/secondCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/second"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/secondCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/second"
+                        android:layout_alignLeft="@id/second"
+                        android:layout_alignRight="@id/second"
+                        android:layout_alignTop="@id/second"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/thirdCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/third"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/thirdCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/third"
+                        android:layout_alignLeft="@id/third"
+                        android:layout_alignRight="@id/third"
+                        android:layout_alignTop="@id/third"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fourthCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/fourth"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/fourthCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/fourth"
+                        android:layout_alignLeft="@id/fourth"
+                        android:layout_alignRight="@id/fourth"
+                        android:layout_alignTop="@id/fourth"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fifthCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/fifth"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/fifthCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/fifth"
+                        android:layout_alignLeft="@id/fifth"
+                        android:layout_alignRight="@id/fifth"
+                        android:layout_alignTop="@id/fifth"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sixthCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/sixth"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/sixthCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/sixth"
+                        android:layout_alignLeft="@id/sixth"
+                        android:layout_alignRight="@id/sixth"
+                        android:layout_alignTop="@id/sixth"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/seventhCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/seventh"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/sevenCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/seventh"
+                        android:layout_alignLeft="@id/seventh"
+                        android:layout_alignRight="@id/seventh"
+                        android:layout_alignTop="@id/seventh"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/eighthCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/eighth"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/eighthCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/eighth"
+                        android:layout_alignLeft="@id/eighth"
+                        android:layout_alignRight="@id/eighth"
+                        android:layout_alignTop="@id/eighth"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ninthCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/ninth"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/ninthCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/ninth"
+                        android:layout_alignLeft="@id/ninth"
+                        android:layout_alignRight="@id/ninth"
+                        android:layout_alignTop="@id/ninth"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tenthCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginRight="30px">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent" >
+                    <ImageView
+                        android:id="@+id/tenth"
+                        android:layout_width="141dp"
+                        android:layout_height="211dp"
+                        android:src="@drawable/white_card" />
+
+                    <TextView
+                        android:id="@+id/tenthCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/tenth"
+                        android:layout_alignLeft="@id/tenth"
+                        android:layout_alignRight="@id/tenth"
+                        android:layout_alignTop="@id/tenth"
+                        android:layout_margin="1dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="white_card_text"
+                        android:textColor="#000000" />
+                </RelativeLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
