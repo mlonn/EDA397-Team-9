@@ -27,7 +27,6 @@
         </activity>
         <activity android:name=".CreatePlayerListActivity">
         </activity>
-
     </application>
 
 </manifest>

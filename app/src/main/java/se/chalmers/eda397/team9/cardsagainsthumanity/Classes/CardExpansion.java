@@ -14,13 +14,13 @@ import java.util.List;
 public class CardExpansion {
     private List<BlackCard> blackCardList;
     private List<WhiteCard> whiteCardList;
-    private String expasionName;
+    private String name;
 
     public CardExpansion(JSONObject data, JSONObject expansion) {
         blackCardList = new ArrayList<>();
         whiteCardList = new ArrayList<>();
         try {
-            expasionName = expansion.getString("name");
+            name = expansion.getString("name");
             JSONArray blackCards = data.getJSONArray("blackCards");
             JSONArray whiteCards = data.getJSONArray("whiteCards");
             JSONArray black = expansion.getJSONArray("black");
@@ -35,5 +35,17 @@ public class CardExpansion {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+
+    public int getNoBlackCards() {
+        return blackCardList.size();
+    }
+    public int getNoWhiteCards() {
+        return whiteCardList.size();
     }
 }

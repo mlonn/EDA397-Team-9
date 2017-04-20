@@ -4,32 +4,15 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/expansionsTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Create Rule"
-        android:textSize="18sp" />
+        android:text="Select Expansions"
+        android:textAppearance="@android:style/TextAppearance.Material.Headline" />
 
-    <EditText
-        android:id="@+id/editText"
+    <ListView
+        android:id="@+id/expansion_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Role Name"
-        android:inputType="textPersonName" />
-
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Description"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/addRole_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

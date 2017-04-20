@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
@@ -20,7 +19,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 
 public class CardHandler {
 
-    public static List<CardExpansion> getExpansions(Activity a) {
+    public static ArrayList<CardExpansion> getExpansions(Activity a) {
         try {
             JSONObject obj;
             obj = new JSONObject(getJsonString(a));
@@ -31,12 +30,12 @@ public class CardHandler {
         return new ArrayList<CardExpansion>();
     }
 
-    private static List<CardExpansion> createExpansions(JSONObject data, JSONArray order) throws JSONException {
+    private static ArrayList<CardExpansion> createExpansions(JSONObject data, JSONArray order) throws JSONException {
         ArrayList<CardExpansion> cardExpansionsList = new ArrayList<>();
         for (int i = 0; i < order.length(); i++) {
             cardExpansionsList.add(new CardExpansion(data, data.getJSONObject(order.getString(i))));
         }
-        return null;
+        return cardExpansionsList;
     }
 
     private static String getJsonString(Activity a) {
