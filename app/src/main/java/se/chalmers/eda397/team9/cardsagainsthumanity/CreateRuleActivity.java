@@ -20,6 +20,5 @@ public class CreateRuleActivity extends AppCompatActivity {
         expansionList = (ListView) findViewById(R.id.expansion_list);
         expansions = CardHandler.getExpansions(this);
         expansionList.setAdapter(new ExpansionsAdapter(this, expansions));
-
     }
 }
