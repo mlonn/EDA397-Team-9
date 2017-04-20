@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
 package="se.chalmers.eda397.team9.cardsagainsthumanity">
 <uses-sdk android:minSdkVersion="14" />
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -31,5 +32,4 @@ package="se.chalmers.eda397.team9.cardsagainsthumanity">
     </activity>
 
 </application>
-
 </manifest>
