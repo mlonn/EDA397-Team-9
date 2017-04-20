@@ -1,0 +1,57 @@
+package se.chalmers.eda397.team9.cardsagainsthumanity.util;
+
+import android.app.Activity;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
+import se.chalmers.eda397.team9.cardsagainsthumanity.R;
+
+/**
+ * Created by Mikae on 2017-04-08.
+ */
+
+public class CardHandler {
+
+    public static List<CardExpansion> getExpansions(Activity a) {
+        try {
+            JSONObject obj;
+            obj = new JSONObject(getJsonString(a));
+            return createExpansions(obj, obj.getJSONArray("order"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<CardExpansion>();
+    }
+
+    private static List<CardExpansion> createExpansions(JSONObject data, JSONArray order) throws JSONException {
+        ArrayList<CardExpansion> cardExpansionsList = new ArrayList<>();
+        for (int i = 0; i < order.length(); i++) {
+            cardExpansionsList.add(new CardExpansion(data, data.getJSONObject(order.getString(i))));
+        }
+        return null;
+    }
+
+    private static String getJsonString(Activity a) {
+        String json = null;
+        try {
+            InputStream is = a.getResources().openRawResource(R.raw.cards);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+}

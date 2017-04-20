@@ -7,18 +7,10 @@ import java.io.Serializable;
  */
 
 public class WhiteCard implements Serializable {
-    public WhiteCard(){
-        sentence = this.sentence;
+    private String word;
+    public WhiteCard(String word) {
+        this.word = word;
     }
-
-    public String sentence = "";
-
     //fetch random new white card
     //Invoked from Player
-    public WhiteCard getNewWhiteCard()  {
-
-        return new WhiteCard();
-    }
-
-
 }
