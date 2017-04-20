@@ -2,17 +2,12 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
 import android.os.AsyncTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Serializer;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 
 /**
  * Created by SAMSUNG on 2017-04-06.
