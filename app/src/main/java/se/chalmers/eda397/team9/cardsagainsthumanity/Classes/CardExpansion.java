@@ -15,10 +15,12 @@ public class CardExpansion {
     private List<BlackCard> blackCardList;
     private List<WhiteCard> whiteCardList;
     private String name;
+    private boolean selected;
 
     public CardExpansion(JSONObject data, JSONObject expansion) {
         blackCardList = new ArrayList<>();
         whiteCardList = new ArrayList<>();
+        selected = false;
         try {
             name = expansion.getString("name");
             JSONArray blackCards = data.getJSONArray("blackCards");
@@ -36,7 +38,6 @@ public class CardExpansion {
             e.printStackTrace();
         }
     }
-
     public String getName() {
         return name;
     }
@@ -47,5 +48,13 @@ public class CardExpansion {
     }
     public int getNoWhiteCards() {
         return whiteCardList.size();
+    }
+
+    public boolean getSelection(){
+        return selected;
+    }
+
+    public void setSelection(boolean s) {
+        selected = s;
     }
 }
