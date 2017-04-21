@@ -8,10 +8,10 @@
     android:background="@drawable/background_port">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="344dp"
-    android:layout_height="495dp"
-    tools:layout_editor_absoluteY="8dp"
-    tools:layout_editor_absoluteX="8dp">
+        android:orientation="vertical" android:layout_width="344dp"
+        android:layout_height="495dp"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp">
 
         <TextView
             android:id="@+id/textView"
@@ -25,14 +25,35 @@
             android:layout_marginTop="50px"/>
 
         <ImageView
-        android:id="@+id/blackCard"
-        android:layout_width="141dp"
-        android:layout_height="211dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="150px"
-        app:srcCompat="@drawable/black_card" />
+            android:id="@+id/blackCard"
+            android:layout_width="141dp"
+            android:layout_height="211dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="150px"
+            app:srcCompat="@drawable/black_card" />
 
-    <TextView
+        <ImageButton
+            android:id="@+id/block"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_block"
+            android:layout_below="@+id/favoriteBorder"
+            android:layout_alignStart="@+id/favoriteBorder"
+            android:layout_marginTop="31dp"
+            android:background="@null"/>
+
+        <ImageButton
+            android:id="@+id/favoriteBorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_favorite_border"
+            android:layout_marginTop="62dp"
+            android:background="@null"
+            android:layout_alignTop="@+id/blackCardText"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="37dp" />
+
+        <TextView
         android:id="@+id/blackCardText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,6 +73,8 @@
         android:gravity="center"
         android:layout_marginTop="750px">
 
+        <!-- Delete redundant code, insert Adapter class and use activity scroll_white_cards (Redundant code is only for test)-->
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -70,6 +93,7 @@
                 <RelativeLayout
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent" >
+
                     <ImageView
                         android:id="@+id/first"
                         android:layout_width="141dp"
@@ -122,7 +146,9 @@
                         android:gravity="center"
                         android:text="white_card_text"
                         android:textColor="#000000" />
+
                 </RelativeLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -393,6 +419,6 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-</RelativeLayout>
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

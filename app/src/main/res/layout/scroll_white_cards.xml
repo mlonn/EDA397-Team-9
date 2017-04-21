@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:gravity="center_vertical"
+    android:layout_marginTop="750px"
+    android:layout_marginLeft="15px">
+
+    <LinearLayout
+        android:id="@+id/whiteCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginRight="30px">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent" >
+
+            <!-- Should I use ImageButton instead of ImageView to do zoom when the card will select? -->
+
+            <ImageView
+                android:id="@+id/imgWhiteCard"
+                android:layout_width="141dp"
+                android:layout_height="211dp"
+                android:src="@drawable/white_card" />
+
+            <TextView
+                android:id="@+id/txtWhiteCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/imgWhiteCard"
+                android:layout_alignLeft="@id/imgWhiteCard"
+                android:layout_alignRight="@id/imgWhiteCard"
+                android:layout_alignTop="@id/imgWhiteCard"
+                android:layout_margin="1dp"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="white_card_text"
+                android:textColor="#000000" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

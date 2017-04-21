@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_port">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="344dp"
+        android:layout_height="495dp"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50px"
+            android:fontFamily="serif-monospace"
+            android:text="What card wins?"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/blackCard"
+            android:layout_width="141dp"
+            android:layout_height="211dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="150px"
+            app:srcCompat="@drawable/black_card" />
+
+        <ImageButton
+            android:id="@+id/block"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_block"
+            android:layout_below="@+id/favoriteBorder"
+            android:layout_alignStart="@+id/favoriteBorder"
+            android:layout_marginTop="31dp"
+            android:background="@null"/>
+
+        <ImageButton
+            android:id="@+id/favoriteBorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_favorite_border"
+            android:layout_marginTop="62dp"
+            android:background="@null"
+            android:layout_alignTop="@+id/blackCardText"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="37dp" />
+
+        <TextView
+            android:id="@+id/blackCardText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/blackCard"
+            android:layout_alignLeft="@id/blackCard"
+            android:layout_alignRight="@id/blackCard"
+            android:layout_alignTop="@id/blackCard"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:text="black_card_text"
+            android:textColor="#FFFFFF" />
+
+        <HorizontalScrollView
+            android:id="@+id/whiteCardsScroll"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:gravity="center"
+            android:layout_marginTop="750px">
+
+            <!-- Insert Adapter class and use activity scroll_white_cards -->
+
+        </HorizontalScrollView>
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
