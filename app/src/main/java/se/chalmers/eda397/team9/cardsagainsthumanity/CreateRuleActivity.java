@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
@@ -58,11 +56,6 @@ public class CreateRuleActivity extends AppCompatActivity {
                         exp.add(e);
                     }
                 }
-                ArrayList<Player> p = new ArrayList<>();
-                p.add(new Player("Mike"));
-                p.add(new Player("Ike"));
-                p.add(new Player("rob"));
-                Game g = new Game(p, exp);
             }
         });
     }
