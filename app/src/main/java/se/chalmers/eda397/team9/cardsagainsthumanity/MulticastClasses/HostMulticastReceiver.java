@@ -70,5 +70,4 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
             }
         }
     }
-
 }

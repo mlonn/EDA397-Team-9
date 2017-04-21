@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/swipe_to_refresh"
     android:layout_width="match_parent"
@@ -38,7 +38,7 @@
             tools:layout_editor_absoluteX="40dp"
             tools:layout_editor_absoluteY="9dp"
             android:layout_marginBottom="20px"/>
-        <Spinner
+        <se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinner
             android:id="@+id/table_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,35 +58,6 @@
             android:text="Join" />
 
         <Button
-            android:id="@+id/refresh_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Refresh" />
-
-
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="OR"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="45px"/>
-
-        <EditText
-            android:id="@+id/tablename"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20px"
-            android:ems="10"
-            android:fontFamily="monospace"
-            android:hint="Table Name"
-            android:inputType="textPersonName"
-            android:textAlignment="center"
-            android:textStyle="italic" />
-
-        <Button
             android:id="@+id/createTable_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,4 +66,4 @@
 
     </LinearLayout>
 
-</android.support.v4.widget.SwipeRefreshLayout>
+</se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout>
