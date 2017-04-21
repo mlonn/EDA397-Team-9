@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,7 +27,7 @@ import android.widget.Toast;
  * Created by axel_ on 2017-03-31.
  */
 
-public class IndexActivity extends Activity  {
+public class IndexActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +37,12 @@ public class IndexActivity extends Activity  {
         final Player player = new Player("");
 
         //Check if the application has a Shared Preferences file containing a username already
-//        if(fileExists()){
-//            player.username = player.getUsername(context);
-//            Intent intent = new Intent(this, CreateTableActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
+        if(fileExists()){
+            player.username = player.getUsername(context);
+            Intent intent = new Intent(this, CreateTableActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         final Button button = (Button) findViewById(R.id.btn_submitUsername);
         button.setOnClickListener(new View.OnClickListener() {
@@ -53,14 +54,7 @@ public class IndexActivity extends Activity  {
             }
         });
     }
-
-    private void createUsernameFile(String username2Save){
-        SharedPreferences.Editor editor = getSharedPreferences("usernameFile", MODE_PRIVATE).edit();
-        editor.putString("name", username2Save);
-        editor.commit();
-    }
-
-    private boolean fileExists(){
+    protected boolean fileExists(){
 
         String sharePrefName = "usernameFile.xml";
         File f = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/"+ sharePrefName);
@@ -76,6 +70,14 @@ public class IndexActivity extends Activity  {
             return false;
         }
     }
+
+    protected void createUsernameFile(String username2Save){
+        SharedPreferences.Editor editor = getSharedPreferences("usernameFile", MODE_PRIVATE).edit();
+        editor.putString("name", username2Save);
+        editor.commit();
+    }
+
+
 
     private void gotoCreateTable(View view) {
         Intent intent = new Intent(this, CreateTableActivity.class);
