@@ -6,8 +6,6 @@ import android.test.mock.MockContext;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by SAMSUNG on 2017-04-05.
  */
@@ -18,6 +16,6 @@ public class CreateTableActivityTest {
     @Test
     public void testMulticast(){
         mockContext = new MockContext();
-        mockContext.startActivity(new Intent(mockContext, CreateTableActivity.class));
+        mockContext.startActivity(new Intent(mockContext, LobbyActivity.class));
     }
 }

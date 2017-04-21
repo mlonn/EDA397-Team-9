@@ -6,6 +6,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -27,10 +29,12 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
     private AppCompatActivity activity;
     private Map<String, TableInfo> newTables;
     private TablePresenter tablePresenter;
+    PropertyChangeSupport pcs;
 
     public ClientMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s, InetAddress group, TablePresenter tablePresenter) {
         super(mcLock, s, group);
         this.tablePresenter = tablePresenter;
+        pcs = new PropertyChangeSupport(this);
     }
 
     @Override
@@ -53,18 +57,17 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
     private void receiveAndRegisterTable(){
         byte[] buf = new byte[1000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
-//        Toast.makeText(activity, "Searching for tables...", Toast.LENGTH_SHORT).show();
 
         boolean keepGoing = true;
         int counter = 1;
         int marginOfError = 3;
-        startMulticastLock();
 
         try {
             getSocket().setSoTimeout(2000);
         } catch (SocketException e) {
             counter++;
         }
+
 
         while(keepGoing && !isCancelled()) {
             Object msg = null;
@@ -85,7 +88,7 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
             }
 
             if (msg instanceof TableInfo) {
-                System.out.println(msg);
+                System.out.println("ClientMulticastReceiver message received: " + msg);
                 newTables.put(((TableInfo) msg).getName(), (TableInfo)msg);
             }
         }
@@ -94,11 +97,21 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
     @Override
     protected void onPostExecute(Map<String, TableInfo> tables) {
         super.onPostExecute(tables);
+
+        pcs.firePropertyChange("GREETING_FINISHED", 0, 1);
         updateTable();
     }
 
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+        pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener){
+        pcs.removePropertyChangeListener(listener);
+    }
 
     private void updateTable(){
+
         tablePresenter.clearTables();
         tablePresenter.insertAll(newTables);
 
@@ -110,9 +123,7 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
             list.add(current.getValue());
         }
 
-        ArrayAdapter<TableInfo> spinnerAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, list);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        tableList.setAdapter(spinnerAdapter);
+        pcs.firePropertyChange("TABLES_UPDATED", null, list);
     }
 
     @Override

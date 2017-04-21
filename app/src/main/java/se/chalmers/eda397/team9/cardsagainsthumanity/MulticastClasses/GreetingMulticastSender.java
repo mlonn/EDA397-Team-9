@@ -33,19 +33,20 @@ public class GreetingMulticastSender extends AsyncTask<Object, Void, Void> {
     }
 
     private void sendMulticast(String greeting){
-        byte[] msg = Serializer.serialize(greeting);
-        DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, s.getLocalPort());
-        try {
-            s.send(datagramMsg);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(s != null || !s.isClosed()) {
+            byte[] msg = Serializer.serialize(greeting);
+            DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, s.getLocalPort());
+            try {
+                s.send(datagramMsg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        cancel(true);
     }
 }
 

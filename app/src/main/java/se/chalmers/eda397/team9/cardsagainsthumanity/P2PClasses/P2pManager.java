@@ -52,7 +52,7 @@ public class P2pManager {
 
             @Override
             public void onSuccess() {
-                Toast.makeText(activity, "Discovery successful", Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(activity, "Discovery successful", Toast.LENGTH_SHORT).show();
             }
 
             @Override
