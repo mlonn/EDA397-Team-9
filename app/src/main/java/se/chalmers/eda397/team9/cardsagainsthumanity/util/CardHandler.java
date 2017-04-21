@@ -1,6 +1,6 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.util;
 
-import android.app.Activity;
+import android.content.Context;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,10 +19,10 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 
 public class CardHandler {
 
-    public static ArrayList<CardExpansion> getExpansions(Activity a) {
+    public static ArrayList<CardExpansion> getExpansions(Context ctx) {
         try {
             JSONObject obj;
-            obj = new JSONObject(getJsonString(a));
+            obj = new JSONObject(getJsonString(ctx));
             return createExpansions(obj, obj.getJSONArray("order"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -38,10 +38,11 @@ public class CardHandler {
         return cardExpansionsList;
     }
 
-    private static String getJsonString(Activity a) {
+    private static String getJsonString(Context ctx) {
         String json = null;
         try {
-            InputStream is = a.getResources().openRawResource(R.raw.cards);
+
+            InputStream is = ctx.getResources().openRawResource(R.raw.cards);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);

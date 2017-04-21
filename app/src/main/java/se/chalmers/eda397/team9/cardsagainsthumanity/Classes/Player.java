@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by axel_ on 2017-03-31.
@@ -16,25 +15,34 @@ public class Player implements Serializable {
     public String username = "";
     public int currentScore = 0;
     public boolean isKing;
-    private List<WhiteCard> whiteCards = new ArrayList<>();
-    //Do we need this?
+    private ArrayList<WhiteCard> whiteCards = new ArrayList<>();
     private String ip_adress = "";
 
-    public Player(String username){
+    public Player(String username) {
         this.username = username;
     }
 
-    public WhiteCard playCard() {
-
-        //When played a card get a new one-> always 10 cards on the hand
-        //WhiteCard whiteCard = new WhiteCard();
-        //whiteCards.add(whiteCard.getNewWhiteCard());
-        //return new WhiteCard();
-        return null;
-
+    public int getCurrentScore() {
+        return currentScore;
     }
 
-    public String getUsername(){
+    public void setCurrentScore(int currentScore) {
+        this.currentScore = currentScore;
+    }
+
+    public boolean isKing() {
+        return isKing;
+    }
+
+    public void setKing(boolean king) {
+        isKing = king;
+    }
+
+    public WhiteCard playCard() {
+        return null;
+    }
+
+    public String getUsername() {
         return username;
     }
 
@@ -42,5 +50,13 @@ public class Player implements Serializable {
     public String getUsername(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         return prefs.getString("name", null);
+    }
+
+    public ArrayList<WhiteCard> getWhiteCards() {
+        return whiteCards;
+    }
+
+    public void addWhiteCard(WhiteCard whiteCard) {
+        whiteCards.add(whiteCard);
     }
 }

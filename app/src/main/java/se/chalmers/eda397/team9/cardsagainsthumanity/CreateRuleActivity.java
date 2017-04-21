@@ -1,43 +1,37 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
-import android.widget.ListView;
+import android.content.Context;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
+
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.ExpansionsAdapter;
-
-
-        import android.content.Context;
-        import android.net.wifi.WifiManager;
-        import android.os.AsyncTask;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.Toast;
-
-        import java.io.IOException;
-        import java.net.InetAddress;
-        import java.net.MulticastSocket;
-        import java.net.UnknownHostException;
-        import java.util.ArrayList;
-        import java.util.List;
-
-        import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
-        import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
-        import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 
 public class CreateRuleActivity extends AppCompatActivity {
     private ArrayList<CardExpansion> expansions;
     private ListView expansionList;
-
     private MulticastSocket s;
     private InetAddress group;
     private List<AsyncTask> threadList;
@@ -51,10 +45,26 @@ public class CreateRuleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_rule);
-
+        final Button startTableButton = (Button) findViewById(R.id.btn_startTable);
         expansionList = (ListView) findViewById(R.id.expansion_list);
-        expansions = CardHandler.getExpansions(this);
+        expansions = CardHandler.getExpansions(getApplicationContext());
         expansionList.setAdapter(new ExpansionsAdapter(this, expansions));
+        startTableButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<CardExpansion> exp = new ArrayList<CardExpansion>();
+                for (CardExpansion e : expansions) {
+                    if (e.isSelected()) {
+                        exp.add(e);
+                    }
+                }
+                ArrayList<Player> p = new ArrayList<>();
+                p.add(new Player("Mike"));
+                p.add(new Player("Ike"));
+                p.add(new Player("rob"));
+                Game g = new Game(p, exp);
+            }
+        });
     }
 
     public void clickNext(View view) {
