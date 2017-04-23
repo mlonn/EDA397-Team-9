@@ -1,5 +1,6 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
+import android.content.Intent;
 import android.widget.ListView;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 import java.util.ArrayList;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
+import se.chalmers.eda397.team9.cardsagainsthumanity.GameActivity;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.ExpansionsAdapter;
 
@@ -55,6 +57,15 @@ public class CreateRuleActivity extends AppCompatActivity {
         expansionList = (ListView) findViewById(R.id.expansion_list);
         expansions = CardHandler.getExpansions(this);
         expansionList.setAdapter(new ExpansionsAdapter(this, expansions));
+
+        //Just a test
+        final Button start_btn = (Button) findViewById(R.id.btn_startTable);
+        start_btn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(CreateRuleActivity.this, GameActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     public void clickNext(View view) {
