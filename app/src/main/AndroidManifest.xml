@@ -30,6 +30,9 @@ package="se.chalmers.eda397.team9.cardsagainsthumanity">
     </activity>
     <activity android:name=".CreatePlayerListActivity">
     </activity>
+    <!-- Just for testing -->
+    <activity android:name=".GameActivity">
+    </activity>
 
 </application>
 </manifest>
