@@ -1,5 +1,6 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
+import android.content.Intent;
 import android.widget.ListView;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
+
+import java.io.File;
 import java.util.ArrayList;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
@@ -105,7 +108,11 @@ public class CreateRuleActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                //Do something
+                File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
+                prefsFile.delete();
+
+                Intent intent = new Intent(this, IndexActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.changeTable:
                 //Do something
@@ -122,7 +129,6 @@ public class CreateRuleActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     private void closeConnection(){

@@ -2,7 +2,9 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class Player implements Serializable {
     public String username = "";
     public int currentScore = 0;
     public boolean isKing;
+    public boolean firstTimeStartApp;
     private List<WhiteCard> whiteCards = new ArrayList<>();
     //Do we need this?
     private String ip_adress = "";
@@ -37,6 +40,7 @@ public class Player implements Serializable {
     public String getUsername(){
         return username;
     }
+
 
     //Returns the username which is stored in SharedPreferences
     public String getUsername(Context context) {
