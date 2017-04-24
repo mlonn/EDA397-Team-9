@@ -41,35 +41,40 @@ public class ClassesInstrumentedTest {
 
         assertEquals("se.chalmers.eda397.team9.cardsagainsthumanity", appContext.getPackageName());
     }
+    //Test1
     IndexActivity indexActivity;
     Player player;
 
+    //Test2
     Table table;
     Player playerTable;
 
+    //Test3
+    IndexActivity indexActivityTest3;
+    Context contextTest3;
 
     @Rule
     public ActivityTestRule<IndexActivity> rule1  = new ActivityTestRule<>(IndexActivity.class);
 
-    @Before
-    public void setUp(){
-        player = new Player("");
-        indexActivity = rule1.getActivity();;
-    }
-
-    @Test
-    public void checkUsernameFile(){
-
-        if(indexActivity.fileExists()){
-            assertThat(player.getUsername(),is(notNullValue()));
-        }
-        else{
-            indexActivity.createUsernameFile("Sven");
-
-            assertThat(player.getUsername(), is(notNullValue()));
-            assertThat(player.getUsername(),is("Sven"));
-        }
-    }
+//    @Before
+//    public void setUp(){
+//        player = new Player("");
+//        indexActivity = rule1.getActivity();;
+//    }
+//
+//    @Test
+//    public void checkUsernameFile(){
+//
+//        if(indexActivity.fileExists()){
+//            assertThat(player.getUsername(),is(notNullValue()));
+//        }
+//        else{
+//            indexActivity.createUsernameFile("Sven");
+//
+//            assertThat(player.getUsername(), is(notNullValue()));
+//            assertThat(player.getUsername(),is("Sven"));
+//        }
+//    }
 
     @Rule
     public ActivityTestRule<CreateRuleActivity> rule2  = new ActivityTestRule<>(CreateRuleActivity.class);
@@ -109,5 +114,21 @@ public class ClassesInstrumentedTest {
         assertThat(table.getHost(), is(notNullValue()));
     }
 
+    @Rule
+    public ActivityTestRule<IndexActivity> ruleOptionSelection  = new ActivityTestRule<>(IndexActivity.class);
+
+    @Before
+    public void setUp3(){
+        indexActivityTest3 = ruleOptionSelection.getActivity();
+        contextTest3 = indexActivityTest3.getBaseContext();
+        String sss = "";
+    }
+
+
+    @Test
+    public void testOptionsSelection(){
+//        assertThat(contextTest3, is());
+//        indexActivityTest3.onOptionsItemSelected()
+    }
 
 }

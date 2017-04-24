@@ -22,6 +22,7 @@ import android.widget.Toast;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -221,10 +222,19 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                //Do something
-
                 //Example message (only for test)
                 Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_SHORT).show();
+
+                try{
+                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
+                    prefsFile.delete();
+                }
+                catch(Exception e) {
+
+                }
+
+                Intent intent = new Intent(this, IndexActivity.class);
+                startActivity(intent);
 
                 return true;
             case R.id.changeTable:
