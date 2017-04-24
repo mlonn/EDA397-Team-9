@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -53,6 +54,23 @@ public class FindTableSpinner extends android.support.v7.widget.AppCompatSpinner
                 ArrayAdapter<TableInfo> spinnerAdapter = new ArrayAdapter<TableInfo>(getContext(), android.R.layout.simple_list_item_1, list);
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 this.setAdapter(spinnerAdapter);
+
+                int tableSize = ((List) propertyChangeEvent.getNewValue()).size();
+
+                String toastSentence = "";
+
+                if(tableSize == 0)
+                    toastSentence = "No tables found";
+
+                if(tableSize == 1) {
+                    toastSentence = tableSize + " table found";
+                }
+
+                if(tableSize > 1) {
+                    toastSentence = tableSize + " tables found";
+                }
+
+                Toast.makeText(getContext(), toastSentence, Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -1,16 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="se.chalmers.eda397.team9.cardsagainsthumanity.HostTableActivity">
+    android:layout_margin="6dp"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
+    <GridLayout
+        android:id="@+id/playerlist_grid"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="HostTableActivity"
-        tools:layout_editor_absoluteX="163dp"
-        tools:layout_editor_absoluteY="204dp" />
-</android.support.constraint.ConstraintLayout>
+        android:background="#252525"
+        android:columnCount="2"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp">
+
+    </GridLayout>
+
+    <LinearLayout
+        android:id="@+id/playerlist_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:layout_below="@+id/playerlist_grid"
+        >
+
+
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Start game"
+            android:layout_marginLeft="0dp"
+            />
+
+        <Button
+            android:id="@+id/close_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Close table"
+            android:layout_marginRight="0dp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
+
