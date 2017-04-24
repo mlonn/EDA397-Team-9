@@ -46,18 +46,11 @@ public class CardExpansion {
         return blackCardList;
     }
 
-    public void setBlackCardList(List<BlackCard> blackCardList) {
-        this.blackCardList = blackCardList;
-    }
-
     public List<WhiteCard> getWhiteCards() {
         return whiteCardList;
     }
 
-    public void setWhiteCardList(List<WhiteCard> whiteCardList) {
-        this.whiteCardList = whiteCardList;
-    }
-
+    //used to know if expansions will be used in game creation
     public void setSelection(boolean s) {
         selected = s;
     }

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by axel_ on 2017-03-31.
@@ -13,21 +14,25 @@ import java.util.ArrayList;
 public class Player implements Serializable {
 
     public String username = "";
-    public int currentScore = 0;
+    public int score = 0;
     public boolean isKing;
-    private ArrayList<WhiteCard> whiteCards = new ArrayList<>();
+    private BlackCard blackCard;
+    private ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
+    private ArrayList<WhiteCard> selectedCards = new ArrayList<WhiteCard>();
+    private Submission submission;
     private String ip_adress = "";
+    private List<Submission> submissions;
 
     public Player(String username) {
         this.username = username;
     }
 
-    public int getCurrentScore() {
-        return currentScore;
+    public int getScore() {
+        return score;
     }
 
-    public void setCurrentScore(int currentScore) {
-        this.currentScore = currentScore;
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public boolean isKing() {
@@ -38,10 +43,15 @@ public class Player implements Serializable {
         isKing = king;
     }
 
-    public WhiteCard playCard() {
-        return null;
+    public void addCardToSelected(WhiteCard whiteCard) {
+        selectedCards.add(whiteCard);
     }
-
+    public void removeCardFromSelected(WhiteCard whiteCard) {
+        selectedCards.remove(whiteCard);
+    }
+    public void submitSelection() {
+        submission = new Submission(this, selectedCards);
+    }
     public String getUsername() {
         return username;
     }
@@ -58,5 +68,21 @@ public class Player implements Serializable {
 
     public void addWhiteCard(WhiteCard whiteCard) {
         whiteCards.add(whiteCard);
+    }
+
+    public void setBlackCard(BlackCard blackCard) {
+        this.blackCard = blackCard;
+    }
+
+    public void resetSubmissions() {
+        submissions = null;
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
+    }
+
+    public Submission getSubmission() {
+        return submission;
     }
 }
