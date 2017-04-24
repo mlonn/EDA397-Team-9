@@ -80,7 +80,7 @@ public class ClassesInstrumentedTest {
     public ActivityTestRule<CreateRuleActivity> rule2  = new ActivityTestRule<>(CreateRuleActivity.class);
 
     @Test
-    public void testGetExpansions(){
+    public void testGetExpansions() throws Exception{
 
         CardHandler cardHandler = new CardHandler();
         CreateRuleActivity createRuleActivity = rule2.getActivity();
@@ -102,7 +102,7 @@ public class ClassesInstrumentedTest {
     }
 
     @Test
-    public void testTable(){
+    public void testTable() throws Exception{
 
         assertThat(table.tableName, is("Table1"));
 
@@ -126,7 +126,7 @@ public class ClassesInstrumentedTest {
 
 
     @Test
-    public void testOptionsSelection(){
+    public void testOptionsSelection() throws Exception{
 //        assertThat(contextTest3, is());
 //        indexActivityTest3.onOptionsItemSelected()
     }
