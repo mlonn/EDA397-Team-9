@@ -1,6 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -13,6 +14,7 @@ public class Game {
     private BlackCard blackCard;
     private ArrayList<CardExpansion> cardExpansions;
     private Random r;
+    private ArrayList<WhiteCard> submittedWhiteCards;
 
     public Game(ArrayList<Player> players, ArrayList<CardExpansion> cardExpansions) {
         r = new Random();
@@ -22,7 +24,11 @@ public class Game {
         pickBlackCard();
         distributeWhiteCards();
     }
-
+    //Call this method with what ever update frequency you want
+    public void update(){
+        giveCardsToKing();
+    }
+    //gives each player 10 cards from selected expansion
     private void distributeWhiteCards() {
         for (Player p : players) {
             if (!p.isKing()) {
@@ -34,12 +40,14 @@ public class Game {
             }
         }
     }
-
+    //Selects a random black card from selected expansioons
     private void pickBlackCard() {
         CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
         blackCard = exp.getBlackCards().get(r.nextInt(exp.getBlackCards().size()));
+        for (Player p : players) {
+            p.setBlackCard(blackCard);
+        }
     }
-
     private Player setKing() {
         for (Player p : players) {
             p.setKing(false);
@@ -47,5 +55,20 @@ public class Game {
         int kingNumber = r.nextInt(players.size());
         players.get(kingNumber).setKing(true);
         return players.get(kingNumber);
+    }
+    
+    //collects all submitted white cards and gives them to the king
+    private void giveCardsToKing() {
+        List<Submission> sub = new ArrayList<Submission>();
+        king.resetSubmissions();
+        for (Player p : players) {
+            if(!p.equals(king)) {
+                sub.add(p.getSubmission());
+            }
+        }
+        king.setSubmissions(sub);
+    }
+    public Boolean hasAllPlayersSubmitted(){
+        return (submittedWhiteCards.size() == (players.size()-1) * blackCard.getPick());
     }
 }
