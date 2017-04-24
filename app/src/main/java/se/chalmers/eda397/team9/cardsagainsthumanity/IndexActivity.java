@@ -80,7 +80,6 @@ public class IndexActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
     //Main menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -53,9 +53,9 @@ public class ClassesInstrumentedTest {
     IndexActivity indexActivityTest3;
     Context contextTest3;
 
-    @Rule
-    public ActivityTestRule<IndexActivity> rule1  = new ActivityTestRule<>(IndexActivity.class);
-
+//    @Rule
+//    public ActivityTestRule<IndexActivity> rule1  = new ActivityTestRule<>(IndexActivity.class);
+//
 //    @Before
 //    public void setUp(){
 //        player = new Player("");
@@ -76,59 +76,63 @@ public class ClassesInstrumentedTest {
 //        }
 //    }
 
-    @Rule
-    public ActivityTestRule<CreateRuleActivity> rule2  = new ActivityTestRule<>(CreateRuleActivity.class);
+//    @Rule
+//    public ActivityTestRule<CreateRuleActivity> rule2  = new ActivityTestRule<>(CreateRuleActivity.class);
+//
+//    @Test
+//    public void testGetExpansions() throws Exception{
+//
+//        CardHandler cardHandler = new CardHandler();
+//        CreateRuleActivity createRuleActivity = rule2.getActivity();
+//
+//        ArrayList<CardExpansion> cardExpansions = cardHandler.getExpansions(createRuleActivity);
+//
+//        assertThat(cardExpansions.isEmpty(), is(false));
+//        assertThat(cardExpansions.size() > 0, is(true));
+//    }
 
-    @Test
-    public void testGetExpansions() throws Exception{
-
-        CardHandler cardHandler = new CardHandler();
-        CreateRuleActivity createRuleActivity = rule2.getActivity();
-
-        ArrayList<CardExpansion> cardExpansions = cardHandler.getExpansions(createRuleActivity);
-
-        assertThat(cardExpansions.isEmpty(), is(false));
-        assertThat(cardExpansions.size() > 0, is(true));
-    }
-
-    @Rule
-    public ActivityTestRule<CreateTableActivity> ruleTable  = new ActivityTestRule<>(CreateTableActivity.class);
+//    @Rule
+//    public ActivityTestRule<CreateTableActivity> ruleTable  = new ActivityTestRule<>(CreateTableActivity.class);
 
     @Before
     public void setUpTable(){
         playerTable = new Player("Klas");
-        table = new Table("Table1", ruleTable.getActivity().getBaseContext());
+        Context con = InstrumentationRegistry.getTargetContext();
+        player = new Player("Nils");
+        table = new Table("Table1", con);
+
+        //table = new Table("Table1", ruleTable.getActivity().getBaseContext());
         table.newPlayer(playerTable);
+
     }
 
     @Test
     public void testTable() throws Exception{
 
         assertThat(table.tableName, is("Table1"));
-
         assertThat(table.getSize() == 1, is(true));
-
         table.newPlayer(player);
         assertThat(table.getSize() > 1, is(true));
 
+        String host = table.getHost();
         assertThat(table.getHost(), is(notNullValue()));
     }
 
-    @Rule
-    public ActivityTestRule<IndexActivity> ruleOptionSelection  = new ActivityTestRule<>(IndexActivity.class);
-
-    @Before
-    public void setUp3(){
-        indexActivityTest3 = ruleOptionSelection.getActivity();
-        contextTest3 = indexActivityTest3.getBaseContext();
-        String sss = "";
-    }
-
-
-    @Test
-    public void testOptionsSelection() throws Exception{
-//        assertThat(contextTest3, is());
-//        indexActivityTest3.onOptionsItemSelected()
-    }
+//    @Rule
+//    public ActivityTestRule<IndexActivity> ruleOptionSelection  = new ActivityTestRule<>(IndexActivity.class);
+//
+//    @Before
+//    public void setUp3(){
+//        indexActivityTest3 = ruleOptionSelection.getActivity();
+//        contextTest3 = indexActivityTest3.getBaseContext();
+//        String sss = "";
+//    }
+//
+//
+//    @Test
+//    public void testOptionsSelection() throws Exception{
+////        assertThat(contextTest3, is());
+////        indexActivityTest3.onOptionsItemSelected()
+//    }
 
 }
