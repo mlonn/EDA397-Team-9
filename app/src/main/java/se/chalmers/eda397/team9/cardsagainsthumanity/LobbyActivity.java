@@ -38,11 +38,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinne
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
-public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
-    private WiFiBroadcastReceiver receiver;
-    private IntentFilter mIntentFilter;
-    private P2pManager p2pManager;
-    private List<WifiP2pDevice> peers;
+public class LobbyActivity extends AppCompatActivity{
 
     private Map<String, TableInfo> tables;
     private FindTableSwipeRefreshLayout swipeRefreshLayout;
@@ -68,7 +64,6 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
         username = prefs.getString("name", null);
 
         tables = new HashMap<String, TableInfo>();
-
         tpresenter = new TablePresenter(this);
 
         final Button createTableButton = (Button) findViewById(R.id.createTable_button);
@@ -79,22 +74,17 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
 
         /* Initialize multicast */
         initMulticastSocket();
-        greetAndReceive();
 
-        /* Initialzie p2p */
-        initP2p();
-        System.out.println("Username: " + username);
         swipeRefreshLayout = (FindTableSwipeRefreshLayout) findViewById(R.id.swipe_to_refresh);
+        swipeRefreshLayout.setProgressViewOffset(true, 500, 700);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
+                Toast.makeText(LobbyActivity.this, "Searching for tables...", Toast.LENGTH_SHORT).show();
+
                 ClientMulticastReceiver greeting = greetAndReceive();
                 greeting.addPropertyChangeListener(swipeRefreshLayout);
-                p2pManager.discoverPeers();
-                p2pManager.connect2Peers(peers);
-                swipeRefreshLayout.setRefreshing(true);
-
-                Toast.makeText(LobbyActivity.this, "Searching for tables...", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -161,39 +151,14 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
     @Override
     public void onResume(){
         super.onResume();
-        registerReceiver(receiver, mIntentFilter);
         initMulticastSocket();
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        unregisterReceiver(receiver);
         s.close();
     }
-
-    /* Peer to peer functions*/
-
-    private void initP2p() {
-        p2pManager = new P2pManager(this);
-        mIntentFilter = p2pManager.getIntentFilter();
-        receiver = p2pManager.getReceiver();
-        peers = new ArrayList<WifiP2pDevice>();
-
-        registerReceiver(receiver, mIntentFilter);
-        p2pManager.discoverPeers();
-    }
-
-    @Override
-    public void onPeersAvailable(WifiP2pDeviceList peerList) {
-        peers.clear();
-        peers.addAll(peerList.getDeviceList());
-        if (peers.size() == 0) {
-            Toast.makeText(LobbyActivity.this, "No peers available",Toast.LENGTH_SHORT).show();
-            return;
-        }
-    }
-
 
     /* Main menu */
     @Override
