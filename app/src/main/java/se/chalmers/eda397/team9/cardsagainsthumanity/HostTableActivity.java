@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
@@ -35,6 +37,9 @@ public class HostTableActivity extends AppCompatActivity{
     private List<AsyncTask> threadList;
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s;
+
+    private ArrayList<CardExpansion> expansions;
+    private ListView expansionList;
 
     private GridLayout playerGridLayout;
     private LinearLayout playerRow;
@@ -55,12 +60,13 @@ public class HostTableActivity extends AppCompatActivity{
     int port = 9879;
 
 
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_table);
-        Button startButton = (Button) findViewById(R.id.start_button);
-        startButton.setOnClickListener(new View.OnClickListener() {
+        final Button startTableButton = (Button) findViewById(R.id.start_button);
+        startTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), GameActivity.class);
