@@ -14,27 +14,45 @@ import java.util.List;
 public class Player implements Serializable {
 
     public String username = "";
-    public int currentScore = 0;
+    public int score = 0;
     public boolean isKing;
-    private List<WhiteCard> whiteCards = new ArrayList<>();
-    //Do we need this?
+    private BlackCard blackCard;
+    private ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
+    private ArrayList<WhiteCard> selectedCards = new ArrayList<WhiteCard>();
+    private Submission submission;
     private String ip_adress = "";
+    private List<Submission> submissions;
 
-    public Player(String username){
+    public Player(String username) {
         this.username = username;
     }
 
-    public WhiteCard playCard() {
-
-        //When played a card get a new one-> always 10 cards on the hand
-        //WhiteCard whiteCard = new WhiteCard();
-        //whiteCards.add(whiteCard.getNewWhiteCard());
-        //return new WhiteCard();
-        return null;
-
+    public int getScore() {
+        return score;
     }
 
-    public String getUsername(){
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public boolean isKing() {
+        return isKing;
+    }
+
+    public void setKing(boolean king) {
+        isKing = king;
+    }
+
+    public void addCardToSelected(WhiteCard whiteCard) {
+        selectedCards.add(whiteCard);
+    }
+    public void removeCardFromSelected(WhiteCard whiteCard) {
+        selectedCards.remove(whiteCard);
+    }
+    public void submitSelection() {
+        submission = new Submission(this, selectedCards);
+    }
+    public String getUsername() {
         return username;
     }
 
@@ -42,5 +60,29 @@ public class Player implements Serializable {
     public String getUsername(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         return prefs.getString("name", null);
+    }
+
+    public ArrayList<WhiteCard> getWhiteCards() {
+        return whiteCards;
+    }
+
+    public void addWhiteCard(WhiteCard whiteCard) {
+        whiteCards.add(whiteCard);
+    }
+
+    public void setBlackCard(BlackCard blackCard) {
+        this.blackCard = blackCard;
+    }
+
+    public void resetSubmissions() {
+        submissions = null;
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
+    }
+
+    public Submission getSubmission() {
+        return submission;
     }
 }
