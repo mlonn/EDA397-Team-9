@@ -13,11 +13,6 @@
         android:title="Change table"/>
 
     <item
-        android:id="@+id/blackList"
-        android:title="Black list"
-        android:icon="@mipmap/ic_block"/>
-
-    <item
         android:id="@+id/settings"
         app:showAsAction="ifRoom"
         android:title="Settings"
