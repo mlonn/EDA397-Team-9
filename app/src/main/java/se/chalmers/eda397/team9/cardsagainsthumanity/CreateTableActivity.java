@@ -105,7 +105,7 @@ public class CreateTableActivity extends AppCompatActivity implements WifiP2pMan
         createTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 TableInfo table = tpresenter.createTable(tableName.getText().toString(), username);
-                Intent intent = new Intent(v.getContext(), CreateRuleActivity.class);
+                Intent intent = new Intent(v.getContext(), HostTableActivity.class);
                 threadList.add(new TableMulticastSender().execute(s, group, table, port));
 
                 try {
