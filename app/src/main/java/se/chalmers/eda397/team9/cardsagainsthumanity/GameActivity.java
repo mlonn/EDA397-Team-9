@@ -27,7 +27,7 @@ public class GameActivity extends Activity {
             ImageView imageView = new ImageView(this);
             imageView.setId(i);
             imageView.setPadding(2, 2, 2, 2);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(500, 500);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(550, 550);
             params.setMargins(1, 1, 1, 1);
             imageView.setLayoutParams(params);
             imageView.setImageBitmap(BitmapFactory.decodeResource(
