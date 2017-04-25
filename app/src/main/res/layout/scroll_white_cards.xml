@@ -11,13 +11,13 @@
         android:id="@+id/whiteCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="30px"
         android:gravity="center"
-        android:orientation="vertical"
-        android:layout_marginRight="30px">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <!-- Should I use ImageButton instead of ImageView to do zoom when the card will select? -->
 

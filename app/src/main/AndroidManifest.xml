@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="se.chalmers.eda397.team9.cardsagainsthumanity">
 
-    <uses-sdk android:minSdkVersion="14" />
+    <uses-sdk android:minSdkVersion="21" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -36,7 +36,9 @@
             android:label="@string/title_activity_table" />
         <activity
             android:name=".PlayerTableActivity"
-            android:label="@string/title_activity_player_table"></activity>
-    </application>
+            android:label="@string/title_activity_player_table" />
+        <activity android:name=".GameActivity">
+        </activity>
 
+    </application>
 </manifest>
