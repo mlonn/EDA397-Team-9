@@ -17,7 +17,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50px"
+            android:layout_marginTop="20dp"
             android:fontFamily="serif-monospace"
             android:text="What card wins?"
             android:textAlignment="center"
@@ -26,21 +26,11 @@
 
         <ImageView
             android:id="@+id/blackCard"
-            android:layout_width="141dp"
-            android:layout_height="211dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="150px"
-            app:srcCompat="@drawable/black_card" />
-
-        <ImageButton
-            android:id="@+id/block"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@mipmap/ic_block"
-            android:layout_below="@+id/favoriteBorder"
-            android:layout_alignStart="@+id/favoriteBorder"
-            android:layout_marginTop="31dp"
-            android:background="@null"/>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="70dp"
+            app:srcCompat="@drawable/black_card" />
 
         <ImageButton
             android:id="@+id/favoriteBorder"
@@ -71,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:gravity="center"
-            android:layout_marginTop="750px">
+            android:layout_marginTop="260dp">
 
             <!-- Insert Adapter class and use activity scroll_white_cards -->
 
