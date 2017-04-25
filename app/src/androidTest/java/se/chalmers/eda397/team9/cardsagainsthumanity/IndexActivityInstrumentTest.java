@@ -6,6 +6,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.app.AppCompatActivity;
+import android.test.ActivityInstrumentationTestCase2;
 import android.test.ActivityUnitTestCase;
 
 import org.junit.Before;
@@ -28,96 +29,39 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class ClassesInstrumentedTest {
-    @Test
-    public void useAppContext() throws Exception {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
-
-        assertEquals("se.chalmers.eda397.team9.cardsagainsthumanity", appContext.getPackageName());
+public class IndexActivityInstrumentTest extends ActivityInstrumentationTestCase2<IndexActivity> {
+    public IndexActivityInstrumentTest() {
+        super(IndexActivity.class);
     }
+
     //Test1
-    IndexActivity indexActivity;
+    IndexActivity mIndexActivity;
     Player player;
-
-    //Test2
-    Table table;
-    Player playerTable;
-
-    //Test3
-    IndexActivity indexActivityTest3;
-    Context contextTest3;
-
-
-    //testTableNameUnique
-    Table tableUnique1;
-
 
     @Rule
     public ActivityTestRule<IndexActivity> rule1  = new ActivityTestRule<>(IndexActivity.class);
 
     @Before
     public void setUp(){
+        injectInstrumentation(InstrumentationRegistry.getInstrumentation());
         player = new Player("");
-        indexActivity = rule1.getActivity();;
+        mIndexActivity = rule1.getActivity();;
     }
 
     @Test
     public void checkUsernameFile(){
 
-        if(indexActivity.fileExists()){
+        if(mIndexActivity.fileExists()){
             assertNotNull(player.getUsername());
         }
         else{
-            indexActivity.createUsernameFile("Sven");
-
+            mIndexActivity.createUsernameFile("Sven");
             assertNotNull(player.getUsername());
             assertEquals(player.getUsername(),"Sven");
         }
     }
 
-    @Rule
-    public ActivityTestRule<CreateTableActivity> rule2  = new ActivityTestRule<>(CreateTableActivity.class);
 
-    @Test
-    public void testGetExpansions() throws Exception{
-
-        CardHandler cardHandler = new CardHandler();
-        CreateTableActivity createRuleActivity = rule2.getActivity();
-
-        ArrayList<CardExpansion> cardExpansions = cardHandler.getExpansions(createRuleActivity);
-
-        assertEquals(cardExpansions.isEmpty(), false);
-        assertEquals(cardExpansions.size() > 0, true);
-
-    }
-
-    @Rule
-    public ActivityTestRule<CreateTableActivity> ruleTable  = new ActivityTestRule<>(CreateTableActivity.class);
-
-    @Before
-    public void setUpTable(){
-        playerTable = new Player("Klasse");
-        Context con = InstrumentationRegistry.getTargetContext();
-        player = new Player("Nils");
-        table = new Table("Table1", con);
-
-
-        //table = new Table("Table1", ruleTable.getActivity().getBaseContext());
-        table.newPlayer(playerTable);
-    }
-
-    @Test
-    public void testTable() throws Exception{
-
-        assertNotNull(table.getName());
-        assertNotEquals(table.getName(),"");
-        assertEquals(table.getName(),"Table1");
-        assertEquals(table.getSize(), 1);
-        table.newPlayer(player);
-        assertEquals(table.getSize() > 1, true);
-        assertNotNull(table.getHost());
-    }
 
 //    @Before
 //    public void setUpTableNameUnique(){
