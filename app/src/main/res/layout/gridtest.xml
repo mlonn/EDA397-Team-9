@@ -18,6 +18,10 @@
         android:layout_margin="0.5dp"
         android:background="@drawable/host_row_item_background"
         android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
 
         >
 
@@ -28,13 +32,22 @@
             app:srcCompat="@color/colorAccent" />
 
         <TextView
+            android:id="@+id/textView13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
+            android:fontFamily="monospace"
             android:text="TextView"
             android:textColor="#333333"
             android:textSize="18dp" />
+
+        <ImageView
+            android:id="@+id/kingIcon"
+            android:layout_width="49dp"
+            android:layout_height="33dp"
+            app:srcCompat="@mipmap/ic_king"
+            android:layout_marginTop="5dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -44,6 +57,9 @@
         android:layout_margin="0.5dp"
         android:background="@drawable/player_row_item_background"
         android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
 
         >
 
@@ -54,13 +70,15 @@
             app:srcCompat="@color/colorAccent" />
 
         <TextView
+            android:id="@+id/textView14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
+            android:fontFamily="monospace"
             android:text="TextView"
             android:textColor="#333333"
-            android:textSize="18dp" />
+            android:textSize="16dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -70,6 +88,9 @@
         android:layout_margin="0.5dp"
         android:background="@drawable/player_row_item_background"
         android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
 
         >
 
@@ -84,9 +105,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
+            android:fontFamily="monospace"
             android:text="TextView"
             android:textColor="#333333"
-            android:textSize="18dp" />
+            android:textSize="16dp" />
     </LinearLayout>
 
 </GridLayout>

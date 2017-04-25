@@ -282,9 +282,6 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
             case R.id.changeTable:
                 //Do something
                 return true;
-            case R.id.blackList:
-                //Do something
-                return true;
             case R.id.settings:
                 //Do something
                 return true;

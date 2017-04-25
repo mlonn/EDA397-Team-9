@@ -205,9 +205,6 @@ public class HostTableActivity extends AppCompatActivity{
             case R.id.changeTable:
                 //Do something
                 return true;
-            case R.id.blackList:
-                //Do something
-                return true;
             case R.id.settings:
                 //Do something
                 return true;
