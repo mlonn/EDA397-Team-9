@@ -36,7 +36,9 @@ public class GreetingMulticastSender extends AsyncTask<Object, Void, Void> {
         byte[] msg = Serializer.serialize(greeting);
         DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, s.getLocalPort());
         try {
-            s.send(datagramMsg);
+            if(s != null || !s.isClosed())
+                s.send(datagramMsg);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,7 +47,6 @@ public class GreetingMulticastSender extends AsyncTask<Object, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        cancel(true);
     }
 }
 

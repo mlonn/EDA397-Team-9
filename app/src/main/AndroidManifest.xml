@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="se.chalmers.eda397.team9.cardsagainsthumanity">
 
-package="se.chalmers.eda397.team9.cardsagainsthumanity">
-<uses-sdk android:minSdkVersion="14" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-sdk android:minSdkVersion="14" />
 
-<application
-    android:allowBackup="true"
-    android:icon="@mipmap/ic_launcher"
-    android:label="Cards against humanity"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/CardsAgainstHumanity">
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <activity android:name=".IndexActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
-    <activity android:name=".CreateTableActivity">
-    </activity>
-    <activity android:name=".CreateRuleActivity">
-    </activity>
-    <activity android:name=".CreatePlayerListActivity">
-    </activity>
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Cards against humanity"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/CardsAgainstHumanity">
+        <activity android:name=".IndexActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-</application>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".LobbyActivity" />
+        <activity android:name=".CreateTableActivity" />
+        <activity android:name=".CreatePlayerListActivity" />
+        <activity
+            android:name=".HostTableActivity"
+            android:label="@string/title_activity_table" />
+        <activity
+            android:name=".PlayerTableActivity"
+            android:label="@string/title_activity_player_table"></activity>
+    </application>
+
 </manifest>

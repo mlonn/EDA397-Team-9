@@ -22,6 +22,7 @@ public abstract class MulticastReceiver<A, B, C> extends AsyncTask<A, B, C> {
         this.mcLock = mcLock;
         this.s = s;
         this.group = group;
+        startMulticastLock();
     }
 
     public InetAddress getGroup(){
@@ -32,14 +33,14 @@ public abstract class MulticastReceiver<A, B, C> extends AsyncTask<A, B, C> {
         return s;
     }
 
-    protected void startMulticastLock() {
+    private void startMulticastLock() {
         if (!mcLock.isHeld()) {
             mcLock.setReferenceCounted(true);
             mcLock.acquire();
         }
     }
 
-    protected void endMulticastLock() {
+    private void endMulticastLock() {
         if (mcLock != null && mcLock.isHeld()) {
             mcLock.release();
         }
@@ -49,8 +50,13 @@ public abstract class MulticastReceiver<A, B, C> extends AsyncTask<A, B, C> {
     protected void onPostExecute(C result) {
         if (mcLock.isHeld())
             endMulticastLock();
+    }
 
-        if (!isCancelled())
-            cancel(true);
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        if (mcLock.isHeld())
+            endMulticastLock();
     }
 }
