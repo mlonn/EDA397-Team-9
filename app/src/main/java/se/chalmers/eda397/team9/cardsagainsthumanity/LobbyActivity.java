@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -30,26 +32,34 @@ import java.util.List;
 import java.util.Map;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ClientMulticastReceiver;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinner;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
-public class LobbyActivity extends AppCompatActivity{
+public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
 
+    /* Class variables */
     private Map<String, TableInfo> tables;
     private FindTableSwipeRefreshLayout swipeRefreshLayout;
     private FindTableSpinner tableSpinner;
     private String username;
+    private List<AsyncTask> threadList = new ArrayList<>();
+    private TablePresenter tpresenter;
 
+    /* Multicast variables */
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s;
     private InetAddress group;
-    private List<AsyncTask> threadList = new ArrayList<>();
-    private TablePresenter tpresenter;
+
+    /* WifiP2P variables */
+    private WiFiBroadcastReceiver receiver;
+    private IntentFilter mIntentFilter;
+    private P2pManager p2pManager;
+    private List<WifiP2pDevice> peers;
 
     //Temporary
     String ipAdress = "224.1.1.1";
@@ -60,23 +70,28 @@ public class LobbyActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
+        /* Initialize P2p */
+        initP2p();
+
+        /* Get my username */
         SharedPreferences prefs = this.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         username = prefs.getString("name", null);
 
-        tables = new HashMap<String, TableInfo>();
+        /* Initialize presenter (Used to separate view from model) */
         tpresenter = new TablePresenter(this);
 
+        /* Initialize variables, views and layouts */
+        tables = new HashMap<String, TableInfo>();
         final Button createTableButton = (Button) findViewById(R.id.createTable_button);
         final Button joinTableButton = (Button) findViewById(R.id.joinTable_button);
         tableSpinner = (FindTableSpinner) findViewById(R.id.table_list);
-
-        tables = new HashMap<String, TableInfo>();
-
-        /* Initialize multicast */
-        initMulticastSocket();
-
         swipeRefreshLayout = (FindTableSwipeRefreshLayout) findViewById(R.id.swipe_to_refresh);
         swipeRefreshLayout.setProgressViewOffset(true, 500, 700);
+
+        /* Initialize multicast socket */
+        initMulticastSocket();
+
+        /* Set listeners to views and layouts*/
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -98,13 +113,99 @@ public class LobbyActivity extends AppCompatActivity{
 
         joinTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), PlayerTableActivity.class);
-                startActivity(intent);
+                //TODO needs to be correctly implemented. Not tested yet.
+                //When peers are found, p2pmanager
+                //connects to the host of the selected table as well
+                p2pManager.discoverPeers();
+
             }
         });
     }
 
-    /* initialize the multicast */
+    /* PeerListListener overrides */
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peerList) {
+        peers.clear();
+        peers.addAll(peerList.getDeviceList());
+
+        connectToSelectedTableHost();
+
+        if (peers.size() == 0) {
+            Toast.makeText(LobbyActivity.this, "No peers available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+    }
+
+    /* WifiP2p functions */
+    private void initP2p() {
+        p2pManager = new P2pManager(this);
+        mIntentFilter = p2pManager.getIntentFilter();
+        receiver = p2pManager.getReceiver();
+        peers = new ArrayList<WifiP2pDevice>();
+
+        registerReceiver(receiver, mIntentFilter);
+        p2pManager.discoverPeers();
+    }
+
+    private void connectToSelectedTableHost(){
+        final TableInfo selectedTable = (TableInfo) tableSpinner.getSelectedItem();
+
+        if(selectedTable == null){
+            return;
+        }
+
+        /* Set up config for connection */
+        WifiP2pConfig config = new WifiP2pConfig();
+
+        //Used to check whether WifiP2p can find the host as well before connecting
+        WifiP2pDevice hostDevice = getTableHostDevice(peers, selectedTable.getHost().getDeviceAddress());
+        if(hostDevice == null){
+            return;
+        }
+
+        config.deviceAddress = hostDevice.deviceAddress;
+
+        /* Connect to host of selected table*/
+        p2pManager.connect(config, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                String toastText = "Connected to " + selectedTable.getHost().getName();
+                System.out.println(toastText);
+
+                Intent intent = new Intent(LobbyActivity.this, PlayerTableActivity.class);
+                //startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                String toastText = "Failed to connect to  " + selectedTable.getName() + " for reason " + reason;
+                System.out.println(toastText);
+            }
+        });
+    }
+
+    private WifiP2pDevice getTableHostDevice(List<WifiP2pDevice> allPeers, String hostAdress) {
+        TableInfo selectedTable = (TableInfo) tableSpinner.getSelectedItem();
+        if(selectedTable == null){
+            return null;
+        }
+
+        String hostAddress = selectedTable.getHost().getDeviceAddress();
+
+        for(WifiP2pDevice current : allPeers){
+            if(current.deviceAddress.equals(hostAddress)){
+                return current;
+            }
+        }
+
+        System.out.println("The host with device address " + selectedTable.getHost().getDeviceAddress() +
+                ", and game name " + selectedTable.getHost().getName() + " could not be found.");
+        return null;
+    }
+
+
+
+    /* Initialize the multicast */
 
     private void initMulticastSocket(){
 

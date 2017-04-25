@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 /**
@@ -38,11 +39,11 @@ public class TablePresenter {
     }
 
     private TableInfo convertToTableInfo(Table table){
-        return new TableInfo(table.getName(), table.getHost(), table.getSize());
+        return new TableInfo(table.getName(), new PlayerInfo(table.getHost()), table.getSize());
     }
 
     private Table convertToTable(TableInfo table){
-        return new Table(table.getName(), table.getHost());
+        return new Table(table.getName(), table.getHost().getName());
     }
 
     public void addTable(TableInfo table){
