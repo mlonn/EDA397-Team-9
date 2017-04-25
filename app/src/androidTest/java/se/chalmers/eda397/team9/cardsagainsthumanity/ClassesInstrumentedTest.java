@@ -77,13 +77,13 @@ public class ClassesInstrumentedTest {
     }
 
     @Rule
-    public ActivityTestRule<CreateRuleActivity> rule2  = new ActivityTestRule<>(CreateRuleActivity.class);
+    public ActivityTestRule<CreateTableActivity> rule2  = new ActivityTestRule<>(CreateTableActivity.class);
 
     @Test
     public void testGetExpansions() throws Exception{
 
         CardHandler cardHandler = new CardHandler();
-        CreateRuleActivity createRuleActivity = rule2.getActivity();
+        CreateTableActivity createRuleActivity = rule2.getActivity();
 
         ArrayList<CardExpansion> cardExpansions = cardHandler.getExpansions(createRuleActivity);
 
