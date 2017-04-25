@@ -1,7 +1,12 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -17,24 +22,19 @@ public class GameActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        TextView[] t = new TextView[11];
-        t[0] = (TextView) findViewById(R.id.firstCardText);
-        t[1] = (TextView) findViewById(R.id.secondCardText);
-        t[2] = (TextView) findViewById(R.id.thirdCardText);
-        t[3] = (TextView) findViewById(R.id.fourthCardText);
-        t[4] = (TextView) findViewById(R.id.fifthCardText);
-        t[5] = (TextView) findViewById(R.id.sixthCardText);
-        t[6] = (TextView) findViewById(R.id.sevenCardText);
-        t[7] = (TextView) findViewById(R.id.eighthCardText);
-        t[8] = (TextView) findViewById(R.id.ninthCardText);
-        t[9] = (TextView) findViewById(R.id.tenthCardText);
-        t[10] = (TextView) findViewById(R.id.blackCardText);
-
-        t[10].setText(textBlackCard);
-        setText();
-        for (int i=0; i<10; i++){
-            t[i].setText(textWhiteCard[i]);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.linear);
+        for (int i = 0; i < 10; i++) {
+            ImageView imageView = new ImageView(this);
+            imageView.setId(i);
+            imageView.setPadding(2, 2, 2, 2);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(500, 500);
+            params.setMargins(1, 1, 1, 1);
+            imageView.setLayoutParams(params);
+            imageView.setImageBitmap(BitmapFactory.decodeResource(
+                    getResources(), R.drawable.white_card));
+            layout.addView(imageView);
         }
+
 
     }
     public void setText() {
