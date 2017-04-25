@@ -101,7 +101,7 @@ public class ClassesInstrumentedTest {
 
     @Before
     public void setUpTable(){
-        playerTable = new Player("Klas");
+        playerTable = new Player("Klasse");
         Context con = InstrumentationRegistry.getTargetContext();
         player = new Player("Nils");
         table = new Table("Table1", con);
