@@ -11,4 +11,8 @@ public class BlackCard implements Serializable {
         this.text = text;
         this.pick = pick;
     }
+
+    public int getPick() {
+        return pick;
+    }
 }
