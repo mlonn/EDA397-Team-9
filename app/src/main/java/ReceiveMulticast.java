@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 
@@ -91,7 +92,7 @@ public class ReceiveMulticast {
             }
 
             if (msg instanceof TableInfo) {
-                String hostName = ((TableInfo) msg).getHost();
+                PlayerInfo hostName = ((TableInfo) msg).getHost();
                 String tableName = ((TableInfo) msg).getName();
                 int tableSize = ((TableInfo) msg).getSize();
                 tables.put(tableName, new TableInfo(tableName, hostName, tableSize));

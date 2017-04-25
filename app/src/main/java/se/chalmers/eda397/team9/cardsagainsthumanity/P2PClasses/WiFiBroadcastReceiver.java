@@ -13,13 +13,13 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager wifiManager;
     private WifiP2pManager.Channel channel;
-    private WifiP2pManager.PeerListListener activity;
+    private WifiP2pManager.PeerListListener peerListListener;
 
 
-    public WiFiBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, WifiP2pManager.PeerListListener activity) {
+    public WiFiBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, WifiP2pManager.PeerListListener peerListListener) {
         this.wifiManager = manager;
         this.channel = channel;
-        this.activity = activity;
+        this.peerListListener = peerListListener;
     }
 
     //Whenever a broadcast is received, do something depending on the broadcast type
@@ -36,7 +36,7 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
             }
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             if (wifiManager != null) {
-                    wifiManager.requestPeers(channel, (WifiP2pManager.PeerListListener) activity);
+                    wifiManager.requestPeers(channel, peerListListener);
             }
             //Whenever peers changed we need to broadcast the table.
 

@@ -20,7 +20,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 
-public class PlayerTableActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
+public class PlayerTableActivity extends AppCompatActivity {
 
     private WiFiBroadcastReceiver receiver;
     private IntentFilter mIntentFilter;
@@ -58,6 +58,7 @@ public class PlayerTableActivity extends AppCompatActivity implements WifiP2pMan
         listview1.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems));
     }
 
+    /* Activity overrides */
     @Override
     protected void onResume() {
         super.onResume();
@@ -79,16 +80,6 @@ public class PlayerTableActivity extends AppCompatActivity implements WifiP2pMan
 
         registerReceiver(receiver, mIntentFilter);
         p2pManager.discoverPeers();
-    }
-
-    @Override
-    public void onPeersAvailable(WifiP2pDeviceList peerList) {
-        peers.clear();
-        peers.addAll(peerList.getDeviceList());
-        if (peers.size() == 0) {
-            Toast.makeText(PlayerTableActivity.this, "No peers available",Toast.LENGTH_SHORT).show();
-            return;
-        }
     }
 
     /* Main menu */

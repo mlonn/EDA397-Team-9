@@ -10,10 +10,6 @@ import android.widget.Toast;
 
 import java.util.List;
 
-/**
- * Created by SAMSUNG on 2017-04-06.
- */
-
 public class P2pManager {
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
@@ -22,15 +18,20 @@ public class P2pManager {
     WiFiBroadcastReceiver receiver;
 
     public P2pManager(AppCompatActivity activity){
+
+        /* Initialize variables */
         this.activity = activity;
         manager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(activity, activity.getMainLooper(), null);
 
+        /* Initialize receiver */
         if(activity instanceof WifiP2pManager.PeerListListener) {
             receiver = new WiFiBroadcastReceiver(manager, channel, (WifiP2pManager.PeerListListener) activity);
         }else{
             throw new IllegalArgumentException("The input activity does not implement WifiP2pManager.PeerListListener");
         }
+
+        /* Add intent filters */
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -38,6 +39,26 @@ public class P2pManager {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
     }
+
+    public void connect(WifiP2pConfig config, WifiP2pManager.ActionListener actionListener){
+        manager.connect(channel, config, actionListener);
+    }
+
+    public void disconnect(){
+        manager.cancelConnect(channel, new WifiP2pManager.ActionListener(){
+
+            @Override
+            public void onSuccess() {
+                System.out.println("P2P disconnected");
+            }
+
+            @Override
+            public void onFailure(int i) {
+                System.out.println("P2P failed to disconnect");
+            }
+        });
+    }
+
 
     public IntentFilter getIntentFilter(){
         return mIntentFilter;
@@ -52,7 +73,7 @@ public class P2pManager {
 
             @Override
             public void onSuccess() {
-            //    Toast.makeText(activity, "Discovery successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Discovery successful", Toast.LENGTH_SHORT).show();
             }
 
             @Override

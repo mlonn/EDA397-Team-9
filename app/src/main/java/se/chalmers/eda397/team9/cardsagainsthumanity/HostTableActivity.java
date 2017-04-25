@@ -32,7 +32,6 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 public class HostTableActivity extends AppCompatActivity{
 
-
     private InetAddress group;
     private List<AsyncTask> threadList;
     private WifiManager.MulticastLock multicastLock;
@@ -40,10 +39,11 @@ public class HostTableActivity extends AppCompatActivity{
 
     private ArrayList<CardExpansion> expansions;
     private ListView expansionList;
+    private TableInfo table;
 
     private GridLayout playerGridLayout;
-    private LinearLayout playerRow;
 
+    private LinearLayout playerRow;
     String[] colorArray = {
             "#f8c82d", "#fbcf61", "#ff6f6f",
             "#e3a712", "#e5ba5a", "#d1404a",
@@ -79,6 +79,7 @@ public class HostTableActivity extends AppCompatActivity{
         initMulticastSocket();
 
         playerGridLayout = (GridLayout) findViewById(R.id.playerlist_grid);
+        openConnection();
 
         addHostRow("Alex");
         addPlayerRow("Mikael");
@@ -99,7 +100,6 @@ public class HostTableActivity extends AppCompatActivity{
         addPlayerRow("Gustav");
         addPlayerRow("Daniel");
         addPlayerRow("Debora");
-        openConnection();
 
     }
 
@@ -143,13 +143,13 @@ public class HostTableActivity extends AppCompatActivity{
     }
 
     private void openConnection(){
-        TableInfo table = (TableInfo) getIntent().getExtras().get("THIS.TABLE");
+        table = (TableInfo) getIntent().getExtras().get("THIS.TABLE");
+
         threadList.add(new TableMulticastSender().execute(s, group, table, port));
         threadList.add(new HostMulticastReceiver(multicastLock, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table));
+
         Toast.makeText(this, "Table opened", Toast.LENGTH_SHORT).show();
-
         initMulticastSocket();
-
     }
 
     private void closeConnection() {
@@ -183,6 +183,7 @@ public class HostTableActivity extends AppCompatActivity{
             }
         }
     }
+
     /* Main menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
