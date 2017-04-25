@@ -32,9 +32,9 @@ public class CreateTableActivityIntrumentTest extends ActivityInstrumentationTes
     CreateTableActivity mCreateTableActivity;
 
     //Test2
-    Table table;
-    Player playerTable;
-    Player player;
+    Table   table;
+    Player  playerTable;
+    Player  player;
 
     //testTableNameUnique
     Table tableUnique1;
@@ -58,7 +58,7 @@ public class CreateTableActivityIntrumentTest extends ActivityInstrumentationTes
         playerTable = new Player("Klasse");
         Context con = InstrumentationRegistry.getTargetContext();
         player = new Player("Nils");
-        table = new Table("Table1", con);
+        table = new Table("Table1", mCreateTableActivity);
         //table = new Table("Table1", ruleTable.getActivity().getBaseContext());
         table.newPlayer(playerTable);
     }
