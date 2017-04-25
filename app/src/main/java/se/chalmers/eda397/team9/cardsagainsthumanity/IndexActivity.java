@@ -1,7 +1,6 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,11 +16,7 @@ import java.io.File;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by axel_ on 2017-03-31.
@@ -39,7 +34,7 @@ public class IndexActivity extends AppCompatActivity {
         //Check if the application has a Shared Preferences file containing a username already
         if(fileExists()){
             player.username = player.getUsername(context);
-            Intent intent = new Intent(this, CreateTableActivity.class);
+            Intent intent = new Intent(this, LobbyActivity.class);
             startActivity(intent);
             finish();
         }
@@ -80,7 +75,7 @@ public class IndexActivity extends AppCompatActivity {
 
 
     private void gotoCreateTable(View view) {
-        Intent intent = new Intent(this, CreateTableActivity.class);
+        Intent intent = new Intent(this, LobbyActivity.class);
         startActivity(intent);
     }
 
