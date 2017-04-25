@@ -55,13 +55,11 @@ public class IndexActivity extends AppCompatActivity {
         File f = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/"+ sharePrefName);
         if (f.exists())
         {
-            Log.d("TAG", "SharedPreferences Name_of_your_preference : exist");
             return true;
         }
 
         else
         {
-            Log.d("TAG", "Setup default preferences");
             return false;
         }
     }
@@ -72,13 +70,10 @@ public class IndexActivity extends AppCompatActivity {
         editor.commit();
     }
 
-
-
     private void gotoCreateTable(View view) {
         Intent intent = new Intent(this, LobbyActivity.class);
         startActivity(intent);
     }
-
 
     //Main menu
     @Override
@@ -93,7 +88,17 @@ public class IndexActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                //Do something
+                try{
+                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
+                    prefsFile.delete();
+                }
+                catch (Exception e){
+
+                }
+
+                Intent intent = new Intent(this, IndexActivity.class);
+                startActivity(intent);
+
                 return true;
             case R.id.changeTable:
                 //Do something

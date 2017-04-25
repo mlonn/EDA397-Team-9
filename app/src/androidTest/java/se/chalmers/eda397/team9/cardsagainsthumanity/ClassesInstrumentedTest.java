@@ -20,11 +20,6 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 
-import static android.support.test.espresso.core.deps.guava.base.CharMatcher.isNot;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
 
 /**
@@ -41,11 +36,21 @@ public class ClassesInstrumentedTest {
 
         assertEquals("se.chalmers.eda397.team9.cardsagainsthumanity", appContext.getPackageName());
     }
+    //Test1
     IndexActivity indexActivity;
     Player player;
 
+    //Test2
     Table table;
     Player playerTable;
+
+    //Test3
+    IndexActivity indexActivityTest3;
+    Context contextTest3;
+
+
+    //testTableNameUnique
+    Table tableUnique1;
 
 
     @Rule
@@ -61,29 +66,30 @@ public class ClassesInstrumentedTest {
     public void checkUsernameFile(){
 
         if(indexActivity.fileExists()){
-            assertThat(player.getUsername(),is(notNullValue()));
+            assertNotNull(player.getUsername());
         }
         else{
             indexActivity.createUsernameFile("Sven");
 
-            assertThat(player.getUsername(), is(notNullValue()));
-            assertThat(player.getUsername(),is("Sven"));
+            assertNotNull(player.getUsername());
+            assertEquals(player.getUsername(),"Sven");
         }
     }
 
     @Rule
-    public ActivityTestRule<CreateRuleActivity> rule2  = new ActivityTestRule<>(CreateRuleActivity.class);
+    public ActivityTestRule<CreateTableActivity> rule2  = new ActivityTestRule<>(CreateTableActivity.class);
 
     @Test
-    public void testGetExpansions(){
+    public void testGetExpansions() throws Exception{
 
         CardHandler cardHandler = new CardHandler();
-        CreateRuleActivity createRuleActivity = rule2.getActivity();
+        CreateTableActivity createRuleActivity = rule2.getActivity();
 
         ArrayList<CardExpansion> cardExpansions = cardHandler.getExpansions(createRuleActivity);
 
-        assertThat(cardExpansions.isEmpty(), is(false));
-        assertThat(cardExpansions.size() > 0, is(true));
+        assertEquals(cardExpansions.isEmpty(), false);
+        assertEquals(cardExpansions.size() > 0, true);
+
     }
 
     @Rule
@@ -91,23 +97,62 @@ public class ClassesInstrumentedTest {
 
     @Before
     public void setUpTable(){
-        playerTable = new Player("Klas");
-        table = new Table("Table1", ruleTable.getActivity().getBaseContext());
+        playerTable = new Player("Klasse");
+        Context con = InstrumentationRegistry.getTargetContext();
+        player = new Player("Nils");
+        table = new Table("Table1", con);
+
+
+        //table = new Table("Table1", ruleTable.getActivity().getBaseContext());
         table.newPlayer(playerTable);
     }
 
     @Test
-    public void testTable(){
+    public void testTable() throws Exception{
 
-        assertThat(table.tableName, is("Table1"));
-
-        assertThat(table.getSize() == 1, is(true));
-
+        assertNotNull(table.getName());
+        assertNotEquals(table.getName(),"");
+        assertEquals(table.getName(),"Table1");
+        assertEquals(table.getSize(), 1);
         table.newPlayer(player);
-        assertThat(table.getSize() > 1, is(true));
-
-        assertThat(table.getHost(), is(notNullValue()));
+        assertEquals(table.getSize() > 1, true);
+        assertNotNull(table.getHost());
     }
+
+//    @Before
+//    public void setUpTableNameUnique(){
+//        playerTable = new Player("Klas");
+//        Context con = InstrumentationRegistry.getTargetContext();
+//        player = new Player("Nils");
+//        table = new Table("Table1", con);
+//
+//        //table = new Table("Table1", ruleTable.getActivity().getBaseContext());
+//        table.newPlayer(playerTable);
+//    }
+//
+//    @Test
+//    public void testTableNameUnique(){
+//
+//
+//    }
+
+//    @Rule
+//    public ActivityTestRule<IndexActivity> ruleOptionSelection  = new ActivityTestRule<>(IndexActivity.class);
+//
+//    @Before
+//    public void setUp3(){
+//        indexActivityTest3 = ruleOptionSelection.getActivity();
+//        contextTest3 = indexActivityTest3.getBaseContext();
+//        String sss = "";
+//    }
+//
+//
+//    @Test
+//    public void testOptionsSelection() throws Exception{
+//       assertThat(contextTest3, is());
+//       indexActivityTest3.onOptionsItemSelected()
+//    }
+
 
 
 }
