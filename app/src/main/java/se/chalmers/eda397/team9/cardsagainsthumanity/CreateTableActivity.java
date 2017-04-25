@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -147,7 +148,17 @@ public class CreateTableActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                //Do something
+                try{
+                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
+                    prefsFile.delete();
+                }
+                catch(Exception e) {
+
+                }
+
+                Intent intent = new Intent(this, IndexActivity.class);
+                startActivity(intent);
+
                 return true;
             case R.id.changeTable:
                 //Do something
