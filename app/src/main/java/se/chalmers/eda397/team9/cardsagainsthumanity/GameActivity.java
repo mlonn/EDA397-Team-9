@@ -3,6 +3,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -13,7 +14,7 @@ import android.widget.TextView;
  * Created by emy on 23/04/17.
  */
 
-public class GameActivity extends Activity {
+public class GameActivity extends AppCompatActivity {
 
     String[] textWhiteCard = new String [10];
     String textBlackCard = "Black card";
