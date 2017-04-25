@@ -47,7 +47,6 @@ public class CreateTableActivityIntrumentTest extends ActivityInstrumentationTes
     @Test
     public void testGetExpansions() throws Exception{
         CardHandler cardHandler = new CardHandler();
-
         ArrayList<CardExpansion> cardExpansions = cardHandler.getExpansions(mCreateTableActivity);
         assertEquals(cardExpansions.isEmpty(), false);
         assertEquals(cardExpansions.size() > 0, true);
@@ -56,10 +55,8 @@ public class CreateTableActivityIntrumentTest extends ActivityInstrumentationTes
     @Before
     public void setUpTable(){
         playerTable = new Player("Klasse");
-        Context con = InstrumentationRegistry.getTargetContext();
         player = new Player("Nils");
         table = new Table("Table1", mCreateTableActivity);
-        //table = new Table("Table1", ruleTable.getActivity().getBaseContext());
         table.newPlayer(playerTable);
     }
 
@@ -71,6 +68,7 @@ public class CreateTableActivityIntrumentTest extends ActivityInstrumentationTes
         assertEquals(table.getSize(), 1);
         table.newPlayer(player);
         assertEquals(table.getSize() > 1, true);
+        String host = table.getHost();
         assertNotNull(table.getHost());
     }
 }
