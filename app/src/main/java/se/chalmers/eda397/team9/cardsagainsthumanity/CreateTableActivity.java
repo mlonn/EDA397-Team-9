@@ -81,6 +81,10 @@ public class CreateTableActivity extends AppCompatActivity {
 
         final EditText tableName = (EditText)findViewById(R.id.tablename);
 
+        expansionList = (ListView) findViewById(R.id.expansion_list);
+        expansions = CardHandler.getExpansions(this);
+        expansionList.setAdapter(new ExpansionsAdapter(this, expansions));
+
         createTableButton = (Button) findViewById(R.id.btn_startTable);
         createTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +101,12 @@ public class CreateTableActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                ArrayList<CardExpansion> exp = new ArrayList<CardExpansion>();
+                for (CardExpansion e : expansions) {
+                    if (e.isSelected()) {
+                        exp.add(e);
+                    }
+                }
 
                 Intent intent = new Intent(view.getContext(), HostTableActivity.class);
                 intent.putExtra("THIS.TABLE", table);
@@ -105,9 +115,6 @@ public class CreateTableActivity extends AppCompatActivity {
             }
         });
 
-        expansionList = (ListView) findViewById(R.id.expansion_list);
-        expansions = CardHandler.getExpansions(this);
-        expansionList.setAdapter(new ExpansionsAdapter(this, expansions));
 
 
     }

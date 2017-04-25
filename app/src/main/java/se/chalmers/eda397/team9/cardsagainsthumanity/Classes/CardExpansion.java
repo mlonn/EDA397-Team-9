@@ -3,7 +3,6 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import java.util.List;
  */
 
 public class CardExpansion {
+
     private List<BlackCard> blackCardList;
     private List<WhiteCard> whiteCardList;
     private String name;
@@ -32,7 +32,7 @@ public class CardExpansion {
                 blackCardList.add(new BlackCard(b.getString("text"), b.getInt("pick")));
             }
             for(int i = 0; i < white.length(); i++) {
-                whiteCardList.add(new WhiteCard("hej"));
+                whiteCardList.add(new WhiteCard(whiteCards.getString(Integer.parseInt(white.getString(i)))));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -42,19 +42,19 @@ public class CardExpansion {
         return name;
     }
 
-
-    public int getNoBlackCards() {
-        return blackCardList.size();
-    }
-    public int getNoWhiteCards() {
-        return whiteCardList.size();
+    public List<BlackCard> getBlackCards() {
+        return blackCardList;
     }
 
-    public boolean getSelection(){
-        return selected;
+    public List<WhiteCard> getWhiteCards() {
+        return whiteCardList;
     }
 
+    //used to know if expansions will be used in game creation
     public void setSelection(boolean s) {
         selected = s;
+    }
+    public boolean isSelected(){
+        return selected;
     }
 }

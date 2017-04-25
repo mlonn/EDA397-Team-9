@@ -59,7 +59,7 @@ public class ExpansionsAdapter extends BaseAdapter {
             holder.checkBox.setOnCheckedChangeListener(null);
         }
         holder.checkBox.setFocusable(false);
-        holder.checkBox.setChecked(expansions.get(position).getSelection());
+        holder.checkBox.setChecked(expansions.get(position).isSelected());
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -71,8 +71,8 @@ public class ExpansionsAdapter extends BaseAdapter {
             }
         });
         holder.expansionName.setText(expansions.get(position).getName());
-        holder.nbrBlackCards.setText(String.valueOf(expansions.get(position).getNoBlackCards()));
-        holder.nbrWhiteCards.setText(String.valueOf(expansions.get(position).getNoWhiteCards()));
+        holder.nbrBlackCards.setText(String.valueOf(expansions.get(position).getBlackCards().size()));
+        holder.nbrWhiteCards.setText(String.valueOf(expansions.get(position).getWhiteCards().size()));
 
         return view;
     }
