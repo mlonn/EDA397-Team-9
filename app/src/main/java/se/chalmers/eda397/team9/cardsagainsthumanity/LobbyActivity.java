@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -20,7 +19,6 @@ import android.view.View;
 import android.widget.Button;
 
 import android.widget.Toast;
-import android.widget.Spinner;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -37,7 +35,6 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastRec
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinner;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout;
-import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
@@ -128,6 +125,8 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
         peers.clear();
         peers.addAll(peerList.getDeviceList());
 
+        System.out.println("Found peer!");
+
         connectToSelectedTableHost();
 
         if (peers.size() == 0) {
@@ -159,6 +158,14 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
 
         //Used to check whether WifiP2p can find the host as well before connecting
         WifiP2pDevice hostDevice = getTableHostDevice(peers, selectedTable.getHost().getDeviceAddress());
+
+
+        System.out.println("Host device address from selected table: " + selectedTable.getHost().getDeviceAddress());
+        System.out.println("Host device address from method: " + hostDevice.deviceName);
+        for(WifiP2pDevice current: peers){
+            System.out.println("Peers: " + current.deviceName);
+        }
+
         if(hostDevice == null){
             return;
         }
