@@ -25,9 +25,9 @@ public class Table {
         host = new Player(context.getSharedPreferences("usernameFile", Context.MODE_PRIVATE).getString("name", null));
     }
 
-    public Table(String tableName, String hostName) {
+    public Table(String tableName, Player host) {
         this.tableName = tableName;
-        host = new Player(hostName);
+        this.host = host;
     }
 
 

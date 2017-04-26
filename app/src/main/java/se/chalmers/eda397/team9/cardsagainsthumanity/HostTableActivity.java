@@ -2,7 +2,11 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,10 +31,13 @@ import java.util.List;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
+import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
-public class HostTableActivity extends AppCompatActivity{
+public class HostTableActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
 
     private InetAddress group;
     private List<AsyncTask> threadList;
@@ -59,29 +66,41 @@ public class HostTableActivity extends AppCompatActivity{
     String ipAdress = "224.1.1.1";
     int port = 9879;
 
-
+    private WiFiBroadcastReceiver receiver;
+    private IntentFilter mIntentFilter;
+    private P2pManager p2pManager;
+    private Button startTableButton;
+    private Button closeTableButton;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_table);
-        final Button startTableButton = (Button) findViewById(R.id.start_button);
-        startTableButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), GameActivity.class);
-                startActivity(intent);
-            }
-        });
-        colorList = new LinkedList<>(Arrays.asList(colorArray));
 
+        /* Initialize class variables */
+        p2pManager = new P2pManager(this);
+        colorList = new LinkedList<>(Arrays.asList(colorArray));
         threadList = new ArrayList<>();
+
+        /* Initialize views */
+        startTableButton = (Button) findViewById(R.id.start_button);
+        closeTableButton = (Button) findViewById(R.id.close_button);
+        playerGridLayout = (GridLayout) findViewById(R.id.playerlist_grid);
+
+        /* Initialize peer to peer and multicast socket */
+        initP2p();
         initMulticastSocket();
 
-        playerGridLayout = (GridLayout) findViewById(R.id.playerlist_grid);
+        p2pManager.discoverPeers();
         openConnection();
 
-        addHostRow("Alex");
+        /* Get table info */
+        TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra("THIS_TABLE");
+        PlayerInfo hostInfo = tableInfo.getHost();
+
+        addHostRow(hostInfo.getName());
+
+        /* Add dummy players */
         addPlayerRow("Mikael");
         addPlayerRow("Axel");
         addPlayerRow("Alessandro");
@@ -101,6 +120,32 @@ public class HostTableActivity extends AppCompatActivity{
         addPlayerRow("Daniel");
         addPlayerRow("Debora");
 
+        startTableButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), GameActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        closeTableButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeConnection();
+
+                finish();
+
+            }
+        });
+    }
+
+    private void initP2p() {
+        p2pManager = new P2pManager(this);
+        mIntentFilter = p2pManager.getIntentFilter();
+        receiver = p2pManager.getReceiver();
+
+        registerReceiver(receiver, mIntentFilter);
+        p2pManager.discoverPeers();
     }
 
     private void addHostRow(String name){
@@ -132,6 +177,7 @@ public class HostTableActivity extends AppCompatActivity{
     protected void onPause() {
         super.onPause();
         closeConnection();
+        unregisterReceiver(receiver);
         System.out.println("Connection closed");
     }
 
@@ -143,9 +189,9 @@ public class HostTableActivity extends AppCompatActivity{
     }
 
     private void openConnection(){
-        table = (TableInfo) getIntent().getExtras().get("THIS.TABLE");
+        table = (TableInfo) getIntent().getExtras().get("THIS_TABLE");
 
-        threadList.add(new TableMulticastSender().execute(s, group, table, port));
+        //threadList.add(new TableMulticastSender().execute(s, group, table, port));
         threadList.add(new HostMulticastReceiver(multicastLock, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table));
 
         Toast.makeText(this, "Table opened", Toast.LENGTH_SHORT).show();
@@ -154,17 +200,16 @@ public class HostTableActivity extends AppCompatActivity{
 
     private void closeConnection() {
         for (AsyncTask current : threadList) {
-            if (current.isCancelled())
+            if (!current.isCancelled())
                 current.cancel(true);
         }
 
         s.close();
-        multicastLock.release();
     }
 
     private void initMulticastSocket() {
 
-        if(multicastLock == null) {
+        if(multicastLock == null || !multicastLock.isHeld()) {
             WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             multicastLock = wifi.createMulticastLock("multicastLock");
         }
@@ -217,4 +262,8 @@ public class HostTableActivity extends AppCompatActivity{
     }
 
 
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
+
+    }
 }
