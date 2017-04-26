@@ -7,6 +7,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
@@ -42,22 +43,15 @@ public class TablePresenter {
         return new TableInfo(table.getName(), new PlayerInfo(table.getHost()), table.getSize());
     }
 
-    private Table convertToTable(TableInfo table){
-        return new Table(table.getName(), table.getHost().getName());
+    private Table convertToTable(TableInfo tableInfo){
+        PlayerInfo hostInfo = tableInfo.getHost();
+        return new Table(tableInfo.getName(), new Player(hostInfo.getName()));
     }
 
-    public void addTable(TableInfo table){
-        tables.put(table.getName(), convertToTable(table));
-    }
-
-    public TableInfo createTable(String name, String host, int size){
+    public TableInfo createTable(String name, PlayerInfo host){
         Table table = new Table(name, activity);
         tables.put(name, table);
         return convertToTableInfo(table);
-    }
-
-    public TableInfo createTable(String name, String host){
-        return createTable(name, host, 0);
     }
 
     public void clearTables() {
