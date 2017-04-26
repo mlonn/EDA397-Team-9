@@ -1,5 +1,6 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -95,10 +96,8 @@ public class PlayerTableActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                //Do something
-
-                //Example message (only for test)
-                Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, IndexActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.changeTable:
                 //Do something

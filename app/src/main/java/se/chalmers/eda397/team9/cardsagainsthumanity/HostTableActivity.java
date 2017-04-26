@@ -33,6 +33,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMultic
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
@@ -69,25 +70,37 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
     private IntentFilter mIntentFilter;
     private P2pManager p2pManager;
     private Button startTableButton;
+    private Button closeTableButton;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_table);
 
+        /* Initialize class variables */
         p2pManager = new P2pManager(this);
         colorList = new LinkedList<>(Arrays.asList(colorArray));
         threadList = new ArrayList<>();
+
+        /* Initialize views */
         startTableButton = (Button) findViewById(R.id.start_button);
+        closeTableButton = (Button) findViewById(R.id.close_button);
         playerGridLayout = (GridLayout) findViewById(R.id.playerlist_grid);
 
+        /* Initialize peer to peer and multicast socket */
         initP2p();
         initMulticastSocket();
 
         p2pManager.discoverPeers();
         openConnection();
 
-        addHostRow("Alex");
+        /* Get table info */
+        TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra("THIS_TABLE");
+        PlayerInfo hostInfo = tableInfo.getHost();
+
+        addHostRow(hostInfo.getName());
+
+        /* Add dummy players */
         addPlayerRow("Mikael");
         addPlayerRow("Axel");
         addPlayerRow("Alessandro");
@@ -112,6 +125,16 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), GameActivity.class);
                 startActivity(intent);
+                finish();
+            }
+        });
+        closeTableButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeConnection();
+
+                finish();
+
             }
         });
     }
@@ -154,6 +177,7 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
     protected void onPause() {
         super.onPause();
         closeConnection();
+        unregisterReceiver(receiver);
         System.out.println("Connection closed");
     }
 
@@ -165,9 +189,9 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
     }
 
     private void openConnection(){
-        table = (TableInfo) getIntent().getExtras().get("THIS.TABLE");
+        table = (TableInfo) getIntent().getExtras().get("THIS_TABLE");
 
-        threadList.add(new TableMulticastSender().execute(s, group, table, port));
+        //threadList.add(new TableMulticastSender().execute(s, group, table, port));
         threadList.add(new HostMulticastReceiver(multicastLock, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table));
 
         Toast.makeText(this, "Table opened", Toast.LENGTH_SHORT).show();
@@ -176,17 +200,16 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
 
     private void closeConnection() {
         for (AsyncTask current : threadList) {
-            if (current.isCancelled())
+            if (!current.isCancelled())
                 current.cancel(true);
         }
 
         s.close();
-        multicastLock.release();
     }
 
     private void initMulticastSocket() {
 
-        if(multicastLock == null) {
+        if(multicastLock == null || !multicastLock.isHeld()) {
             WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             multicastLock = wifi.createMulticastLock("multicastLock");
         }

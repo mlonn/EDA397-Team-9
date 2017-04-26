@@ -84,14 +84,14 @@ int i = 0;
             @Override
             public void onClick(View view) {
                 PlayerInfo myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra("PLAYER_INFO");
-                TableInfo table = new TableInfo(tableNameText.getText().toString(), myPlayerInfo);
-                threadList.add(new TableMulticastSender().execute(s, group, table, port));
+                TableInfo tableInfo = new TableInfo(tableNameText.getText().toString(), myPlayerInfo);
+                threadList.add(new TableMulticastSender().execute(s, group, tableInfo, port));
 
                 try {
                     MulticastSocket s2;
                     s2 = new MulticastSocket(port);
                     s2.joinGroup(group);
-                    threadList.add(new HostMulticastReceiver(multicastLock, s2, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table));
+                    threadList.add(new HostMulticastReceiver(multicastLock, s2, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, tableInfo));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -104,7 +104,7 @@ int i = 0;
                 }
 
                 Intent intent = new Intent(view.getContext(), HostTableActivity.class);
-                intent.putExtra("THIS.TABLE", table);
+                intent.putExtra("THIS_TABLE", tableInfo);
                 //intent.putExtra("expansions", expansions);
                 startActivity(intent);
             }
@@ -142,17 +142,8 @@ int i = 0;
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                try{
-                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
-                    prefsFile.delete();
-                }
-                catch(Exception e) {
-
-                }
-
                 Intent intent = new Intent(this, IndexActivity.class);
                 startActivity(intent);
-
                 return true;
             case R.id.changeTable:
                 //Do something
