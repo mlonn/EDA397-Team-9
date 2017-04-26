@@ -32,9 +32,9 @@ public class IndexActivity extends AppCompatActivity {
         setContentView(R.layout.activity_index);
 
         /* Check if the application has a Shared Preferences file containing a username already */
-        if(fileExists()){
-            goToLobby();
-        }
+//        if(fileExists()){
+//            goToLobby();
+//        }
 
         /* Defining username */
         final Button button = (Button) findViewById(R.id.btn_submitUsername);

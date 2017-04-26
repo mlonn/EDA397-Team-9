@@ -26,6 +26,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.ExpansionsAdapter;
@@ -37,9 +38,6 @@ public class CreateTableActivity extends AppCompatActivity {
 
     private ListView expansionList;
     private Button createTableButton;
-
-    private TablePresenter tpresenter;
-    private String username;
 
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s;
@@ -72,15 +70,10 @@ public class CreateTableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_table);
-
+int i = 0;
         initMulticastSocket();
 
-        SharedPreferences prefs = this.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        username = prefs.getString("name", null);
-
-        tpresenter = new TablePresenter(this);
-
-        final EditText tableName = (EditText)findViewById(R.id.tablename);
+        final EditText tableNameText = (EditText)findViewById(R.id.tablename);
 
         expansionList = (ListView) findViewById(R.id.expansion_list);
         expansions = CardHandler.getExpansions(this);
@@ -90,7 +83,8 @@ public class CreateTableActivity extends AppCompatActivity {
         createTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TableInfo table = tpresenter.createTable(tableName.getText().toString(), username);
+                PlayerInfo myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra("PLAYER_INFO");
+                TableInfo table = new TableInfo(tableNameText.getText().toString(), myPlayerInfo);
                 threadList.add(new TableMulticastSender().execute(s, group, table, port));
 
                 try {
