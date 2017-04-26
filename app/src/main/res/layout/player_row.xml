@@ -24,5 +24,6 @@
         android:fontFamily="monospace"
         android:text="TextView"
         android:textColor="#333333"
-        android:textSize="16dp" />
+        android:textSize="16dp"
+        />
 </LinearLayout>
