@@ -52,23 +52,23 @@ public class CreateTableActivityIntrumentTest extends ActivityInstrumentationTes
         assertEquals(cardExpansions.size() > 0, true);
     }
 
-    @Before
-    public void setUpTable(){
-        playerTable = new Player("Klasse");
-        player = new Player("Nils");
-        table = new Table("Table1", mCreateTableActivity);
-        table.newPlayer(playerTable);
-    }
-
-    @Test
-    public void testTable() throws Exception{
-        assertNotNull(table.getName());
-        assertNotEquals(table.getName(),"");
-        assertEquals(table.getName(),"Table1");
-        assertEquals(table.getSize(), 1);
-        table.newPlayer(player);
-        assertEquals(table.getSize() > 1, true);
-        String host = table.getHost();
-        assertNotNull(table.getHost());
-    }
+//    @Before
+//    public void setUpTable(){
+//        playerTable = new Player("Klasse");
+//        player = new Player("Nils");
+//        table = new Table("Table1", mCreateTableActivity);
+//        table.newPlayer(playerTable);
+//    }
+//
+//    @Test
+//    public void testTable() throws Exception{
+//        assertNotNull(table.getName());
+//        assertNotEquals(table.getName(),"");
+//        assertEquals(table.getName(),"Table1");
+//        assertEquals(table.getSize(), 1);
+//        table.newPlayer(player);
+//        assertEquals(table.getSize() > 1, true);
+//        String host = table.getHost();
+//        assertNotNull(table.getHost());
+//    }
 }
