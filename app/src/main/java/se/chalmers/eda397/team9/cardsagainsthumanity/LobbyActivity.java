@@ -283,10 +283,8 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                //Do something
-
-                //Example message (only for test)
-                Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, IndexActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.changeTable:
                 //Do something
