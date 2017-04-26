@@ -28,22 +28,23 @@ public class PlayerRowLayout extends LinearLayout {
     ImageView imageView;
     int screenWidth;
 
+    //Players' rows
     private void init(){
         View.inflate(getContext(), R.layout.player_row, this);
         textView = (TextView) findViewById(R.id.player_name);
         imageView = (ImageView) findViewById(R.id.player_image);
 
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        param.setMargins(1,1,1,1);
+        param.setMargins(10,10,10,10); //Margins for the boxes that contain the players' names (except king)
         param.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1);
         setLayoutParams(param);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        screenWidth = displayMetrics.widthPixels;
+        screenWidth = displayMetrics.widthPixels; // !!!!!!!!! PIXEL !!!!!!!!!!!!!!!!!!!!!
 
         //int test = ((Layout) this.getParent()).getWidth();
-        this.setMinimumWidth(screenWidth/2-22);
+        this.setMinimumWidth(screenWidth/2-50); // !!!!!!!!! PIXEL !!!!!!!!!!!!!!!!!!!!!
 
         setBackgroundResource(R.drawable.player_row_item_background);
     }
@@ -68,11 +69,15 @@ public class PlayerRowLayout extends LinearLayout {
         init();
     }
 
+    //King's row
     public void setAsHost(){
+
+        //ImageView imgKing = (ImageView) findViewById(R.id.kingIcon);
+
         setMinimumWidth(screenWidth);
 
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        param.setMargins(1,1,1,1);
+        param.setMargins(10,10,10,10); //Margins for the boxe that contain the king's name
         param.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 2);
         setLayoutParams(param);
 

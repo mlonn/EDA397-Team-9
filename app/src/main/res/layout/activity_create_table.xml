@@ -31,7 +31,8 @@
             android:textSize="24sp"
             android:textStyle="bold"
             tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="8dp" />
+            tools:layout_editor_absoluteY="8dp"
+            android:layout_marginTop="20dp"/>
 
         <EditText
             android:id="@+id/tablename"
