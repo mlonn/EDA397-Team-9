@@ -44,10 +44,8 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         LinearLayout layout = (LinearLayout) findViewById(R.id.linear);
-        TextView blackCard = (TextView) findViewById(R.id.blackCardTextView);
 
         game = (Game) getIntent().getExtras().get("THIS.GAME");
-        blackCard.setText(game.getBlackCard().getText());
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         player = game.getPlayerByUserName(prefs.getString("name", null));
 

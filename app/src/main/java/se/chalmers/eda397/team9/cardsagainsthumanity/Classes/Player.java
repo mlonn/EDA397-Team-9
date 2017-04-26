@@ -1,10 +1,5 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
-
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,21 +43,17 @@ public class Player implements Serializable {
     public void addCardToSelected(WhiteCard whiteCard) {
         selectedCards.add(whiteCard);
     }
+
     public void removeCardFromSelected(WhiteCard whiteCard) {
         selectedCards.remove(whiteCard);
     }
+
     public void submitSelection() {
         submission = new Submission(this, selectedCards);
     }
+
     public String getUsername() {
         return username;
-    }
-
-
-    //Returns the username which is stored in SharedPreferences
-    public String getUsername(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        return prefs.getString("name", null);
     }
 
     public ArrayList<WhiteCard> getWhiteCards() {

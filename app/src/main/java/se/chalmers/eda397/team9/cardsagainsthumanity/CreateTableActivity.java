@@ -26,6 +26,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.ExpansionsAdapter;
@@ -37,9 +38,6 @@ public class CreateTableActivity extends AppCompatActivity {
 
     private ListView expansionList;
     private Button createTableButton;
-
-    private TablePresenter tpresenter;
-    private String username;
 
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s;
@@ -72,15 +70,10 @@ public class CreateTableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_table);
-
+int i = 0;
         initMulticastSocket();
 
-        SharedPreferences prefs = this.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        username = prefs.getString("name", null);
-
-        tpresenter = new TablePresenter(this);
-
-        final EditText tableName = (EditText)findViewById(R.id.tablename);
+        final EditText tableNameText = (EditText)findViewById(R.id.tablename);
 
         expansionList = (ListView) findViewById(R.id.expansion_list);
         expansions = CardHandler.getExpansions(this);
@@ -90,14 +83,15 @@ public class CreateTableActivity extends AppCompatActivity {
         createTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TableInfo table = tpresenter.createTable(tableName.getText().toString(), username);
-                threadList.add(new TableMulticastSender().execute(s, group, table, port));
+                PlayerInfo myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra("PLAYER_INFO");
+                TableInfo tableInfo = new TableInfo(tableNameText.getText().toString(), myPlayerInfo);
+                threadList.add(new TableMulticastSender().execute(s, group, tableInfo, port));
 
                 try {
                     MulticastSocket s2;
                     s2 = new MulticastSocket(port);
                     s2.joinGroup(group);
-                    threadList.add(new HostMulticastReceiver(multicastLock, s2, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table));
+                    threadList.add(new HostMulticastReceiver(multicastLock, s2, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, tableInfo));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -110,7 +104,8 @@ public class CreateTableActivity extends AppCompatActivity {
                 }
 
                 Intent intent = new Intent(view.getContext(), HostTableActivity.class);
-                intent.putExtra("THIS.TABLE", table);
+
+                intent.putExtra("THIS.TABLE", tableInfo);
                 intent.putExtra("THIS.EXPANSIONS", exp);
                 startActivity(intent);
             }
@@ -148,17 +143,8 @@ public class CreateTableActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                try{
-                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
-                    prefsFile.delete();
-                }
-                catch(Exception e) {
-
-                }
-
                 Intent intent = new Intent(this, IndexActivity.class);
                 startActivity(intent);
-
                 return true;
             case R.id.changeTable:
                 //Do something
