@@ -2,7 +2,6 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,8 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -25,7 +24,6 @@ import java.util.List;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
@@ -107,7 +105,12 @@ int i = 0;
 
                 intent.putExtra("THIS.TABLE", tableInfo);
                 intent.putExtra("THIS.EXPANSIONS", exp);
-                startActivity(intent);
+                if (exp.size()>0) {
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getApplicationContext(), "You Must Select At Least 1 Expansion", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
