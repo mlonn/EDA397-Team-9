@@ -15,4 +15,8 @@ public class BlackCard implements Serializable {
     public int getPick() {
         return pick;
     }
+
+    public String getText() {
+        return text;
+    }
 }
