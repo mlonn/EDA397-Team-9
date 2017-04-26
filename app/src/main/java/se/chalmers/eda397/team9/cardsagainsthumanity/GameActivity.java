@@ -1,15 +1,15 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,6 +17,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.ArrayList;
+
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
+
 
 /**
  * Created by emy on 23/04/17.
@@ -24,12 +30,13 @@ import java.io.File;
 
 public class GameActivity extends AppCompatActivity {
 
-    public int numWhiteCards = 10;
+    public ArrayList<WhiteCard> whiteCards;
 
-    String[] textWhiteCard = new String [numWhiteCards];
-    String textBlackCard = "Black card";
 
-    ImageButton favoriteButtons[] = new ImageButton [numWhiteCards];
+    ImageButton favoriteButtons[];
+
+    private Game game;
+    private Player player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +44,15 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         LinearLayout layout = (LinearLayout) findViewById(R.id.linear);
+        TextView blackCard = (TextView) findViewById(R.id.blackCardTextView);
 
-        for (int i = 0; i < numWhiteCards; i++) {
+        game = (Game) getIntent().getExtras().get("THIS.GAME");
+        blackCard.setText(game.getBlackCard().getText());
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        player = game.getPlayerByUserName(prefs.getString("name", null));
+
+        whiteCards = player.getWhiteCards();
+        for (int i = 0; i < whiteCards.size(); i++) {
 
             //Child relative layout that contains white card and favorite's symbol (heart)
             RelativeLayout childLayout = new RelativeLayout(this);
@@ -46,6 +60,7 @@ public class GameActivity extends AppCompatActivity {
             //Create objects that contain the images
             ImageView imgWhiteCard = new ImageView(this);
             ImageButton imgFavoriteBorder = new ImageButton(this);
+            TextView cardText = new TextView(this);
 
             imgWhiteCard.setId(i);
             imgFavoriteBorder.setId(i);
@@ -62,6 +77,13 @@ public class GameActivity extends AppCompatActivity {
             imgFavoriteBorder.getBackground().setAlpha(0); //ImageButton background full transparent
             imgFavoriteBorder.setLayoutParams(paramsFavoriteBorder);
 
+            cardText.setPadding(50,0,50,0);
+            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(480, 215); //.LayoutParams(width, height) for white cards
+            cardText.setLayoutParams(paramsText);
+            paramsText.setMargins(0,200,0,0);
+            cardText.setText(whiteCards.get(i).getWord());
+            cardText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            cardText.setTextColor(Color.BLACK);
             //Insert images in the objects
             imgWhiteCard.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.white_card));
             imgFavoriteBorder.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_favorite_border));
@@ -74,21 +96,15 @@ public class GameActivity extends AppCompatActivity {
             //Add objects to the view
             childLayout.addView(imgWhiteCard);
             childLayout.addView(imgFavoriteBorder);
+            childLayout.addView(cardText);
             layout.addView(childLayout);
 
             //findViewById(R.id.imgFavoriteBorder).setOnClickListener(favoriteClick);
-
+            favoriteButtons = new ImageButton[whiteCards.size()];
             favoriteButtons[i] = imgFavoriteBorder;
 
         }
 
-    }
-
-    public void setText() {
-        //Set text of white cards (later on also the black card)
-        for (int i=0; i<10; i++){
-            textWhiteCard[i]="White card " + i;
-        }
     }
 
     //Button listener with method onClick for favorite buttons
@@ -99,7 +115,7 @@ public class GameActivity extends AppCompatActivity {
 
             ImageButton favoriteButton = (ImageButton) view; //Cast
 
-            for (int i = 0; i < numWhiteCards; i++) {
+            for (int i = 0; i < whiteCards.size(); i++) {
                 if (favoriteButton == favoriteButtons[i])
                     favoriteButtons[i].setImageResource(R.mipmap.ic_favorite);
                 else

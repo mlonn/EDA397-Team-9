@@ -3,6 +3,8 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,7 @@ import java.util.List;
  * Created by Mikae on 2017-04-08.
  */
 
-public class CardExpansion {
+public class CardExpansion implements Serializable{
 
     private List<BlackCard> blackCardList;
     private List<WhiteCard> whiteCardList;

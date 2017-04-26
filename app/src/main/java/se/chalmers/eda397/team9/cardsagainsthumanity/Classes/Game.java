@@ -1,5 +1,6 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,7 +9,7 @@ import java.util.Random;
  * Created by Mikae on 2017-04-21.
  */
 
-public class Game {
+public class Game implements Serializable {
     private ArrayList<Player> players;
     private Player king;
     private BlackCard blackCard;
@@ -20,7 +21,7 @@ public class Game {
         r = new Random();
         this.players = players;
         this.cardExpansions = cardExpansions;
-        king = setKing();
+        //king = setKing();
         pickBlackCard();
         distributeWhiteCards();
     }
@@ -70,5 +71,18 @@ public class Game {
     }
     public Boolean hasAllPlayersSubmitted(){
         return (submittedWhiteCards.size() == (players.size()-1) * blackCard.getPick());
+    }
+
+    public Player getPlayerByUserName(String name) {
+        for (Player p : players) {
+            if (p.getUsername().equals(name)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public BlackCard getBlackCard() {
+        return blackCard;
     }
 }

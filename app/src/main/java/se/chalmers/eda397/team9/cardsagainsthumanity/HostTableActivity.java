@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -25,6 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
@@ -37,10 +39,7 @@ public class HostTableActivity extends AppCompatActivity{
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s;
 
-    private ArrayList<CardExpansion> expansions;
-    private ListView expansionList;
     private TableInfo table;
-
     private GridLayout playerGridLayout;
 
     private LinearLayout playerRow;
@@ -59,17 +58,24 @@ public class HostTableActivity extends AppCompatActivity{
     String ipAdress = "224.1.1.1";
     int port = 9879;
 
-
+    private ArrayList<Player> players;
+    private ArrayList<CardExpansion> expansions;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_table);
+        expansions = (ArrayList<CardExpansion>) getIntent().getExtras().get("THIS.EXPANSIONS");
+        players = new ArrayList<Player>();
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        players.add(new Player(prefs.getString("name", null)));
         final Button startTableButton = (Button) findViewById(R.id.start_button);
         startTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), GameActivity.class);
+                Game game = new Game(players,expansions);
+                intent.putExtra("THIS.GAME", game);
                 startActivity(intent);
             }
         });

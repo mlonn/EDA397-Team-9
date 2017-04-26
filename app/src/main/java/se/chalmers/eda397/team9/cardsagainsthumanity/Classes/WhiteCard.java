@@ -11,6 +11,10 @@ public class WhiteCard implements Serializable {
     public WhiteCard(String word) {
         this.word = word;
     }
+
+    public String getWord() {
+        return word;
+    }
     //fetch random new white card
     //Invoked from Player
 }
