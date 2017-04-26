@@ -32,9 +32,9 @@ public class CreateTableActivityIntrumentTest extends ActivityInstrumentationTes
     CreateTableActivity mCreateTableActivity;
 
     //Test2
-    Table table;
-    Player playerTable;
-    Player player;
+    Table   table;
+    Player  playerTable;
+    Player  player;
 
     //testTableNameUnique
     Table tableUnique1;
@@ -47,30 +47,28 @@ public class CreateTableActivityIntrumentTest extends ActivityInstrumentationTes
     @Test
     public void testGetExpansions() throws Exception{
         CardHandler cardHandler = new CardHandler();
-
         ArrayList<CardExpansion> cardExpansions = cardHandler.getExpansions(mCreateTableActivity);
         assertEquals(cardExpansions.isEmpty(), false);
         assertEquals(cardExpansions.size() > 0, true);
     }
 
-    @Before
-    public void setUpTable(){
-        playerTable = new Player("Klasse");
-        Context con = InstrumentationRegistry.getTargetContext();
-        player = new Player("Nils");
-        table = new Table("Table1", con);
-        //table = new Table("Table1", ruleTable.getActivity().getBaseContext());
-        table.newPlayer(playerTable);
-    }
-
-    @Test
-    public void testTable() throws Exception{
-        assertNotNull(table.getName());
-        assertNotEquals(table.getName(),"");
-        assertEquals(table.getName(),"Table1");
-        assertEquals(table.getSize(), 1);
-        table.newPlayer(player);
-        assertEquals(table.getSize() > 1, true);
-        assertNotNull(table.getHost());
-    }
+//    @Before
+//    public void setUpTable(){
+//        playerTable = new Player("Klasse");
+//        player = new Player("Nils");
+//        table = new Table("Table1", mCreateTableActivity);
+//        table.newPlayer(playerTable);
+//    }
+//
+//    @Test
+//    public void testTable() throws Exception{
+//        assertNotNull(table.getName());
+//        assertNotEquals(table.getName(),"");
+//        assertEquals(table.getName(),"Table1");
+//        assertEquals(table.getSize(), 1);
+//        table.newPlayer(player);
+//        assertEquals(table.getSize() > 1, true);
+//        String host = table.getHost();
+//        assertNotNull(table.getHost());
+//    }
 }
