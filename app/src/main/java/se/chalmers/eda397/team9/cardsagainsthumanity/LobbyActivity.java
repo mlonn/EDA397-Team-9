@@ -35,6 +35,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastRec
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinner;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
@@ -46,6 +47,7 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
     private String username;
     private List<AsyncTask> threadList = new ArrayList<>();
     private TablePresenter tpresenter;
+    private PlayerInfo myPlayerInfo;
 
     /* Multicast variables */
     private WifiManager.MulticastLock multicastLock;
@@ -70,9 +72,8 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
         /* Initialize P2p */
         initP2p();
 
-        /* Get my username */
-        SharedPreferences prefs = this.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        username = prefs.getString("name", null);
+        /* Get my player information from intent */
+        myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra("PLAYER_INFO");
 
         /* Initialize presenter (Used to separate view from model) */
         tpresenter = new TablePresenter(this);
@@ -104,6 +105,7 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
         createTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), CreateTableActivity.class);
+                intent.putExtra("PLAYER_INFO", myPlayerInfo);
                 startActivity(intent);
             }
         });
