@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -70,5 +71,11 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                 }
             }
         }
+    }
+
+    @Override
+    protected void onCancelled(Void aVoid) {
+        super.onCancelled(aVoid);
+        System.out.println("Cancelled HostMutlicastReceiver!");
     }
 }

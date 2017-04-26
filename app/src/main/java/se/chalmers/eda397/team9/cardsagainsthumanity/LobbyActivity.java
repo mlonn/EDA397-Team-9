@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -20,7 +19,6 @@ import android.view.View;
 import android.widget.Button;
 
 import android.widget.Toast;
-import android.widget.Spinner;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -49,6 +47,7 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
     private String username;
     private List<AsyncTask> threadList = new ArrayList<>();
     private TablePresenter tpresenter;
+    private PlayerInfo myPlayerInfo;
 
     /* Multicast variables */
     private WifiManager.MulticastLock multicastLock;
@@ -73,9 +72,8 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
         /* Initialize P2p */
         initP2p();
 
-        /* Get my username */
-        SharedPreferences prefs = this.getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        username = prefs.getString("name", null);
+        /* Get my player information from intent */
+        myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra("PLAYER_INFO");
 
         /* Initialize presenter (Used to separate view from model) */
         tpresenter = new TablePresenter(this);
@@ -107,6 +105,7 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
         createTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), CreateTableActivity.class);
+                intent.putExtra("PLAYER_INFO", myPlayerInfo);
                 startActivity(intent);
             }
         });
@@ -127,6 +126,8 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
     public void onPeersAvailable(WifiP2pDeviceList peerList) {
         peers.clear();
         peers.addAll(peerList.getDeviceList());
+
+        System.out.println("Found peer!");
 
         connectToSelectedTableHost();
 
@@ -159,6 +160,14 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
 
         //Used to check whether WifiP2p can find the host as well before connecting
         WifiP2pDevice hostDevice = getTableHostDevice(peers, selectedTable.getHost().getDeviceAddress());
+
+
+        System.out.println("Host device address from selected table: " + selectedTable.getHost().getDeviceAddress());
+        System.out.println("Host device address from method: " + hostDevice.deviceName);
+        for(WifiP2pDevice current: peers){
+            System.out.println("Peers: " + current.deviceName);
+        }
+
         if(hostDevice == null){
             return;
         }
@@ -274,10 +283,8 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.P
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                //Do something
-
-                //Example message (only for test)
-                Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, IndexActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.changeTable:
                 //Do something
