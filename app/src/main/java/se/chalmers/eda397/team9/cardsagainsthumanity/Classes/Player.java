@@ -10,18 +10,17 @@ import java.util.List;
 
 public class Player implements Serializable {
 
-    public String username = "";
-    public int score = 0;
-    public boolean isKing;
-    private BlackCard blackCard;
+    private String username;
+    private int score;
+    private boolean isKing;
     private ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private ArrayList<WhiteCard> selectedCards = new ArrayList<WhiteCard>();
     private Submission submission;
-    private String ip_adress = "";
     private List<Submission> submissions;
 
     public Player(String username) {
         this.username = username;
+        score = 0;
     }
 
     public int getScore() {
@@ -64,10 +63,6 @@ public class Player implements Serializable {
         whiteCards.add(whiteCard);
     }
 
-    public void setBlackCard(BlackCard blackCard) {
-        this.blackCard = blackCard;
-    }
-
     public void resetSubmissions() {
         submissions = null;
     }
@@ -78,5 +73,9 @@ public class Player implements Serializable {
 
     public Submission getSubmission() {
         return submission;
+    }
+
+    public ArrayList<WhiteCard> getSelectedCards() {
+        return selectedCards;
     }
 }
