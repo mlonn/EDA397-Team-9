@@ -1,6 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -28,7 +29,7 @@ public class GreetingMulticastSender extends AsyncTask<Object, Void, Void> {
         }
 
         sendMulticast("CARDS_AGAINST_HUMANITY.GREETING");
-        System.out.println("Sent a greeting!");
+        Log.d("GMultiSend", "Sent a greeting!");
         return null;
     }
 

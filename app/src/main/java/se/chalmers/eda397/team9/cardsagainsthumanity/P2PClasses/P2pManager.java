@@ -6,6 +6,7 @@ import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class P2pManager {
         if(activity instanceof WifiP2pManager.PeerListListener) {
             receiver = new WiFiBroadcastReceiver(manager, channel, (WifiP2pManager.PeerListListener) activity);
         }else{
-            throw new IllegalArgumentException("The input activity does not implement WifiP2pManager.PeerListListener");
+            receiver = new WiFiBroadcastReceiver(manager, channel, null);
         }
 
         /* Add intent filters */
@@ -49,12 +50,12 @@ public class P2pManager {
 
             @Override
             public void onSuccess() {
-                System.out.println("P2P disconnected");
+                Log.d("P2pManager", "P2P disconnected");
             }
 
             @Override
             public void onFailure(int i) {
-                System.out.println("P2P failed to disconnect");
+                Log.d("P2pManager", "P2P failed to disconnect");
             }
         });
     }
@@ -93,13 +94,13 @@ public class P2pManager {
                 @Override
                 public void onSuccess() {
                     String toastText = "Connected to " + device.deviceName;
-                    System.out.println(toastText);
+                    Log.d("P2pManager", toastText);
                 }
 
                 @Override
                 public void onFailure(int reason) {
                     String toastText = "Failed to connect to  " + device.deviceName + " for reason " + reason;
-                    System.out.println(toastText);
+                    Log.d("P2pManager", toastText);
                 }
             });
         }

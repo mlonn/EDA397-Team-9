@@ -36,5 +36,10 @@ public class PlayerInfo implements Serializable{
 
     public String getDeviceAddress(){
         return deviceAddress;
+
+    }
+
+    public void setDeviceAddress(String deviceAddress){
+        this.deviceAddress = deviceAddress;
     }
 }

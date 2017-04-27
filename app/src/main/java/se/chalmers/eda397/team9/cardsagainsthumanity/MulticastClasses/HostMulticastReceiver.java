@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
     @Override
     protected void onCancelled() {
         super.onCancelled();
-        System.out.println("Cancelled task!");
+        Log.d("HostMultRec", "Cancelled task!");
         keepGoing = false;
 
     }
@@ -61,7 +62,7 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
             try {
                 getSocket().receive(recv);
                 inMsg = Serializer.deserialize(recv.getData());
-                System.out.println("Message received: " + inMsg);
+                Log.d("HostMultRec", "Message received: " + inMsg);
             } catch (IOException e) {
             }
 
@@ -76,6 +77,6 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
     @Override
     protected void onCancelled(Void aVoid) {
         super.onCancelled(aVoid);
-        System.out.println("Cancelled HostMutlicastReceiver!");
+        Log.d("HostMultRec", "Cancelled HostMutlicastReceiver!");
     }
 }

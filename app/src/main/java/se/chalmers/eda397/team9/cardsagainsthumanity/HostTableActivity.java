@@ -10,6 +10,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,8 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -31,23 +34,27 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
-public class HostTableActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener{
+public class HostTableActivity extends AppCompatActivity implements PropertyChangeListener{
 
+    /* Multicast variables */
     private InetAddress group;
     private List<AsyncTask> threadList;
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s;
 
-    private TableInfo table;
+    /* View variables*/
     private GridLayout playerGridLayout;
+    private Button startTableButton;
+    private Button closeTableButton;
 
-    private LinearLayout playerRow;
+    /* Color variables */
     String[] colorArray = {
             "#f8c82d", "#fbcf61", "#ff6f6f",
             "#e3a712", "#e5ba5a", "#d1404a",
@@ -60,18 +67,19 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
 
     LinkedList<String> colorList;
 
+    //Temporary
     String ipAdress = "224.1.1.1";
     int port = 9879;
 
-
+    /* Class variables */
     private ArrayList<Player> players;
     private ArrayList<CardExpansion> expansions;
+    private PlayerInfo hostInfo;
 
+    /* P2P Variables */
     private WiFiBroadcastReceiver receiver;
     private IntentFilter mIntentFilter;
     private P2pManager p2pManager;
-    private Button startTableButton;
-    private Button closeTableButton;
 
 
     @Override
@@ -81,9 +89,9 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
 
         expansions = (ArrayList<CardExpansion>) getIntent().getExtras().get("THIS.EXPANSIONS");
         players = new ArrayList<Player>();
+
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         players.add(new Player(prefs.getString("name", null)));
-
 
         colorList = new LinkedList<>(Arrays.asList(colorArray));
 
@@ -103,34 +111,19 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
         initMulticastSocket();
 
         p2pManager.discoverPeers();
-        openConnection();
 
         /* Get table info */
         TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra("THIS.TABLE");
-        PlayerInfo hostInfo = tableInfo.getHost();
+        hostInfo = tableInfo.getHost();
 
         addHostRow(hostInfo.getName());
 
         /* Add dummy players */
-        addPlayerRow("Mikael");
-        addPlayerRow("Axel");
-        addPlayerRow("Alessandro");
-        addPlayerRow("Emy");
-        addPlayerRow("Mohannad");
-        addPlayerRow("Debora");
-        addPlayerRow("Karl");
-        addPlayerRow("Gustav");
-        addPlayerRow("Daniel");
-        addPlayerRow("Debora");
-        addPlayerRow("Karl");
-        addPlayerRow("Gustav");
-        addPlayerRow("Daniel");
-        addPlayerRow("Debora");
-        addPlayerRow("Karl");
-        addPlayerRow("Gustav");
-        addPlayerRow("Daniel");
-        addPlayerRow("Debora");
+        for(int i = 0 ; i < 18 ; i++){
+            addPlayerRow("DummyPlayer");
+        }
 
+        /* View Listeners */
         startTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,23 +137,25 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
         closeTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                closeConnection();
-
+                //closeConnection();
                 finish();
 
             }
         });
     }
 
+    /* Initialize peer to peer */
     private void initP2p() {
         p2pManager = new P2pManager(this);
         mIntentFilter = p2pManager.getIntentFilter();
         receiver = p2pManager.getReceiver();
-
+        receiver.addPropertyChangeListener(this);
         registerReceiver(receiver, mIntentFilter);
+
         p2pManager.discoverPeers();
     }
 
+    /* Adds a host row */
     private void addHostRow(String name){
         PlayerRowLayout hostRow = new PlayerRowLayout(this);
         hostRow.setName(name);
@@ -174,6 +169,7 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
         playerGridLayout.addView(hostRow);
     }
 
+    /* Adds a player row */
     private void addPlayerRow(String name){
         int randomNumber = (int) (Math.random() * colorList.size());
         PlayerRowLayout playerRow = new PlayerRowLayout(this);
@@ -186,31 +182,23 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
         playerGridLayout.addView(playerRow);
     }
 
+    /* Activiy overrides */
     @Override
     protected void onPause() {
         super.onPause();
-        closeConnection();
+        //closeConnection();
         unregisterReceiver(receiver);
-        System.out.println("Connection closed");
+        Log.d("HostTableActivity", "Connection closed");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         initMulticastSocket();
-        System.out.println("Connection opened");
+        Log.d("HostTableActivity", "Connection opened");
     }
 
-    private void openConnection(){
-        table = (TableInfo) getIntent().getExtras().get("THIS_TABLE");
-
-        //threadList.add(new TableMulticastSender().execute(s, group, table, port));
-        threadList.add(new HostMulticastReceiver(multicastLock, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table));
-
-        Toast.makeText(this, "Table opened", Toast.LENGTH_SHORT).show();
-        initMulticastSocket();
-    }
-
+    /* Method used for closing all async tasks and socket in this activity*/
     private void closeConnection() {
         for (AsyncTask current : threadList) {
             if (!current.isCancelled())
@@ -220,6 +208,7 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
         s.close();
     }
 
+    /* Method for initializing the multicast socket*/
     private void initMulticastSocket() {
 
         if(multicastLock == null || !multicastLock.isHeld()) {
@@ -274,9 +263,21 @@ public class HostTableActivity extends AppCompatActivity implements WifiP2pManag
         }
     }
 
-
+    /*
+    * Listens to WiFiBroadcastReceiver, whenever it receives the MAC address (of this device),
+    * it will put the address into the host PlayerInfo class tableInfo. Then it will
+    * start hosting the table.
+    * */
     @Override
-    public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        if(propertyChangeEvent.getPropertyName().equals("DEVICE_ADDRESS_FOUND")){
+            String deviceAddress = (String) propertyChangeEvent.getNewValue();
 
+            TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra("THIS.TABLE");
+            tableInfo.getHost().setDeviceAddress(deviceAddress);
+
+            threadList.add(new HostMulticastReceiver(multicastLock, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, tableInfo));
+            Toast.makeText(this, "Table opened", Toast.LENGTH_SHORT).show();
+        }
     }
 }
