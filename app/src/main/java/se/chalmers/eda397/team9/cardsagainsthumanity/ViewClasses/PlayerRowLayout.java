@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
@@ -41,12 +42,21 @@ public class PlayerRowLayout extends LinearLayout {
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        screenWidth = displayMetrics.widthPixels; // !!!!!!!!! PIXEL !!!!!!!!!!!!!!!!!!!!!
+        screenWidth = displayMetrics.widthPixels; // Witdth in pixels
+        //int dpMin = convertPixelsToDp(screenWidth/2-5,this); Converted dp to pixel
 
         //int test = ((Layout) this.getParent()).getWidth();
-        this.setMinimumWidth(screenWidth/2-50); // !!!!!!!!! PIXEL !!!!!!!!!!!!!!!!!!!!!
+        this.setMinimumWidth(screenWidth/2-50); // Pixel (screenWidth/2-50) !!!!!!! Change with dpMin
 
         setBackgroundResource(R.drawable.player_row_item_background);
+    }
+
+    //Method that convert Pixels to DP
+    public static int convertPixelsToDp(float px, PlayerRowLayout context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return (int)dp;
     }
 
     public PlayerRowLayout(Context context) {

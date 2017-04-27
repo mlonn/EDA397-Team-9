@@ -3,11 +3,13 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +42,7 @@ public class GameActivity extends AppCompatActivity {
     private Game game;
     private Player player;
     private Boolean[] selectedCards;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -72,23 +75,24 @@ public class GameActivity extends AppCompatActivity {
 
             //Layout settings of the images
             imgWhiteCard.setPadding(2, 2, 2, 2); //.setPadding(left, top, right, bottom)
-            RelativeLayout.LayoutParams paramsWhiteCard = new RelativeLayout.LayoutParams(480, 530); //.LayoutParams(width, height) for white cards
-            paramsWhiteCard.setMargins(1, 1, 1, 45); //.setMargins(left, top, right, bottom)
+            RelativeLayout.LayoutParams paramsWhiteCard = new RelativeLayout.LayoutParams(480, 530); //.LayoutParams(width, height) for white cards (convertPixelsToDp(480,this))
+            paramsWhiteCard.setMargins(1, 1, 1, convertPixelsToDp(75,this)); //.setMargins(left, top, right, bottom)
             imgWhiteCard.setLayoutParams(paramsWhiteCard);
 
             imgFavoriteBorder.setPadding(2, 2, 2, 2); //.setPadding(left, top, right, bottom)
             RelativeLayout.LayoutParams paramsFavoriteBorder = new RelativeLayout.LayoutParams(100, 100); //(width,height) for favorite border
-            paramsFavoriteBorder.setMargins(350, 10, 1, 1); //.setMargins(left, top, right, bottom)
+            paramsFavoriteBorder.setMargins(convertPixelsToDp(950,this), convertPixelsToDp(10,this), 1, 1); //.setMargins(left, top, right, bottom)
             imgFavoriteBorder.getBackground().setAlpha(0); //ImageButton background full transparent
             imgFavoriteBorder.setLayoutParams(paramsFavoriteBorder);
 
-            cardText.setPadding(50,0,50,0);
+            cardText.setPadding(convertPixelsToDp(200,this),0,convertPixelsToDp(200,this),0);
             RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(480, 215); //.LayoutParams(width, height) for white cards
             cardText.setLayoutParams(paramsText);
-            paramsText.setMargins(0,200,0,0);
+            paramsText.setMargins(0,convertPixelsToDp(200,this),0,0);
             cardText.setText(Html.fromHtml(whiteCards.get(i).getWord()));
             cardText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             cardText.setTextColor(Color.BLACK);
+
             //Insert images in the objects
             imgWhiteCard.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.white_card));
             imgFavoriteBorder.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_favorite_border));
@@ -151,6 +155,14 @@ public class GameActivity extends AppCompatActivity {
 
         }
     };
+
+    //Method that convert Pixels to DP
+    public static int convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return (int)dp;
+    }
 
     private void updateBlackCardText() {
         String[] blackText = game.getBlackCard().getText().split("_");
