@@ -45,9 +45,6 @@ public class Game implements Serializable {
     private void pickBlackCard() {
         CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
         blackCard = exp.getBlackCards().get(r.nextInt(exp.getBlackCards().size()));
-        for (Player p : players) {
-            p.setBlackCard(blackCard);
-        }
     }
     private Player setKing() {
         for (Player p : players) {

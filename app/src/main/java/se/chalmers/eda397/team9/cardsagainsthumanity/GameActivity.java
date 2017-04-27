@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,21 +39,26 @@ public class GameActivity extends AppCompatActivity {
 
     private Game game;
     private Player player;
-
+    private Boolean[] selectedCards;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         LinearLayout layout = (LinearLayout) findViewById(R.id.linear);
-
         game = (Game) getIntent().getExtras().get("THIS.GAME");
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         player = game.getPlayerByUserName(prefs.getString("name", null));
-
+        TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
+        blackCardTextView.setText(Html.fromHtml(game.getBlackCard().getText()));
+        TextView pickTextView = (TextView) findViewById(R.id.pickTextView);
+        String t = "Pick: " + game.getBlackCard().getPick();
+        pickTextView.setText(t);
         whiteCards = player.getWhiteCards();
+        favoriteButtons = new ImageButton[whiteCards.size()];
+        selectedCards = new Boolean[whiteCards.size()];
         for (int i = 0; i < whiteCards.size(); i++) {
-
+            selectedCards[i] = false;
             //Child relative layout that contains white card and favorite's symbol (heart)
             RelativeLayout childLayout = new RelativeLayout(this);
 
@@ -79,7 +86,7 @@ public class GameActivity extends AppCompatActivity {
             RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(480, 215); //.LayoutParams(width, height) for white cards
             cardText.setLayoutParams(paramsText);
             paramsText.setMargins(0,200,0,0);
-            cardText.setText(whiteCards.get(i).getWord());
+            cardText.setText(Html.fromHtml(whiteCards.get(i).getWord()));
             cardText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             cardText.setTextColor(Color.BLACK);
             //Insert images in the objects
@@ -98,12 +105,13 @@ public class GameActivity extends AppCompatActivity {
             layout.addView(childLayout);
 
             //findViewById(R.id.imgFavoriteBorder).setOnClickListener(favoriteClick);
-            favoriteButtons = new ImageButton[whiteCards.size()];
+
             favoriteButtons[i] = imgFavoriteBorder;
 
         }
 
     }
+
 
     //Button listener with method onClick for favorite buttons
     View.OnClickListener favoriteClick = new View.OnClickListener() {
@@ -111,17 +119,55 @@ public class GameActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
-            ImageButton favoriteButton = (ImageButton) view; //Cast
-
+            ImageButton favoriteButton = (ImageButton) view;
+            //Cast
+            int picked = 0;
+            boolean selected = false;
             for (int i = 0; i < whiteCards.size(); i++) {
-                if (favoriteButton == favoriteButtons[i])
-                    favoriteButtons[i].setImageResource(R.mipmap.ic_favorite);
-                else
-                    favoriteButtons[i].setImageResource(R.mipmap.ic_favorite_border);
+                if(selectedCards[i]){
+                    picked++;
+                }
+                if (favoriteButton == favoriteButtons[i] && selectedCards[i]){
+                    selected = true;
+                }
+            }
+            if (picked < game.getBlackCard().getPick() || selected) {
+                for (int i = 0; i < whiteCards.size(); i++) {
+                    if (favoriteButton == favoriteButtons[i]) {
+                        selectedCards[i] = !selectedCards[i];
+                        if (selectedCards[i]) {
+                            favoriteButtons[i].setImageResource(R.mipmap.ic_favorite);
+                            player.getSelectedCards().add(whiteCards.get(i));
+                        } else {
+                            favoriteButtons[i].setImageResource(R.mipmap.ic_favorite_border);
+                            player.getSelectedCards().remove(whiteCards.get(i));
+                        }
+                    }
+                }
+                updateBlackCardText();
+            } else {
+                Toast.makeText(getApplicationContext(), "You can only select " + game.getBlackCard().getPick() + " cards.", Toast.LENGTH_SHORT).show();
             }
 
         }
     };
+
+    private void updateBlackCardText() {
+        String[] blackText = game.getBlackCard().getText().split("_");
+        if (blackText.length>1) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < blackText.length; j++) {
+                sb.append(blackText[j]);
+                if (j < player.getSelectedCards().size()) {
+                    sb.append(player.getSelectedCards().get(j).getWord());
+                } else if (j < blackText.length-1) {
+                    sb.append("_");
+                }
+            }
+            TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
+            blackCardTextView.setText(Html.fromHtml(sb.toString()));
+        }
+    }
 
     //Main menu
     @Override
