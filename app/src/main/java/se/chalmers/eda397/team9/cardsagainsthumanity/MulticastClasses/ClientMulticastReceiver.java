@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
 import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -78,17 +79,17 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
                 if(newTables.equals(tables) && counter < marginOfError){
                     new GreetingMulticastSender().execute(getSocket(), getGroup());
                 }
-                System.out.println("Trying to receive datagram again (try " + counter + ")");
+                Log.d("CMReceiver", "Trying to receive datagram again (try " + counter + ")");
                 counter++;
             }
 
             if(counter > marginOfError) {
                 keepGoing = false;
-                System.out.println("Done");
+                Log.d("CMReceiver", "Done");
             }
 
             if (msg instanceof TableInfo) {
-                System.out.println("ClientMulticastReceiver message received: " + msg);
+                Log.d("CMReceiver", "ClientMulticastReceiver message received: " + msg);
                 newTables.put(((TableInfo) msg).getName(), (TableInfo)msg);
             }
         }

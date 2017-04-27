@@ -69,7 +69,7 @@ public class IndexActivity extends AppCompatActivity {
         /* Get stored username */
         SharedPreferences prefs = getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         String username = prefs.getString("name", null);
-        PlayerInfo playerInfo = new PlayerInfo(username, deviceAddress);
+        PlayerInfo playerInfo = new PlayerInfo(username);
 
         /* Start LobbyActivity*/
         Intent intent = new Intent(this, LobbyActivity.class);

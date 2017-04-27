@@ -85,16 +85,6 @@ public class CreateTableActivity extends AppCompatActivity {
             public void onClick(View view) {
                 PlayerInfo myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra("PLAYER_INFO");
                 TableInfo tableInfo = new TableInfo(tableNameText.getText().toString(), myPlayerInfo);
-                threadList.add(new TableMulticastSender().execute(s, group, tableInfo, port));
-
-                try {
-                    MulticastSocket s2;
-                    s2 = new MulticastSocket(port);
-                    s2.joinGroup(group);
-                    threadList.add(new HostMulticastReceiver(multicastLock, s2, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, tableInfo));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
                 ArrayList<CardExpansion> exp = new ArrayList<CardExpansion>();
                 for (CardExpansion e : expansions) {
