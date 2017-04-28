@@ -20,41 +20,48 @@ import java.util.List;
 import java.util.Map;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
+import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map<String, TableInfo>>{
 
     private Map<String, TableInfo> tables;
-    private Spinner tableList;
-    private AppCompatActivity activity;
     private Map<String, TableInfo> newTables;
     private TablePresenter tablePresenter;
     PropertyChangeSupport pcs;
 
-    public ClientMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s, InetAddress group, TablePresenter tablePresenter) {
+    public ClientMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s,
+                                   InetAddress group, TablePresenter tablePresenter,
+                                   Map<String, TableInfo> tables) {
         super(mcLock, s, group);
         this.tablePresenter = tablePresenter;
+        this.tables = tables;
+        newTables = new HashMap<>();
+
         pcs = new PropertyChangeSupport(this);
+
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        sendGreeting();
+    }
+
+    private void sendGreeting(){
+        MulticastPackage mPackage = new MulticastPackage(MulticastSender.Target.ALL_DEVICES,
+                MulticastSender.Type.GREETING);
+        new MulticastSender(mPackage, getSocket(), getGroup()).execute();
     }
 
     @Override
     protected Map<String, TableInfo> doInBackground(Object... objects) {
-        for(Object current : objects){
-            if(current instanceof Map)
-                tables = (Map<String, TableInfo>) current;
-            if(current instanceof Spinner)
-                tableList = (Spinner) current;
-            if(current instanceof AppCompatActivity)
-                activity = (AppCompatActivity) current;
-            }
-
-        newTables = new HashMap<>();
         receiveAndRegisterTable();
         return tables;
     }
 
-
+    /* Receives messages from tables and registers them */
     private void receiveAndRegisterTable(){
         byte[] buf = new byte[1000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
@@ -69,7 +76,7 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
             counter++;
         }
 
-
+        /* Keeps receiving messages until the thread is cancelled */
         while(keepGoing && !isCancelled()) {
             Object msg = null;
             try {
@@ -77,7 +84,7 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
                 msg = Serializer.deserialize(recv.getData());
             } catch (IOException e) {
                 if(newTables.equals(tables) && counter < marginOfError){
-                    new GreetingMulticastSender().execute(getSocket(), getGroup());
+                    sendGreeting();
                 }
                 Log.d("CMReceiver", "Trying to receive datagram again (try " + counter + ")");
                 counter++;
@@ -88,9 +95,17 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
                 Log.d("CMReceiver", "Done");
             }
 
-            if (msg instanceof TableInfo) {
-                Log.d("CMReceiver", "ClientMulticastReceiver message received: " + msg);
-                newTables.put(((TableInfo) msg).getName(), (TableInfo)msg);
+            if (msg instanceof MulticastPackage) {
+                String targetAddress = (String) ((MulticastPackage) msg).getTarget();
+                String packageName = (String) ((MulticastPackage) msg).getPackageType();
+                Object packageObject = ((MulticastPackage) msg).getObject();
+
+                if(targetAddress.equals(MulticastSender.Target.ALL_DEVICES)){
+                    if(packageName.equals(MulticastSender.Type.HOST_TABLE)){
+                        Log.d("CMReceiver", "Message received: " + msg);
+                        newTables.put(((TableInfo) packageObject).getName(), (TableInfo) packageObject);
+                    }
+                }
             }
         }
     }
@@ -98,7 +113,6 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
     @Override
     protected void onPostExecute(Map<String, TableInfo> tables) {
         super.onPostExecute(tables);
-
         pcs.firePropertyChange("GREETING_FINISHED", 0, 1);
         updateTable();
     }
@@ -112,7 +126,6 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
     }
 
     private void updateTable(){
-
         tablePresenter.clearTables();
         tablePresenter.insertAll(newTables);
 
@@ -125,11 +138,5 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
         }
 
         pcs.firePropertyChange("TABLES_UPDATED", null, list);
-    }
-
-    @Override
-    protected void onPreExecute() {
-        new GreetingMulticastSender().execute(getSocket(), getGroup());
-        super.onPreExecute();
     }
 }

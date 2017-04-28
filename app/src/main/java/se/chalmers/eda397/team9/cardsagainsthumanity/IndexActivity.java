@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import java.io.File;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 
 /**
@@ -28,9 +29,9 @@ public class IndexActivity extends AppCompatActivity {
         setContentView(R.layout.activity_index);
 
         /* Check if the application has a Shared Preferences file containing a username already */
-//        if(fileExists()){
-//            goToLobby();
-//        }
+        if(fileExists()){
+            goToLobby();
+        }
 
         /* Defining username */
         final Button button = (Button) findViewById(R.id.btn_submitUsername);
@@ -46,7 +47,7 @@ public class IndexActivity extends AppCompatActivity {
     /* Checks if username file already exists */
     protected boolean fileExists(){
         String sharePrefName = "usernameFile.xml";
-        File f = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/"+ sharePrefName);
+        File f = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/" + sharePrefName);
         if (f.exists())
             return true;
         else
@@ -73,7 +74,7 @@ public class IndexActivity extends AppCompatActivity {
 
         /* Start LobbyActivity*/
         Intent intent = new Intent(this, LobbyActivity.class);
-        intent.putExtra("PLAYER_INFO", playerInfo);
+        intent.putExtra(IntentType.MY_PLAYER_INFO, playerInfo);
 
         startActivity(intent);
         finish();

@@ -10,10 +10,6 @@ import android.util.Log;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-/**
- * Created by Alex on 2017-03-31.
- */
-
 public class WiFiBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager wifiManager;
