@@ -20,6 +20,8 @@ public class P2pManager {
 
     public P2pManager(AppCompatActivity activity){
 
+
+
         /* Initialize variables */
         this.activity = activity;
         manager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
@@ -83,6 +85,10 @@ public class P2pManager {
             }
 
         });
+    }
+
+    public void stopDiscoverPeers(){
+        manager.stopPeerDiscovery(channel, null);
     }
 
     public void connect2Peers(List<WifiP2pDevice> peers ) {

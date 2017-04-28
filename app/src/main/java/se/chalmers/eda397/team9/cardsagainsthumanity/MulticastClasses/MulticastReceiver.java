@@ -18,6 +18,7 @@ public abstract class MulticastReceiver<A, B, C> extends AsyncTask<A, B, C> {
     private InetAddress group;
 
 
+
     public MulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s, InetAddress group){
         this.mcLock = mcLock;
         this.s = s;

@@ -1,22 +1,19 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
@@ -34,9 +31,10 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
+import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pServerAsyncTask;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
@@ -80,6 +78,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private WiFiBroadcastReceiver receiver;
     private IntentFilter mIntentFilter;
     private P2pManager p2pManager;
+    private boolean receiverIsRegistered = false;
 
 
     @Override
@@ -109,8 +108,12 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         /* Initialize peer to peer and multicast socket */
         initP2p();
         initMulticastSocket();
-
         p2pManager.discoverPeers();
+
+        /* Create an Asynchronous server task*/
+        P2pServerAsyncTask p2pServer;
+        threadList.add(p2pServer = new P2pServerAsyncTask(hostInfo));
+        p2pServer.addPropertyChangeListener(this);
 
         /* Get table info */
         TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra("THIS.TABLE");
@@ -129,7 +132,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), GameActivity.class);
                 Game game = new Game(players,expansions);
-                intent.putExtra("THIS.GAME", game);
+                intent.putExtra(IntentType.THIS_GAME, game);
                 startActivity(intent);
                 finish();
             }
@@ -150,9 +153,9 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         mIntentFilter = p2pManager.getIntentFilter();
         receiver = p2pManager.getReceiver();
         receiver.addPropertyChangeListener(this);
-        registerReceiver(receiver, mIntentFilter);
-
-        p2pManager.discoverPeers();
+        if(!receiverIsRegistered) {
+            registerReceiver(receiver, mIntentFilter);
+        }
     }
 
     /* Adds a host row */
@@ -183,19 +186,29 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     }
 
     /* Activiy overrides */
+
+    @Override
+    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+        receiverIsRegistered = true;
+        return super.registerReceiver(receiver, filter);
+    }
+
+    @Override
+    public void unregisterReceiver(BroadcastReceiver receiver) {
+        receiverIsRegistered = false;
+        super.unregisterReceiver(receiver);
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
-        //closeConnection();
-        unregisterReceiver(receiver);
-        Log.d("HostTableActivity", "Connection closed");
+       // closeConnection();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         initMulticastSocket();
-        Log.d("HostTableActivity", "Connection opened");
     }
 
     /* Method used for closing all async tasks and socket in this activity*/
@@ -263,21 +276,33 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         }
     }
 
+
+    private void stopP2p(){
+        p2pManager.stopDiscoverPeers();
+        p2pManager.disconnect();
+        if(receiverIsRegistered)
+            unregisterReceiver(receiver);
+    }
+
     /*
     * Listens to WiFiBroadcastReceiver, whenever it receives the MAC address (of this device),
     * it will put the address into the host PlayerInfo class tableInfo. Then it will
     * start hosting the table.
     * */
+
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         if(propertyChangeEvent.getPropertyName().equals("DEVICE_ADDRESS_FOUND")){
             String deviceAddress = (String) propertyChangeEvent.getNewValue();
+            stopP2p();
 
-            TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra("THIS.TABLE");
+            TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra(IntentType.THIS_TABLE);
             tableInfo.getHost().setDeviceAddress(deviceAddress);
 
-            threadList.add(new HostMulticastReceiver(multicastLock, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, tableInfo));
+            threadList.add(new HostMulticastReceiver(multicastLock, s, group, tableInfo)
+                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
             Toast.makeText(this, "Table opened", Toast.LENGTH_SHORT).show();
+
         }
     }
 }

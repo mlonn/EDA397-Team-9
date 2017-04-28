@@ -1,6 +1,5 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -15,16 +14,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.TableMulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
@@ -43,34 +39,10 @@ public class CreateTableActivity extends AppCompatActivity {
     private InetAddress group;
     private List<AsyncTask> threadList = new ArrayList<>();
 
-    //Temporary
-    String ipAdress = "224.1.1.1";
-    int port = 9879;
-
-
-    private void initMulticastSocket(){
-        WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        multicastLock = wifi.createMulticastLock("multicastLock");
-
-        try {
-            group = InetAddress.getByName(ipAdress);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        try {
-            s = new MulticastSocket(port);
-            s.joinGroup(group);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_table);
-        int i = 0;
-        initMulticastSocket();
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         final EditText tableNameText = (EditText)findViewById(R.id.tablename);
@@ -88,20 +60,19 @@ public class CreateTableActivity extends AppCompatActivity {
 
                 ArrayList<CardExpansion> exp = new ArrayList<CardExpansion>();
                 for (CardExpansion e : expansions) {
-                    if (e.isSelected()) {
+                    if (e.isSelected())
                         exp.add(e);
-                    }
                 }
 
                 Intent intent = new Intent(view.getContext(), HostTableActivity.class);
 
-                intent.putExtra("THIS.TABLE", tableInfo);
-                intent.putExtra("THIS.EXPANSIONS", exp);
-                if (exp.size()>0) {
+                intent.putExtra(IntentType.THIS_TABLE, tableInfo);
+                intent.putExtra(IntentType.THIS_EXPANSIONS, exp);
+
+                if (exp.size()>0)
                     startActivity(intent);
-                } else {
+                 else
                     Toast.makeText(getApplicationContext(), "You Must Select At Least 1 Expansion", Toast.LENGTH_SHORT).show();
-                }
 
             }
         });

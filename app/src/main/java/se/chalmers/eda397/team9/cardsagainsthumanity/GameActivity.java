@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 
 
 /**
@@ -49,7 +50,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         LinearLayout layout = (LinearLayout) findViewById(R.id.linear);
-        game = (Game) getIntent().getExtras().get("THIS.GAME");
+        game = (Game) getIntent().getExtras().get(IntentType.THIS_GAME);
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         player = game.getPlayerByUserName(prefs.getString("name", null));
         TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
