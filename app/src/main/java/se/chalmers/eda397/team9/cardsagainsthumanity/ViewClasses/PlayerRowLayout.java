@@ -43,7 +43,7 @@ public class PlayerRowLayout extends LinearLayout {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         screenWidth = displayMetrics.widthPixels; // Witdth in pixels
-        //int dpMin = convertPixelsToDp(screenWidth/2-5,this); Converted dp to pixel
+        //int dpMin = convertDpToPixels(screenWidth/2-5,this); Converted dp to pixel
 
         //int test = ((Layout) this.getParent()).getWidth();
         this.setMinimumWidth(screenWidth/2-50); // Pixel (screenWidth/2-50) !!!!!!! Change with dpMin
@@ -51,12 +51,13 @@ public class PlayerRowLayout extends LinearLayout {
         setBackgroundResource(R.drawable.player_row_item_background);
     }
 
-    //Method that convert Pixels to DP
-    public static int convertPixelsToDp(float px, PlayerRowLayout context){
+    //Method that convert DP to Pixels
+    public static int convertDpToPixels(float dp, Context context){
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = px / (metrics.densityDpi / 160f);
-        return (int)dp;
+        float px = dp * (metrics.densityDpi / 160f);
+        //float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, resources.getDisplayMetrics());
+        return (int)px;
     }
 
     public PlayerRowLayout(Context context) {
