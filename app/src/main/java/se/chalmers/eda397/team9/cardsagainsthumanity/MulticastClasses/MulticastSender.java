@@ -18,8 +18,11 @@ public class MulticastSender extends AsyncTask {
     public static class Type{
         public static final String GREETING = "greeting";
         public static final String HOST_TABLE = "host_table_info";
-        public static final String PLAYER_JOINED = "player_joined";
+        public static final String PLAYER_JOIN_ACCEPTED = "player_join_accepted";
+        public static final String PLAYER_JOIN_DENIED = "player_join_denied";
         public static final String PLAYER_JOIN_REQUEST = "player_join_request";
+        public static final String TABLE_INTERVAL_UPDATE = "table_interval_update";
+        public static final String PLAYER_JOIN_SUCCESS = "table_join_success";
     }
 
     public static class Target{
@@ -30,6 +33,18 @@ public class MulticastSender extends AsyncTask {
         this.s = s;
         this.group = group;
         this.mPackage = mPackage;
+    }
+
+    protected InetAddress getGroup(){
+        return group;
+    }
+
+    protected MulticastSocket getSocket(){
+        return s;
+    }
+
+    protected MulticastPackage getMPackage(){
+        return mPackage;
     }
 
     @Override

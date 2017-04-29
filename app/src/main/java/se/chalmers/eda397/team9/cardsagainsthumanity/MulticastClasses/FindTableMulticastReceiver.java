@@ -24,35 +24,27 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
-public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map<String, TableInfo>>{
+public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, Map<String, TableInfo>>{
 
     private Map<String, TableInfo> tables;
     private Map<String, TableInfo> newTables;
     private TablePresenter tablePresenter;
-    PropertyChangeSupport pcs;
 
-    public ClientMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s,
-                                   InetAddress group, TablePresenter tablePresenter,
-                                   Map<String, TableInfo> tables) {
+    public FindTableMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s,
+                                      InetAddress group, TablePresenter tablePresenter,
+                                      Map<String, TableInfo> tables) {
         super(mcLock, s, group);
         this.tablePresenter = tablePresenter;
         this.tables = tables;
         newTables = new HashMap<>();
-
-        pcs = new PropertyChangeSupport(this);
 
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        sendGreeting();
-    }
-
-    private void sendGreeting(){
-        MulticastPackage mPackage = new MulticastPackage(MulticastSender.Target.ALL_DEVICES,
-                MulticastSender.Type.GREETING);
-        new MulticastSender(mPackage, getSocket(), getGroup()).execute();
+        getPropertyChangeSupport().firePropertyChange("REQUEST_TABLES", 0, 1);
+        getPropertyChangeSupport().firePropertyChange("START_REFRESHING", 0, 1);
     }
 
     @Override
@@ -84,7 +76,7 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
                 msg = Serializer.deserialize(recv.getData());
             } catch (IOException e) {
                 if(newTables.equals(tables) && counter < marginOfError){
-                    sendGreeting();
+                    getPropertyChangeSupport().firePropertyChange("REQUEST_TABLES", 0, 1);
                 }
                 Log.d("CMReceiver", "Trying to receive datagram again (try " + counter + ")");
                 counter++;
@@ -113,16 +105,8 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
     @Override
     protected void onPostExecute(Map<String, TableInfo> tables) {
         super.onPostExecute(tables);
-        pcs.firePropertyChange("GREETING_FINISHED", 0, 1);
+        getPropertyChangeSupport().firePropertyChange("STOP_REFRESHING", 0, 1);
         updateTable();
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener listener){
-        pcs.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener){
-        pcs.removePropertyChangeListener(listener);
     }
 
     private void updateTable(){
@@ -137,6 +121,12 @@ public class ClientMulticastReceiver extends MulticastReceiver<Object, Void, Map
             list.add(current.getValue());
         }
 
-        pcs.firePropertyChange("TABLES_UPDATED", null, list);
+        getPropertyChangeSupport().firePropertyChange("TABLES_UPDATED", null, list);
+    }
+
+    @Override
+    protected void onCancelled() {
+        Log.d("FTMultReceiver", "Receiver cancelled");
+        super.onCancelled();
     }
 }
