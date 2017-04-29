@@ -24,9 +24,14 @@ public class FindTableSwipeRefreshLayout extends SwipeRefreshLayout implements P
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals("GREETING_FINISHED")){
-            if(isRefreshing())
+        if(propertyChangeEvent.getPropertyName().equals("START_REFRESHING")){
+            if(!isRefreshing())
+                setRefreshing(true);
+        }
+        if(propertyChangeEvent.getPropertyName().equals("STOP_REFRESHING")){
+            if(isRefreshing()){
                 setRefreshing(false);
+            }
         }
     }
 }

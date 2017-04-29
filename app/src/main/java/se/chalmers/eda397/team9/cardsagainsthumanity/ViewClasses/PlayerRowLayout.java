@@ -28,6 +28,7 @@ public class PlayerRowLayout extends LinearLayout {
     TextView textView;
     ImageView imageView;
     int screenWidth;
+    String color;
 
     //Players' rows
     private void init(){
@@ -59,6 +60,8 @@ public class PlayerRowLayout extends LinearLayout {
         //float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, resources.getDisplayMetrics());
         return (int)px;
     }
+
+
 
     public PlayerRowLayout(Context context) {
         super(context);
@@ -101,7 +104,11 @@ public class PlayerRowLayout extends LinearLayout {
     }
 
     public void setImageColor(String color){
+        this.color = color;
         imageView.setBackgroundColor(Color.parseColor(color));
     }
 
+    public String getColor() {
+        return color;
+    }
 }

@@ -2,9 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,20 +16,20 @@ import android.widget.Button;
 
 import android.widget.Toast;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ClientMulticastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.FindTableMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
-import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
-import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinner;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout;
@@ -39,16 +37,23 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
-public class LobbyActivity extends AppCompatActivity{
+public class LobbyActivity extends AppCompatActivity implements PropertyChangeListener{
 
     /* Class variables */
     private Map<String, TableInfo> tables;
     private FindTableSwipeRefreshLayout swipeRefreshLayout;
     private FindTableSpinner tableSpinner;
-    private List<AsyncTask> threadList = new ArrayList<>();
+    private Map<Integer, AsyncTask> threadMap = new HashMap<Integer, AsyncTask>();
     private TablePresenter tpresenter;
     private PlayerInfo myPlayerInfo;
     private TableInfo selectedTable;
+
+    /* MulticastSenders and MulticastReceivers */
+    private final Integer FIND_TABLE_RECEIVER = 0;
+    private final Integer PLAYER_RECEIER = 1;
+    private final Integer TABLE_REQUEST_SENDER = 2;
+    private final Integer TABLE_REQUEST_RETRY = 3;
+    private final Integer PLAYER_ACCEPTED = 4;
 
     /* Multicast variables */
     private WifiManager.MulticastLock multicastLock;
@@ -85,10 +90,8 @@ public class LobbyActivity extends AppCompatActivity{
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(true);
                 Toast.makeText(LobbyActivity.this, "Searching for tables...", Toast.LENGTH_SHORT).show();
-
-                ClientMulticastReceiver greeting = greetAndReceive();
+                FindTableMulticastReceiver greeting = greetAndReceive();
                 greeting.addPropertyChangeListener(swipeRefreshLayout);
 
             }
@@ -117,9 +120,19 @@ public class LobbyActivity extends AppCompatActivity{
         joinTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //TODO needs to be correctly implemented. Not tested yet.
+                if(selectedTable == null){
+                    Toast.makeText(LobbyActivity.this, "No table is selected", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                Log.d("LobbyActivity", ((TableInfo) tableSpinner.getSelectedItem()).getHost().getDeviceAddress());
-                sendJoinRequest(selectedTable);
+                Toast.makeText(LobbyActivity.this, "Attempting to join selected table", Toast.LENGTH_SHORT).show();
+                Log.d("LobbyActivity", ((TableInfo) tableSpinner.getSelectedItem()).getHost().
+                        getDeviceAddress());
+                MulticastReceiver playerMulticastReceiver = new PlayerMulticastReceiver(multicastLock,
+                        s, group, myPlayerInfo);
+                playerMulticastReceiver.addPropertyChangeListener(tableSpinner);
+                playerMulticastReceiver.addPropertyChangeListener(LobbyActivity.this);
+                threadMap.put(PLAYER_RECEIER, playerMulticastReceiver.execute());
             }
         });
     }
@@ -146,25 +159,15 @@ public class LobbyActivity extends AppCompatActivity{
         }
     }
 
-    /* Sends join request to given table */
-    private void sendJoinRequest(TableInfo targetTable){
-        if(selectedTable == null){
-            throw new NullPointerException("The given TableInfo cannot be null");
-        }
-        MulticastPackage mPackage = new MulticastPackage(targetTable.getHost().getDeviceAddress(),
-                MulticastSender.Type.PLAYER_JOIN_REQUEST, myPlayerInfo);
-        threadList.add(new MulticastSender(mPackage, s, group).execute());
-    }
-
-    /* Starts the ClientMulticastReceiver */
-    private ClientMulticastReceiver greetAndReceive(){
-        ClientMulticastReceiver greeting = (ClientMulticastReceiver)
-                new ClientMulticastReceiver(multicastLock, s, group, tpresenter, tables)
+    /* Starts the FindTableMulticastReceiver */
+    private FindTableMulticastReceiver greetAndReceive(){
+        FindTableMulticastReceiver greeting = (FindTableMulticastReceiver)
+                new FindTableMulticastReceiver(multicastLock, s, group, tpresenter, tables)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         greeting.addPropertyChangeListener(tableSpinner);
 
-        threadList.add(greeting);
+        threadMap.put(FIND_TABLE_RECEIVER, greeting);
         return greeting;
     }
 
@@ -188,7 +191,18 @@ public class LobbyActivity extends AppCompatActivity{
     @Override
     public void onPause(){
         super.onPause();
+        closeConnection();
+    }
+
+    public void closeConnection(){
+        for(Map.Entry<Integer, AsyncTask> current : threadMap.entrySet()) {
+            if(!current.getValue().getStatus().equals(AsyncTask.Status.FINISHED))
+                if(!current.getValue().isCancelled())
+                    if(current.getKey() != PLAYER_RECEIER)
+                        current.getValue().cancel(true);
+        }
         s.close();
+
     }
 
     /* Main menu */
@@ -218,6 +232,43 @@ public class LobbyActivity extends AppCompatActivity{
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        if(propertyChangeEvent.getPropertyName().equals("REQUEST_TABLES")){
+            MulticastPackage mPackage = new MulticastPackage(MulticastSender.Target.ALL_DEVICES,
+                    MulticastSender.Type.GREETING);
+            threadMap.put(TABLE_REQUEST_SENDER, new MulticastSender(mPackage, s, group).execute());
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("NO_RESPONSE")){
+            Toast.makeText(this, "No response from host", Toast.LENGTH_SHORT).show();
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("TABLE_REQUEST_RETRY")){
+            if(selectedTable == null){
+                throw new NullPointerException("Cannot request table information from a null object");
+            }
+            MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
+                    MulticastSender.Type.PLAYER_JOIN_REQUEST, myPlayerInfo);
+            threadMap.put(TABLE_REQUEST_RETRY, new MulticastSender(mPackage, s, group).execute());
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("PLAYER_ACCEPTED")){
+            MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
+                    MulticastSender.Type.PLAYER_JOIN_SUCCESS, myPlayerInfo);
+            threadMap.put(PLAYER_ACCEPTED, new MulticastSender(mPackage, s, group).execute());
+
+            Intent intent = new Intent(this, PlayerTableActivity.class);
+            intent.putExtra("HOST_TABLE_INFO", (TableInfo) propertyChangeEvent.getNewValue());
+            intent.putExtra("PLAYER_MULTICAST_SENDER", (MulticastReceiver) threadMap.get(PLAYER_RECEIER));
+            startActivity(intent);
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("PLAYER_DENIED")){
+            Toast.makeText(this, "Table is full", Toast.LENGTH_SHORT).show();
         }
     }
 }

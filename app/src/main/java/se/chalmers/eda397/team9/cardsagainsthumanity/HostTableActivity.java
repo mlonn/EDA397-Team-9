@@ -9,6 +9,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,11 +27,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pServerAsyncTask;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
@@ -73,6 +77,13 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private ArrayList<Player> players;
     private ArrayList<CardExpansion> expansions;
     private PlayerInfo hostInfo;
+    private TableInfo myTableInfo;
+    private List<PlayerRowLayout> playerRowList;
+
+    /* Connection status */
+    private final int CONNECTING = 0;
+    private final int CONNECTED = 1;
+
 
     /* P2P Variables */
     private WiFiBroadcastReceiver receiver;
@@ -80,13 +91,12 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private P2pManager p2pManager;
     private boolean receiverIsRegistered = false;
 
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_table);
 
-        expansions = (ArrayList<CardExpansion>) getIntent().getExtras().get("THIS.EXPANSIONS");
+        expansions = (ArrayList<CardExpansion>) getIntent().getExtras().get(IntentType.THIS_EXPANSIONS);
         players = new ArrayList<Player>();
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
@@ -99,6 +109,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         p2pManager = new P2pManager(this);
         colorList = new LinkedList<>(Arrays.asList(colorArray));
         threadList = new ArrayList<>();
+        playerRowList = new ArrayList<>();
 
         /* Initialize views */
         startTableButton = (Button) findViewById(R.id.start_button);
@@ -110,20 +121,17 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         initMulticastSocket();
         p2pManager.discoverPeers();
 
-        /* Create an Asynchronous server task*/
-        P2pServerAsyncTask p2pServer;
-        threadList.add(p2pServer = new P2pServerAsyncTask(hostInfo));
-        p2pServer.addPropertyChangeListener(this);
-
         /* Get table info */
-        TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra("THIS.TABLE");
-        hostInfo = tableInfo.getHost();
+        myTableInfo = (TableInfo) getIntent().getSerializableExtra("THIS.TABLE");
+        hostInfo = myTableInfo.getHost();
 
-        addHostRow(hostInfo.getName());
+        assignRandomColor(hostInfo);
+        addHostRow(hostInfo);
 
         /* Add dummy players */
-        for(int i = 0 ; i < 18 ; i++){
-            addPlayerRow("DummyPlayer");
+        for(int i = 0 ; i < 16 ; i++){
+            PlayerInfo dummyPlayer = new PlayerInfo("DummyPlayer");
+            addPlayer(dummyPlayer);
         }
 
         /* View Listeners */
@@ -142,7 +150,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
             public void onClick(View view) {
                 //closeConnection();
                 finish();
-
             }
         });
     }
@@ -159,30 +166,38 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     }
 
     /* Adds a host row */
-    private void addHostRow(String name){
+    private void addHostRow(PlayerInfo playerInfo){
         PlayerRowLayout hostRow = new PlayerRowLayout(this);
-        hostRow.setName(name);
+        hostRow.setName(playerInfo.getName());
         hostRow.setAsHost();
-
-        int randomNumber = (int) (Math.random() * colorList.size());
-        String color = colorList.get(randomNumber);
-        colorList.remove(randomNumber);
-
-        hostRow.setImageColor(color);
+        hostRow.setImageColor(playerInfo.getColor());
         playerGridLayout.addView(hostRow);
     }
 
-    /* Adds a player row */
-    private void addPlayerRow(String name){
+    private void assignRandomColor(PlayerInfo playerInfo){
         int randomNumber = (int) (Math.random() * colorList.size());
-        PlayerRowLayout playerRow = new PlayerRowLayout(this);
-        playerRow.setName(name);
-
         String color = colorList.get(randomNumber);
         colorList.remove(randomNumber);
+        playerInfo.setColor(color);
+    }
 
-        playerRow.setImageColor(color);
+    /* Adds a player row */
+    private void addPlayerRow(PlayerInfo playerInfo){
+        PlayerRowLayout playerRow = new PlayerRowLayout(this);
+        playerRow.setName(playerInfo.getName());
+        playerRow.setImageColor(playerInfo.getColor());
+        playerRowList.add(playerRow);
         playerGridLayout.addView(playerRow);
+    }
+
+    private void removePlayerRow(PlayerInfo player){
+        //TODO: Might have to reposition all other players
+        for(PlayerRowLayout current : playerRowList){
+            if(current.getColor().equals(player.getName())){
+                playerGridLayout.removeView(current);
+                return;
+            }
+        }
     }
 
     /* Activiy overrides */
@@ -202,7 +217,12 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     @Override
     protected void onPause() {
         super.onPause();
-       // closeConnection();
+    }
+
+    @Override
+    public void finish() {
+        closeConnection();
+        super.finish();
     }
 
     @Override
@@ -218,7 +238,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
                 current.cancel(true);
         }
 
-        s.close();
+        //s.close();
     }
 
     /* Method for initializing the multicast socket*/
@@ -276,12 +296,33 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         }
     }
 
-
+    /* Stops p2p connection and receiver */
     private void stopP2p(){
         p2pManager.stopDiscoverPeers();
         p2pManager.disconnect();
         if(receiverIsRegistered)
             unregisterReceiver(receiver);
+    }
+
+    /* Adds player graphically and into the table */
+    private void addPlayer(PlayerInfo newPlayer){
+        assignRandomColor(newPlayer);
+        myTableInfo.addPlayer(newPlayer);
+        addPlayerRow(newPlayer);
+    }
+
+    private void removePlayer(PlayerInfo player){
+        colorList.add(player.getColor());
+        myTableInfo.removePlayer(player);
+        removePlayerRow(player);
+    }
+
+    /* Sends package using MulticastSender*/
+    private void sendPackage(String target, String type, Object object){
+        MulticastPackage mPackage = new MulticastPackage(target,
+                type, object);
+        threadList.add(new MulticastSender(mPackage, s, group).
+                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
     }
 
     /*
@@ -299,10 +340,71 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
             TableInfo tableInfo = (TableInfo) getIntent().getSerializableExtra(IntentType.THIS_TABLE);
             tableInfo.getHost().setDeviceAddress(deviceAddress);
 
-            threadList.add(new HostMulticastReceiver(multicastLock, s, group, tableInfo)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
+            HostMulticastReceiver hostMulticastReceiver = new HostMulticastReceiver(multicastLock, s, group, hostInfo);
+            hostMulticastReceiver.addPropertyChangeListener(this);
+            threadList.add(hostMulticastReceiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
+
             Toast.makeText(this, "Table opened", Toast.LENGTH_SHORT).show();
 
+            final int interval = 3;
+
+            AsyncTask intervalSender = new AsyncTask() {
+                @Override
+                protected Object doInBackground(Object[] objects) {
+                    while(!isCancelled()){
+
+                        try {
+                            TimeUnit.SECONDS.sleep(interval);
+                        } catch (InterruptedException e) {
+                        }
+
+                        sendPackage(hostInfo.getDeviceAddress(),
+                                MulticastSender.Type.TABLE_INTERVAL_UPDATE, myTableInfo);
+
+                        Log.d("HostTA.interSend", "Alive");
+                    }
+                    return null;
+                }
+            };
+            threadList.add(intervalSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("TABLE_REQUESTED")){
+            sendPackage(MulticastSender.Target.ALL_DEVICES,
+                    MulticastSender.Type.HOST_TABLE, myTableInfo);
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("PLAYER_JOIN_REQUESTED")){
+            PlayerInfo newPlayer = (PlayerInfo) propertyChangeEvent.getNewValue();
+            if(!myTableInfo.getPlayerList().contains(newPlayer)) {
+                if(myTableInfo.getPlayerList().size() >= 19){
+                    sendPackage(newPlayer.getDeviceAddress(),
+                            MulticastSender.Type.PLAYER_JOIN_DENIED, null);
+                }
+                if(myTableInfo.getPlayerList().size() <= 19){
+                    sendPackage(newPlayer.getDeviceAddress(),
+                            MulticastSender.Type.PLAYER_JOIN_ACCEPTED, myTableInfo);
+                    addPlayer(newPlayer);
+                    setConnectionStatus((PlayerInfo) propertyChangeEvent.getNewValue(), CONNECTING);
+                }
+            }
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("PLAYER_JOIN_SUCCESSFUL")){
+            setConnectionStatus((PlayerInfo) propertyChangeEvent.getNewValue(), CONNECTED);
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("PLAYER_TIMED_OUT")){
+            removePlayer((PlayerInfo) propertyChangeEvent.getNewValue());
+        }
+    }
+
+    private void setConnectionStatus(PlayerInfo player, int connectionStatus){
+        if(connectionStatus == CONNECTED) {
+            //TODO: Change view to indicate connected
+        }
+        if(connectionStatus == CONNECTING){
+            //TODO: Change view to indicate connecting
         }
     }
 }
