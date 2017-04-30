@@ -1,3 +1,5 @@
+import android.util.Log;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,7 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 
@@ -27,6 +32,9 @@ public class ReceiveMulticast {
     int port = 9879;
     Map<String, TableInfo> tables;
     Map<String, TableInfo> oldTables;
+    private TableInfo hostTable;
+    private MulticastPackage greeting = new MulticastPackage(MulticastSender.Target.ALL_DEVICES,
+            MulticastSender.Type.GREETING);
 
     public ReceiveMulticast(){
         initMulticast();
@@ -39,15 +47,40 @@ public class ReceiveMulticast {
             e.printStackTrace();
         }
 
-        for(int i = 0; i < 100; i++) {
-            send();
+        send(greeting);
+
+        receiveGreeting();
+
+        PlayerInfo player = new PlayerInfo("Alex", "test_address");
+        MulticastPackage joinRequest = new MulticastPackage(hostTable.getHost().getDeviceAddress(),
+                MulticastSender.Type.PLAYER_JOIN_REQUEST, player);
+
+        try {
+            for(int i = 0; i < 3; i++){
+                send(joinRequest);
+                TimeUnit.SECONDS.sleep(1);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        receive();
+
+        MulticastPackage joinSuccessful = new MulticastPackage(hostTable.getHost().getDeviceAddress(),
+                MulticastSender.Type.PLAYER_JOIN_SUCCESS, player);
+
+        try {
+            for(int i = 0; i < 3; i++){
+                send(joinSuccessful);
+                TimeUnit.SECONDS.sleep(1);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    private void send(){
-        byte[] greeting = serialize("CARDS_AGAINST_HUMANITY.GREETING");
-        DatagramPacket dp = new DatagramPacket(greeting, greeting.length, group, port);
+    private void send(MulticastPackage mPackage){
+        byte[] msg = Serializer.serialize(mPackage);
+        DatagramPacket dp = new DatagramPacket(msg, msg.length, group, port);
         try {
             s.send(dp);
         } catch (IOException e) {
@@ -55,30 +88,31 @@ public class ReceiveMulticast {
         }
     }
 
-    private void receive() {
-        byte[] buf = new byte[1000];
+    private void receiveGreeting() {
+        byte[] buf = new byte[10000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
         boolean keepGoing = true;
         int counter = 1;
-        int counter2 = 0;
         int marginOfError = 3;
 
         try {
-            s.setSoTimeout(3000);
+            s.setSoTimeout(100);
         } catch (SocketException e) {
             counter++;
         }
 
         while(keepGoing) {
-            Object msg;
+            Object msg = null;
             try {
                 s.receive(recv);
-                msg = deserialize(recv.getData());
-                System.out.println("Message: " + msg);
+                byte[] data = recv.getData();
+                if(data != null) {
+                    msg = Serializer.deserialize(data);
+                }
             } catch (IOException e) {
                 msg = null;
                 if(oldTables.equals(tables) && counter < marginOfError){
-                    send();
+                    send(greeting);
                 }
 
                 System.out.println("Trying to receive datagram again (try " + counter + ")");
@@ -91,40 +125,28 @@ public class ReceiveMulticast {
                 System.out.println("Done");
             }
 
-            if (msg instanceof TableInfo) {
-                PlayerInfo hostName = ((TableInfo) msg).getHost();
-                String tableName = ((TableInfo) msg).getName();
-                int tableSize = ((TableInfo) msg).getSize();
-                tables.put(tableName, new TableInfo(tableName, hostName, tableSize));
-                counter2++;
-                System.out.println("Received : " + counter2);
-            }
-        }
-    }
+            if (msg instanceof MulticastPackage) {
+                String target = ((MulticastPackage) msg).getTarget();
+                String type = ((MulticastPackage) msg).getPackageType();
+                Object packageObject = ((MulticastPackage) msg).getObject();
 
-    private Object deserialize(byte[] serializedObject) {
-        ByteArrayInputStream bis = new ByteArrayInputStream(serializedObject);
-        ObjectInput in = null;
-        Object o = null;
-        try {
-            in = new ObjectInputStream(bis);
-            o = in.readObject();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
+                if (target.equals(MulticastSender.Target.ALL_DEVICES)) {
+                    if(type.equals(MulticastSender.Type.HOST_TABLE)){
+                        hostTable = (TableInfo) packageObject;
+                        tables.put(hostTable.getName(), hostTable);
+                        System.out.println("ReceiveMulticast: Received a " + type);
+                    }
                 }
-            } catch (IOException ex) {
-                // ignore close exception
+
+                if (hostTable !=  null && target.equals(hostTable.getHost().getDeviceAddress())){
+                    if(type.equals(MulticastSender.Type.PLAYER_JOIN_ACCEPTED)){
+                        //TODO: Send confirmation
+                    }
+                }
             }
         }
-
-        return o;
     }
+
 
     private void initMulticast(){
         try {
@@ -138,27 +160,6 @@ public class ReceiveMulticast {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private byte[] serialize(Object object){
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput out = null;
-        byte[] array = {};
-        try {
-            out = new ObjectOutputStream(bos);
-            out.writeObject(object);
-            out.flush();
-            array = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                bos.close();
-            } catch (IOException ex) {
-                // ignore close exception
-            }
-        }
-        return array;
     }
 
     public static void main(String[] args){

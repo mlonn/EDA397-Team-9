@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.FindTableMulticastReceiver;
@@ -257,12 +258,18 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
         }
 
         if(propertyChangeEvent.getPropertyName().equals("PLAYER_ACCEPTED")){
+            TableInfo hostTable = ((TableInfo) propertyChangeEvent.getNewValue());
+            PlayerInfo newPlayerInfo = findPlayer(hostTable.getPlayerList(), myPlayerInfo);
+
+            if(newPlayerInfo != null)
+                myPlayerInfo = newPlayerInfo;
+
             MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
                     MulticastSender.Type.PLAYER_JOIN_SUCCESS, myPlayerInfo);
             threadMap.put(PLAYER_ACCEPTED, new MulticastSender(mPackage, s, group).execute());
 
             Intent intent = new Intent(this, PlayerTableActivity.class);
-            intent.putExtra("HOST_TABLE_INFO", (TableInfo) propertyChangeEvent.getNewValue());
+            intent.putExtra("HOST_TABLE_INFO", hostTable);
             intent.putExtra("PLAYER_MULTICAST_SENDER", (MulticastReceiver) threadMap.get(PLAYER_RECEIER));
             startActivity(intent);
         }
@@ -270,5 +277,13 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
         if(propertyChangeEvent.getPropertyName().equals("PLAYER_DENIED")){
             Toast.makeText(this, "Table is full", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private PlayerInfo findPlayer(List<PlayerInfo> list, PlayerInfo player){
+        for(PlayerInfo current : list){
+            if(player.getDeviceAddress().equals(current.getDeviceAddress()))
+                return current;
+        }
+        return null;
     }
 }

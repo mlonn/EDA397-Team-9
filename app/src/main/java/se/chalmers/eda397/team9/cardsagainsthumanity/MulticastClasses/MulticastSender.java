@@ -60,7 +60,8 @@ public class MulticastSender extends AsyncTask {
             e.printStackTrace();
         }
 
-        Log.d("MultiSender", "Sent a " + mPackage.getPackageType() + " to " + mPackage.getTarget());
+        if(!mPackage.getPackageType().equals(Type.TABLE_INTERVAL_UPDATE))
+            Log.d("MultiSender", "Sent a " + mPackage.getPackageType() + " to " + mPackage.getTarget());
         return null;
     }
 

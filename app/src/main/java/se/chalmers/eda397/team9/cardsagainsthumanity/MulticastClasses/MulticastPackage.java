@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class MulticastPackage implements Serializable{
 
     private String packageType;
-    private Object object;
+    private Serializable object;
     private String target;
 
     public MulticastPackage(String target, String packageType){
@@ -17,7 +17,7 @@ public class MulticastPackage implements Serializable{
         this.target = target;
     }
 
-    public MulticastPackage(String target, String packageType, Object object){
+    public MulticastPackage(String target, String packageType, Serializable object){
         this.target = target;
         this.packageType = packageType;
         this.object = object;

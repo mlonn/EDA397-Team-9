@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
@@ -55,6 +57,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private GridLayout playerGridLayout;
     private Button startTableButton;
     private Button closeTableButton;
+    private PlayerRowLayout hostRow;
 
     /* Color variables */
     String[] colorArray = {
@@ -126,7 +129,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         hostInfo = myTableInfo.getHost();
 
         assignRandomColor(hostInfo);
-        addHostRow(hostInfo);
+        hostRow = addHostRow(hostInfo);
 
         /* Add dummy players */
         for(int i = 0 ; i < 16 ; i++){
@@ -166,12 +169,14 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     }
 
     /* Adds a host row */
-    private void addHostRow(PlayerInfo playerInfo){
+    private PlayerRowLayout addHostRow(PlayerInfo playerInfo){
         PlayerRowLayout hostRow = new PlayerRowLayout(this);
         hostRow.setName(playerInfo.getName());
         hostRow.setAsHost();
         hostRow.setImageColor(playerInfo.getColor());
         playerGridLayout.addView(hostRow);
+
+        return hostRow;
     }
 
     private void assignRandomColor(PlayerInfo playerInfo){
@@ -183,11 +188,13 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
 
     /* Adds a player row */
     private void addPlayerRow(PlayerInfo playerInfo){
-        PlayerRowLayout playerRow = new PlayerRowLayout(this);
-        playerRow.setName(playerInfo.getName());
-        playerRow.setImageColor(playerInfo.getColor());
-        playerRowList.add(playerRow);
-        playerGridLayout.addView(playerRow);
+            PlayerRowLayout playerRow = new PlayerRowLayout(this);
+            playerRow.setName(playerInfo.getName());
+            playerRow.setImageColor(playerInfo.getColor());
+            playerRow.setPlayerId(playerInfo.getDeviceAddress());
+            playerRowList.add(playerRow);
+            playerGridLayout.addView(playerRow);
+            setConnectionStatus(playerInfo, CONNECTING);
     }
 
     private void removePlayerRow(PlayerInfo player){
@@ -318,7 +325,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     }
 
     /* Sends package using MulticastSender*/
-    private void sendPackage(String target, String type, Object object){
+    private void sendPackage(String target, String type, Serializable object){
         MulticastPackage mPackage = new MulticastPackage(target,
                 type, object);
         threadList.add(new MulticastSender(mPackage, s, group).
@@ -361,7 +368,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
                         sendPackage(hostInfo.getDeviceAddress(),
                                 MulticastSender.Type.TABLE_INTERVAL_UPDATE, myTableInfo);
 
-                        Log.d("HostTA.interSend", "Alive");
                     }
                     return null;
                 }
@@ -375,17 +381,27 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         }
 
         if(propertyChangeEvent.getPropertyName().equals("PLAYER_JOIN_REQUESTED")){
-            PlayerInfo newPlayer = (PlayerInfo) propertyChangeEvent.getNewValue();
+            final PlayerInfo newPlayer = (PlayerInfo) propertyChangeEvent.getNewValue();
             if(!myTableInfo.getPlayerList().contains(newPlayer)) {
                 if(myTableInfo.getPlayerList().size() >= 19){
                     sendPackage(newPlayer.getDeviceAddress(),
                             MulticastSender.Type.PLAYER_JOIN_DENIED, null);
-                }
-                if(myTableInfo.getPlayerList().size() <= 19){
+
+                }else if(findPlayerRow(playerRowList, newPlayer) != null){
+                    sendPackage(newPlayer.getDeviceAddress(),
+                            MulticastSender.Type.PLAYER_JOIN_DENIED, null);
+
+                }else if(myTableInfo.getPlayerList().size() <= 19) {
+                    //Updates view on the main UI thread
+                    Handler mainHandler = new Handler(this.getMainLooper());
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            addPlayer(newPlayer);
+                        }
+                    });
                     sendPackage(newPlayer.getDeviceAddress(),
                             MulticastSender.Type.PLAYER_JOIN_ACCEPTED, myTableInfo);
-                    addPlayer(newPlayer);
-                    setConnectionStatus((PlayerInfo) propertyChangeEvent.getNewValue(), CONNECTING);
                 }
             }
         }
@@ -399,12 +415,37 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         }
     }
 
-    private void setConnectionStatus(PlayerInfo player, int connectionStatus){
-        if(connectionStatus == CONNECTED) {
-            //TODO: Change view to indicate connected
+    private void setConnectionStatus(final PlayerInfo player, int connectionStatus){
+        final PlayerRowLayout thisPlayerLayout = findPlayerRow(playerRowList, player);
+
+        if (thisPlayerLayout == null)
+            return;
+
+        if (connectionStatus == CONNECTED) {
+            Handler mainHandler = new Handler(this.getMainLooper());
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    thisPlayerLayout.setConnectionStatus(PlayerRowLayout.CONNECTED);
+                }
+            });
         }
-        if(connectionStatus == CONNECTING){
-            //TODO: Change view to indicate connecting
+        if (connectionStatus == CONNECTING){
+            Handler mainHandler = new Handler(this.getMainLooper());
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    thisPlayerLayout.setConnectionStatus(PlayerRowLayout.CONNECTING);
+                }
+            });
         }
+    }
+
+    private PlayerRowLayout findPlayerRow(List<PlayerRowLayout> list, PlayerInfo player){
+        for(PlayerRowLayout current : list){
+            if(current.getPlayerId() != null && current.getPlayerId().equals(player.getDeviceAddress()))
+                return current;
+        }
+        return null;
     }
 }
