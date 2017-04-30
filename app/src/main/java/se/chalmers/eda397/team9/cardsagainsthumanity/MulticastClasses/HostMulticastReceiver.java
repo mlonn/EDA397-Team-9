@@ -31,7 +31,7 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
     protected Void doInBackground(Object... objects) {
 
         /* Handles receive message and send message */
-        byte[] buf = new byte[1000];
+        byte[] buf = new byte[10000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
 
         try {
@@ -45,19 +45,18 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
             try {
                 getSocket().receive(recv);
                 inMsg = Serializer.deserialize(recv.getData());
-                Log.d("HostMultRec", "Message received: " + inMsg);
             } catch (IOException e) {
                  /* If join acceptance from player doesn't arrive, try sending out the table again.
                     After maxRetries, stop sending and inform listeners that the player timed out */
                 if(!connectingPlayers.isEmpty()) {
                     for (Map.Entry<PlayerInfo, Integer> current : connectingPlayers.entrySet()) {
-                        if (current.getValue() > maxRetries) {
-                            connectingPlayers.remove(current.getKey());
-                            getPropertyChangeSupport().firePropertyChange("PLAYER_TIMED_OUT",
-                                    null, current.getKey());
-                        } else {
+                        if (current.getValue() < maxRetries) {
                             current.setValue(current.getValue() + 1);
                             getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_REQUESTED",
+                                    null, current.getKey());
+                        } else {
+                            connectingPlayers.remove(current.getKey());
+                            getPropertyChangeSupport().firePropertyChange("PLAYER_TIMED_OUT",
                                     null, current.getKey());
                         }
                     }
@@ -84,6 +83,7 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                     getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_REQUESTED",
                             null, packageObject);
                     connectingPlayers.put((PlayerInfo) packageObject, 0);
+                    Log.d("HMR", "Player " + ((PlayerInfo) packageObject).getName() + " sent join request");
                 }
                 if (packageType.equals(MulticastSender.Type.PLAYER_JOIN_SUCCESS))
                     getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_SUCCESSFUL",

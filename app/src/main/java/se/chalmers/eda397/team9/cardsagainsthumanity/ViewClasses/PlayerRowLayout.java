@@ -19,16 +19,17 @@ import android.widget.TextView;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 
-/**
- * Created by SAMSUNG on 2017-04-24.
- */
-
 public class PlayerRowLayout extends LinearLayout {
 
-    TextView textView;
-    ImageView imageView;
-    int screenWidth;
-    String color;
+    private TextView textView;
+    private ImageView imageView;
+    private int screenWidth;
+    private String color;
+    private String deviceAddress;
+
+    public static final Integer CONNECTING = 0;
+    public static final Integer CONNECTED = 1;
+
 
     //Players' rows
     private void init(){
@@ -110,5 +111,23 @@ public class PlayerRowLayout extends LinearLayout {
 
     public String getColor() {
         return color;
+    }
+
+    public void setConnectionStatus(int status){
+        if(status == CONNECTING){
+            textView.setTextColor(Color.parseColor("#bbbbbb"));
+        }
+
+        if(status == CONNECTED){
+            textView.setTextColor(Color.parseColor("#333333"));
+        }
+    }
+
+    public String getPlayerId(){
+        return deviceAddress;
+    }
+
+    public void setPlayerId(String deviceAddress){
+        this.deviceAddress = deviceAddress;
     }
 }
