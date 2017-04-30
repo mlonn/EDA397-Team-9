@@ -37,11 +37,11 @@ public class TableInfo implements Serializable{
         return playerList;
     }
 
-    public void addPlayer(PlayerInfo player){
+    public synchronized void addPlayer(PlayerInfo player){
         playerList.add(player);
     }
 
-    public void removePlayer(PlayerInfo player){
+    public synchronized void removePlayer(PlayerInfo player){
         playerList.remove(player);
     }
 

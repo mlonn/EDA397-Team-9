@@ -64,7 +64,7 @@ public class CreateTableActivity extends AppCompatActivity {
                         exp.add(e);
                 }
 
-                Intent intent = new Intent(view.getContext(), HostTableActivity.class);
+                Intent intent = new Intent(view.getContext(), HostTableActivityNew.class);
 
                 intent.putExtra(IntentType.THIS_TABLE, tableInfo);
                 intent.putExtra(IntentType.THIS_EXPANSIONS, exp);

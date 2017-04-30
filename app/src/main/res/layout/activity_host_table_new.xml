@@ -28,23 +28,24 @@
             android:layout_below="@+id/playerlist_grid"
             >
 
+
             <Button
-                android:id="@+id/ready_button"
+                android:id="@+id/start_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="0dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-smallcaps"
-                android:text="Ready" />
+                android:text="Start game" />
 
             <Button
-                android:id="@+id/leave_button"
+                android:id="@+id/close_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="0dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-smallcaps"
-                android:text="Leave table" />
+                android:text="Close table" />
 
         </LinearLayout>
 

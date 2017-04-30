@@ -3,7 +3,6 @@
     package="se.chalmers.eda397.team9.cardsagainsthumanity">
 
     <uses-sdk android:minSdkVersion="21" />
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -32,7 +31,7 @@
         <activity android:name=".CreateTableActivity" />
         <activity android:name=".CreatePlayerListActivity" />
         <activity
-            android:name=".HostTableActivity"
+            android:name=".HostTableActivityNew"
             android:label="@string/title_activity_table" />
         <activity
             android:name=".PlayerTableActivity"
@@ -41,4 +40,4 @@
 
 
     </application>
-</manifest>
+    </manifest>
