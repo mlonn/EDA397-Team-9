@@ -121,8 +121,20 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
         joinTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //TODO needs to be correctly implemented. Not tested yet.
-                if(selectedTable == null){
-                    Toast.makeText(LobbyActivity.this, "No table is selected", Toast.LENGTH_SHORT).show();
+                if(!(selectedTable instanceof TableInfo)){
+//                    Toast.makeText(LobbyActivity.this, "No table is selected", Toast.LENGTH_SHORT).show();
+//                    return;
+                    /* For testing purposes */
+                    TableInfo fakeTable = new TableInfo("Cool", new PlayerInfo("Cool Host", "test_address"));
+                    fakeTable.addPlayer(new PlayerInfo("Dummy1", "test_address", "#abcdef"));
+                    fakeTable.addPlayer(new PlayerInfo("Dummy2", "test_address", "#1aaeed"));
+                    fakeTable.addPlayer(new PlayerInfo("Dummy3", "test_address", "#1ea03e"));
+                    fakeTable.addPlayer(myPlayerInfo);
+
+                    Intent intent = new Intent(LobbyActivity.this, PlayerTableActivity.class);
+                    intent.putExtra(IntentType.THIS_TABLE, fakeTable);
+                    intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
+                    startActivity(intent);
                     return;
                 }
 
@@ -269,8 +281,9 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             threadMap.put(PLAYER_ACCEPTED, new MulticastSender(mPackage, s, group).execute());
 
             Intent intent = new Intent(this, PlayerTableActivity.class);
-            intent.putExtra("HOST_TABLE_INFO", hostTable);
-            intent.putExtra("PLAYER_MULTICAST_SENDER", (MulticastReceiver) threadMap.get(PLAYER_RECEIER));
+            intent.putExtra(IntentType.THIS_TABLE, hostTable);
+            intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
+            intent.putExtra(IntentType.MULTICAST_SENDER, (MulticastReceiver) threadMap.get(PLAYER_RECEIER));
             startActivity(intent);
         }
 

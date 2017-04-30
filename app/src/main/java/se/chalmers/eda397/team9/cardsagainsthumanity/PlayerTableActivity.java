@@ -7,10 +7,13 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.app.Activity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,67 +23,73 @@ import java.util.List;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 public class PlayerTableActivity extends AppCompatActivity {
 
-    private WiFiBroadcastReceiver receiver;
-    private IntentFilter mIntentFilter;
-    private P2pManager p2pManager;
-    private List<WifiP2pDevice> peers;
+    /* Fragment variables */
+    private FragmentManager fragmentManager;
+    private PlayerStatisticsFragment psFragment;
+
+    /* Class variables */
+    private TableInfo tableInfo;
+    private boolean ready = false;
+    private PlayerInfo myPlayerInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_table);
 
-        ListView listview1 = (ListView) findViewById(R.id.player_list_view1);
-        ListView listview2 = (ListView) findViewById(R.id.player_list_view2);
+        /* Initialize fragment */
+        fragmentManager = getSupportFragmentManager();
+        psFragment = (PlayerStatisticsFragment) fragmentManager.findFragmentById(R.id.playerFragment);
 
-        ArrayList<String> listItems = new ArrayList<String>();
+        /* Retrieve intent data */
+        tableInfo = (TableInfo) getIntent().getSerializableExtra(IntentType.THIS_TABLE);
+        myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra(IntentType.MY_PLAYER_INFO);
 
-        /*Set up p2p*/
-        initP2p();
-        p2pManager.discoverPeers();
+        /* Initialize the playerlist */
+        psFragment.addHost(tableInfo.getHost());
+        psFragment.addAllPlayers(tableInfo.getPlayerList());
 
-        //TODO: Switch 'peers' from all possible peers to the peers in the same table
-        p2pManager.connect2Peers(peers);
+        /* Initialize views */
+        Button readyButton = (Button) findViewById(R.id.ready_button);
+        Button leaveButton = (Button) findViewById(R.id.leave_button);
 
-        listItems.add("Alex");
-        listItems.add("Mister Yi");
-        listItems.add("Muhaka");
-        listItems.add("Muhaka");
-        listItems.add("Muhaka");
-        listItems.add("Muhaka");
-        listItems.add("Muhaka");
-        listItems.add("Muhaka");
-        listItems.add("Muhaka");
-        listItems.add("Muhaka");
-        listItems.add("Muhaka");
-        listview1.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems));
+        /* View listeners */
+        readyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ready)
+                    psFragment.setReady(myPlayerInfo, false);
+                else
+                    psFragment.setReady(myPlayerInfo, true);
+
+                ready = !ready;
+            }
+        });
+
+        leaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     /* Activity overrides */
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(receiver, mIntentFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(receiver);
-    }
-
-    /* Peer to peer functions*/
-    private void initP2p() {
-        p2pManager = new P2pManager(this);
-        mIntentFilter = p2pManager.getIntentFilter();
-        receiver = p2pManager.getReceiver();
-        peers = new ArrayList<WifiP2pDevice>();
-
-        registerReceiver(receiver, mIntentFilter);
-        p2pManager.discoverPeers();
     }
 
     /* Main menu */

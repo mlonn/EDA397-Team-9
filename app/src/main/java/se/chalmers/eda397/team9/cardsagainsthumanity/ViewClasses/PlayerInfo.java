@@ -22,7 +22,13 @@ public class PlayerInfo implements Serializable{
         this.deviceAddress = deviceAddress;
     }
 
-    public void setColor(String color){
+    public PlayerInfo(String name, String deviceAddress, String color){
+        this.name = name;
+        this.deviceAddress = deviceAddress;
+        this.color = color;
+    }
+
+    public synchronized void setColor(String color){
         this.color = color;
     }
 
@@ -39,7 +45,7 @@ public class PlayerInfo implements Serializable{
 
     }
 
-    public void setDeviceAddress(String deviceAddress){
+    public synchronized void setDeviceAddress(String deviceAddress){
         this.deviceAddress = deviceAddress;
     }
 }
