@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +25,11 @@ import android.widget.Toast;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +43,14 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 public class PlayerTableActivity extends AppCompatActivity implements PropertyChangeListener{
+
+    private P2pManager p2pManager;
+    
+    private int p2pPort = 9888;
 
     /* Multicast variables */
     private InetAddress group;
@@ -60,6 +70,9 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     /* Class variables */
     private TableInfo tableInfo;
     private PlayerInfo myPlayerInfo;
+    private IntentFilter mIntentFilter;
+    private WiFiBroadcastReceiver receiver;
+    private ArrayList<WifiP2pDevice> peers;
 
     /* Method for initializing the multicast socket*/
     private void initMulticastSocket() {
@@ -199,9 +212,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
             MulticastPackage playerUpdate = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
                     MulticastSender.Type.PLAYER_INTERVAL_UPDATE, myPlayerInfo);
             new MulticastSender(playerUpdate, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
         }
-
     }
-
 }

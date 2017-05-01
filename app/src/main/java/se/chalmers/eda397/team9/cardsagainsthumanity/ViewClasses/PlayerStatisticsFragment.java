@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Handler;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 
@@ -129,7 +130,7 @@ public class PlayerStatisticsFragment extends Fragment {
         playerRow.setName(newPlayer.getName());
         playerRow.setImageColor(newPlayer.getColor());
         playerRow.setPlayerId(newPlayer.getDeviceAddress());
-        playerRow.setConnectionStatus(1);
+        playerRow.setConnectionStatus(0);
 
         playerRowList.add(playerRow);
         playerGridLayout.addView(playerRow);
@@ -242,6 +243,17 @@ public class PlayerStatisticsFragment extends Fragment {
             }
             //TODO: Check score and king as well when implemented
         }
+    }
+
+    public void removePlayer(final PlayerInfo player) {
+        android.os.Handler mainHandler = new android.os.Handler(getActivity().getMainLooper());
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                playerGridLayout.removeView(findPlayerRow(playerRowList, player));
+                playerRowList.remove(findPlayerRow(playerRowList, player));
+            }
+        });
     }
 
     /**
