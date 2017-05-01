@@ -231,6 +231,19 @@ public class PlayerStatisticsFragment extends Fragment {
         }
     }
 
+    public void update(TableInfo tableInfo) {
+        for(PlayerInfo current : tableInfo.getPlayerList()){
+            PlayerRowLayout currentRow = findPlayerRow(playerRowList, current);
+            if(currentRow == null){
+                addPlayer(current);
+            }
+            if(!currentRow.getColor().equals(current.getColor())){
+                currentRow.setColor(current.getColor());
+            }
+            //TODO: Check score and king as well when implemented
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

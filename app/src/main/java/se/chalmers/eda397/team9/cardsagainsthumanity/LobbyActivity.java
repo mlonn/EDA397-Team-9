@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -51,7 +52,7 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
 
     /* MulticastSenders and MulticastReceivers */
     private final Integer FIND_TABLE_RECEIVER = 0;
-    private final Integer PLAYER_RECEIER = 1;
+    private final Integer PLAYER_RECEIVER = 1;
     private final Integer TABLE_REQUEST_SENDER = 2;
     private final Integer TABLE_REQUEST_RETRY = 3;
     private final Integer PLAYER_ACCEPTED = 4;
@@ -145,7 +146,7 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
                         s, group, myPlayerInfo);
                 playerMulticastReceiver.addPropertyChangeListener(tableSpinner);
                 playerMulticastReceiver.addPropertyChangeListener(LobbyActivity.this);
-                threadMap.put(PLAYER_RECEIER, playerMulticastReceiver.execute());
+                threadMap.put(PLAYER_RECEIVER, playerMulticastReceiver.execute());
             }
         });
     }
@@ -211,11 +212,10 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
         for(Map.Entry<Integer, AsyncTask> current : threadMap.entrySet()) {
             if(!current.getValue().getStatus().equals(AsyncTask.Status.FINISHED))
                 if(!current.getValue().isCancelled())
-                    if(current.getKey() != PLAYER_RECEIER)
+                    if(current.getKey() != PLAYER_RECEIVER)
                         current.getValue().cancel(true);
         }
         s.close();
-
     }
 
     /* Main menu */
@@ -231,6 +231,13 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
+                try{
+                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
+                    prefsFile.delete();
+                } catch (Exception e){
+
+                }
+
                 Intent intent = new Intent(this, IndexActivity.class);
                 startActivity(intent);
                 return true;
@@ -283,7 +290,7 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             Intent intent = new Intent(this, PlayerTableActivity.class);
             intent.putExtra(IntentType.THIS_TABLE, hostTable);
             intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
-            intent.putExtra(IntentType.MULTICAST_SENDER, (MulticastReceiver) threadMap.get(PLAYER_RECEIER));
+            intent.putExtra(IntentType.MULTICAST_RECEIVER, (MulticastReceiver) threadMap.get(PLAYER_RECEIVER));
             startActivity(intent);
         }
 

@@ -52,12 +52,41 @@ public class TableInfo implements Serializable{
         return host;
     }
     public int getSize(){
-        return size;
+        return playerList.size();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof TableInfo))
+            return false;
+        TableInfo table = (TableInfo) obj;
+        if(!name.equals(table.getName()))
+            return false;
+        if(size != table.getSize())
+            return false;
+        if(!host.equals(table.getHost()))
+            return false;
+        if(!comparePlayerList(playerList, table.getPlayerList()))
+            return false;
+        return true;
+    }
+
+    private boolean comparePlayerList(List<PlayerInfo> list1, List<PlayerInfo> list2){
+        if(list1 == null && list2 == null)
+            return true;
+        if((list1 != null && list2 == null) || (list2 != null && list1 == null))
+            return false;
+        if(list1.size() != list2.size())
+            return false;
+        for(PlayerInfo current : list1){
+            if(!list2.contains(current))
+                return false;
+        }
+        return true;
     }
 
     @Override
     public String toString(){
         return getHost().getName() + " - " + getName() + " - " + getSize();
     }
-
 }
