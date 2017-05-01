@@ -54,7 +54,9 @@ public class PlayerRowLayout extends LinearLayout {
 
         //int test = ((Layout) this.getParent()).getWidth();
         this.setMinimumWidth(screenWidth/2-50); // Pixel (screenWidth/2-50) !!!!!!! Change with dpMin
+        param.width = screenWidth/2-(convertDpToPixels(15, getContext()));
 
+        textView.setWidth(screenWidth/2-(convertDpToPixels(90, getContext())));
         setBackgroundResource(R.drawable.player_row_item_background);
     }
 
