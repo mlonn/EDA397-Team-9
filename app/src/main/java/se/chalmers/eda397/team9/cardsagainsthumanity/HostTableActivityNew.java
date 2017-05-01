@@ -171,7 +171,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         colorList.add(player.getColor());
         myTableInfo.removePlayer(player);
         playerList.remove(player);
-        //TODO: Add removePlayerMethod
+        psFragment.removePlayer(player);
     }
 
 
@@ -210,21 +210,27 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
     @Override
     protected void onPause() {
         super.onPause();
+        if(receiverIsRegistered)
+            unregisterReceiver(receiver);
     }
 
     @Override
-    public void finish() {
+    protected void onStop() {
+        super.onStop();
         closeConnection();
-        super.finish();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         initMulticastSocket();
+        if(!receiverIsRegistered) {
+            registerReceiver(receiver, mIntentFilter);
+        }
     }
 
     /* Method used for closing all async tasks and socket in this activity */
+    //TODO: Concurrent modification exception
     private void closeConnection() {
         for (AsyncTask current : threadList) {
             if (!current.isCancelled())
@@ -327,8 +333,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
     private void stopP2p(){
         p2pManager.stopDiscoverPeers();
         p2pManager.disconnect();
-        if(receiverIsRegistered)
-            unregisterReceiver(receiver);
+
     }
 
     /* Sends package using MulticastSender*/
@@ -400,7 +405,6 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
                             @Override
                             public void run() {
                                 addNewPlayer(newPlayer);
-                                setConnectionStatus(newPlayer, PlayerRowLayout.CONNECTING);
                             }
                         });
                         sendPackage(newPlayer.getDeviceAddress(),

@@ -26,6 +26,7 @@ public class MulticastSender extends AsyncTask {
         public static final String PLAYER_READY = "player_ready";
         public static final String PLAYER_NOT_READY = "player_not_ready";
         public static final String PLAYER_INTERVAL_UPDATE = "player_interval_update";
+        public static final String GAME_STARTED = "game_started";
     }
 
     public static class Target{
