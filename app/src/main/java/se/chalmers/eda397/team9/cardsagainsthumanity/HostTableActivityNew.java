@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -145,8 +148,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         closeTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //closeConnection();
-                finish();
+                openCloseTableDialog();
             }
         });
     }
@@ -228,7 +230,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
             if (!current.isCancelled())
                 current.cancel(true);
         }
-        
+
 //        TODO: Find a way to close the socket safely
 //        if(s != null || !s.isClosed())
 //            s.close();
@@ -257,6 +259,31 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         }
     }
 
+    private void openCloseTableDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to close this table?").setTitle("Table: " + myTableInfo.getName());
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Do nothing
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        openCloseTableDialog();
+    }
+
     /* Main menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -271,9 +298,16 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         switch (item.getItemId()) {
             case R.id.changeName:
                 //Do something
+                try{
+                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
+                    prefsFile.delete();
+                } catch (Exception e){
 
-                //Example message (only for test)
-                Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_SHORT).show();
+                }
+
+                openCloseTableDialog();
+                Intent intent = new Intent(this, IndexActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.changeTable:
                 //Do something
@@ -381,6 +415,22 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
 
         if(propertyChangeEvent.getPropertyName().equals("PLAYER_TIMED_OUT")){
             removePlayer((PlayerInfo) propertyChangeEvent.getNewValue());
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("PLAYER_READY")){
+            PlayerInfo player = findPlayer(playerList, (PlayerInfo) propertyChangeEvent.getNewValue());
+            if(!player.isReady()) {
+                player.setReady(true);
+                psFragment.setReady(player, true);
+            }
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals("PLAYER_NOT_READY")){
+            PlayerInfo player = findPlayer(playerList, (PlayerInfo) propertyChangeEvent.getNewValue());
+            if(player.isReady()) {
+                player.setReady(false);
+                psFragment.setReady(player, false);
+            }
         }
     }
 

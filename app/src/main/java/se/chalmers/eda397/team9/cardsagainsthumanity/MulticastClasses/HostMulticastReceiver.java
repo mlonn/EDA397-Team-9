@@ -85,10 +85,20 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                     connectingPlayers.put((PlayerInfo) packageObject, 0);
                     Log.d("HMR", "Player " + ((PlayerInfo) packageObject).getName() + " sent join request");
                 }
-                if (packageType.equals(MulticastSender.Type.PLAYER_JOIN_SUCCESS))
+
+                if (packageType.equals(MulticastSender.Type.PLAYER_JOIN_SUCCESS)) {
                     getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_SUCCESSFUL",
                             null, packageObject);
                     connectingPlayers.remove(packageObject);
+                }
+
+                if (packageType.equals(MulticastSender.Type.PLAYER_READY))
+                    getPropertyChangeSupport().firePropertyChange("PLAYER_READY",
+                            null, packageObject);
+
+                if (packageType.equals(MulticastSender.Type.PLAYER_NOT_READY))
+                    getPropertyChangeSupport().firePropertyChange("PLAYER_NOT_READY",
+                            null, packageObject);
             }
         }
     }

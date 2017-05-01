@@ -11,14 +11,17 @@ public class PlayerInfo implements Serializable{
     String name;
     String color;
     String deviceAddress;
-
+    boolean isReady = false;
 
     public PlayerInfo(String name){
         this.name = name;
+        color = "#000000";
+        deviceAddress = "Test_Address";
     }
 
     public PlayerInfo(String name, String deviceAddress){
         this.name = name;
+        color = "#000000";
         this.deviceAddress = deviceAddress;
     }
 
@@ -42,10 +45,34 @@ public class PlayerInfo implements Serializable{
 
     public String getDeviceAddress(){
         return deviceAddress;
+    }
 
+    public void setReady(boolean ready){
+        isReady = ready;
     }
 
     public synchronized void setDeviceAddress(String deviceAddress){
         this.deviceAddress = deviceAddress;
+    }
+
+    public boolean isReady() {
+        return isReady;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof PlayerInfo))
+            return false;
+        PlayerInfo playerInfo = (PlayerInfo) obj;
+        if(!deviceAddress.equals(playerInfo.getDeviceAddress()))
+            return false;
+        if(!name.equals(playerInfo.getName()))
+            return false;
+        if(!color.equals(playerInfo.getColor()))
+            return false;
+        if(isReady != playerInfo.isReady()){
+            return false;
+        }
+        return true;
     }
 }

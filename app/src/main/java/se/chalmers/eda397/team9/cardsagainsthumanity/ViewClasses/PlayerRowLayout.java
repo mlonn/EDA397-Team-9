@@ -142,4 +142,8 @@ public class PlayerRowLayout extends LinearLayout {
         else
             textView.setTextColor(Color.parseColor(CONNECTED_COLOR));
     }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
 }

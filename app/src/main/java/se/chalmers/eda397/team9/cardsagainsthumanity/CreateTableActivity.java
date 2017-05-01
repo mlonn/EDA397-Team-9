@@ -69,9 +69,10 @@ public class CreateTableActivity extends AppCompatActivity {
                 intent.putExtra(IntentType.THIS_TABLE, tableInfo);
                 intent.putExtra(IntentType.THIS_EXPANSIONS, exp);
 
-                if (exp.size()>0)
+                if (exp.size()>0) {
                     startActivity(intent);
-                 else
+                    finish();
+                } else
                     Toast.makeText(getApplicationContext(), "You Must Select At Least 1 Expansion", Toast.LENGTH_SHORT).show();
 
             }

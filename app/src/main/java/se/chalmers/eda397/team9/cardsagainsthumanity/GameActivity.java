@@ -1,12 +1,14 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.DisplayMetrics;
@@ -177,6 +179,26 @@ public class GameActivity extends AppCompatActivity {
         return (int)px;
     }
 
+    private void openExitGameDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to exit the game?").setTitle("King of cards");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Do nothing
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void updateBlackCardText() {
         String[] blackText = game.getBlackCard().getText().split("_");
         if (blackText.length>1) {
@@ -200,6 +222,11 @@ public class GameActivity extends AppCompatActivity {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        openExitGameDialog();
     }
 
     @Override

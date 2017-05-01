@@ -23,6 +23,9 @@ public class MulticastSender extends AsyncTask {
         public static final String PLAYER_JOIN_REQUEST = "player_join_request";
         public static final String TABLE_INTERVAL_UPDATE = "table_interval_update";
         public static final String PLAYER_JOIN_SUCCESS = "table_join_success";
+        public static final String PLAYER_READY = "player_ready";
+        public static final String PLAYER_NOT_READY = "player_not_ready";
+        public static final String PLAYER_INTERVAL_UPDATE = "player_interval_update";
     }
 
     public static class Target{

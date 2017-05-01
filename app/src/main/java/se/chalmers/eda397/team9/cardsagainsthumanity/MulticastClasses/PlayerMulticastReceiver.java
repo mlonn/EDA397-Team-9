@@ -36,12 +36,12 @@ public class PlayerMulticastReceiver extends MulticastReceiver{
         int maxCount = 3;
 
         while(!isCancelled() && counter < maxCount) {
-            byte[] buf = new byte[1000];
+            byte[] buf = new byte[10000];
             DatagramPacket recv = new DatagramPacket(buf, buf.length);
             Object msg = null;
 
             try {
-                getSocket().setSoTimeout(1000);
+                getSocket().setSoTimeout(500);
             } catch (SocketException e) {
             }
 
@@ -52,6 +52,8 @@ public class PlayerMulticastReceiver extends MulticastReceiver{
                 if(!isJoined){
                     getPropertyChangeSupport().firePropertyChange("REQUEST_TABLE_RETRY", 0 ,1);
                     counter++;
+                }else{
+                    getPropertyChangeSupport().firePropertyChange("SEND_PLAYER_UPDATE", 0, 1);
                 }
             }
 
@@ -60,27 +62,26 @@ public class PlayerMulticastReceiver extends MulticastReceiver{
                 String type = ((MulticastPackage) msg).getPackageType();
                 Object packageObject = ((MulticastPackage) msg).getObject();
 
-                if(target.equals(myPlayerInfo.getDeviceAddress())){
-                    if(type.equals(MulticastSender.Type.PLAYER_JOIN_ACCEPTED)){
+                if(target.equals(myPlayerInfo.getDeviceAddress())) {
+                    if (type.equals(MulticastSender.Type.PLAYER_JOIN_ACCEPTED)) {
                         getPropertyChangeSupport().firePropertyChange("PLAYER_ACCEPTED",
                                 null, packageObject);
                         isJoined = true;
                         getPropertyChangeSupport().firePropertyChange("STOP_REFRESHING", 0, 1);
                     }
-
-                    if(type.equals(MulticastSender.Type.PLAYER_JOIN_DENIED)) {
+                    if (type.equals(MulticastSender.Type.PLAYER_JOIN_DENIED)) {
                         getPropertyChangeSupport().firePropertyChange("TABLE_FULL", 0, 1);
                         getPropertyChangeSupport().firePropertyChange("STOP_REFRESHING", 0, 1);
                         cancel(true);
                     }
-
-                    if(type.equals(MulticastSender.Type.TABLE_INTERVAL_UPDATE))
+                    if (type.equals(MulticastSender.Type.TABLE_INTERVAL_UPDATE))
                         getPropertyChangeSupport().firePropertyChange("TABLE_INTERVAL_UPDATE",
                                 null, packageObject);
+                    if (type.equals(MulticastSender.Type.PLAYER_INTERVAL_UPDATE))
+                        getPropertyChangeSupport().firePropertyChange("PLAYER_INTERVAL_UPDATE", null, packageObject);
                 }
             }
         }
-
         return null;
     }
 
@@ -89,7 +90,6 @@ public class PlayerMulticastReceiver extends MulticastReceiver{
         Log.d("PlayerMultReceiver", "Receiver cancelled");
         getPropertyChangeSupport().firePropertyChange("STOP_REFRESHING", 0, 1);
         super.onCancelled();
-
     }
 
     @Override
