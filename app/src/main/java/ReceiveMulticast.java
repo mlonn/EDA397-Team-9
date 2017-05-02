@@ -66,7 +66,7 @@ public class ReceiveMulticast {
 
         MulticastPackage joinSuccessful = new MulticastPackage(hostTable.getHost().getDeviceAddress(),
                 MulticastSender.Type.PLAYER_JOIN_SUCCESS, player);
-
+/*
         try {
             for(int i = 0; i < 3; i++){
                 send(joinSuccessful);
@@ -75,6 +75,7 @@ public class ReceiveMulticast {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        */
 
     }
 
