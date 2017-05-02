@@ -11,6 +11,9 @@ public class PlayerInfo implements Serializable{
     String name;
     String color;
     String deviceAddress;
+    int score;
+    boolean isKing = false;
+
     boolean isReady = false;
 
     public PlayerInfo(String name){
@@ -75,4 +78,21 @@ public class PlayerInfo implements Serializable{
         }
         return true;
     }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public boolean isKing() {
+        return isKing;
+    }
+
+    public void setKing() {
+        isKing = true;
+    }
+
 }
