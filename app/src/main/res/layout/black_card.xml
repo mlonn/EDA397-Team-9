@@ -27,4 +27,13 @@
         android:text="BlackCardText"
         android:textAlignment="center" />
 
+    <RadioButton
+        android:id="@+id/blackCardRadioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/blackCardImageView"
+        android:layout_alignTop="@+id/blackCardImageView"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp" />
+
 </RelativeLayout>
