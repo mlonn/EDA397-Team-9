@@ -88,9 +88,11 @@ public class Game implements Serializable {
         blackCard = exp.getBlackCards().get(r.nextInt(exp.getBlackCards().size()));
     }
     private Player setKing() {
+        //Set all players to not being king
         for (Player p : players) {
             p.setKing(false);
         }
+        //Assign new king
         int kingNumber = r.nextInt(players.size());
         players.get(kingNumber).setKing(true);
         return players.get(kingNumber);
