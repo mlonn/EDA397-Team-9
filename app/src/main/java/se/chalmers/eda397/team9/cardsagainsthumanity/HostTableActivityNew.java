@@ -130,7 +130,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
 
         /* Add dummy players */
         for(int i = 0 ; i < 16 ; i++){
-            PlayerInfo dummyPlayer = new PlayerInfo("DummyPlayer");
+            PlayerInfo dummyPlayer = new PlayerInfo("Dummy");
             addNewPlayer(dummyPlayer);
         }
 
@@ -320,6 +320,14 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
                 return true;
             case R.id.settings:
                 //Do something
+                return true;
+            case R.id.share:
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = "Hi! I'm playing this wonderful game called King of Cards. Please download it you too from Play store so we can play together!";
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "King of Cards");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
                 return true;
             case R.id.help:
                 //Do something
