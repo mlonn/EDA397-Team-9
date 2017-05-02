@@ -130,7 +130,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
 
         /* Add dummy players */
         for(int i = 0 ; i < 16 ; i++){
-            PlayerInfo dummyPlayer = new PlayerInfo("DummyPlayer");
+            PlayerInfo dummyPlayer = new PlayerInfo("Dummy");
             addNewPlayer(dummyPlayer);
         }
 

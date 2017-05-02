@@ -70,6 +70,7 @@ public class Player implements Serializable {
     public void setSubmissions(List<Submission> submissions) {
         this.submissions = submissions;
     }
+    
 
     public Submission getSubmission() {
         return submission;
@@ -77,5 +78,9 @@ public class Player implements Serializable {
 
     public ArrayList<WhiteCard> getSelectedCards() {
         return selectedCards;
+    }
+
+    public List<Submission> getSubmissions() {
+        return submissions;
     }
 }
