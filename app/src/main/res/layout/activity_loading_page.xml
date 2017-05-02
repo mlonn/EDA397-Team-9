@@ -17,7 +17,7 @@
         android:fontFamily="serif"
         android:gravity="center"
         android:lines="2"
-        android:text="The king of the cards"
+        android:text="The king of cards"
         android:textSize="40sp"
         android:textStyle="bold|italic"
         android:typeface="serif" />
