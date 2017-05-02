@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
 
     private PlayerInfo hostInfo;
     private Map<PlayerInfo, Integer> connectingPlayers;
-    private final int maxRetries = 5;
+    private final int maxRetries = 10;
 
     public HostMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s,
                                  InetAddress group, PlayerInfo hostInfo) {
@@ -49,16 +50,20 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                  /* If join acceptance from player doesn't arrive, try sending out the table again.
                     After maxRetries, stop sending and inform listeners that the player timed out */
                 if(!connectingPlayers.isEmpty()) {
+                    ArrayList<PlayerInfo> playersToRemove = new ArrayList<>();
                     for (Map.Entry<PlayerInfo, Integer> current : connectingPlayers.entrySet()) {
                         if (current.getValue() < maxRetries) {
                             current.setValue(current.getValue() + 1);
                             getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_REQUESTED",
                                     null, current.getKey());
                         } else {
-                            connectingPlayers.remove(current.getKey());
+                            playersToRemove.add(current.getKey());
                             getPropertyChangeSupport().firePropertyChange("PLAYER_TIMED_OUT",
                                     null, current.getKey());
                         }
+                    }
+                    for(PlayerInfo current : playersToRemove) {
+                        connectingPlayers.remove(current);
                     }
                 }
             }
