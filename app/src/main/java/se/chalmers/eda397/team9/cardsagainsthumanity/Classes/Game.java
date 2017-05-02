@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
 
 /**
  * Created by Mikae on 2017-04-21.
@@ -11,20 +12,37 @@ import java.util.Random;
 
 public class Game implements Serializable {
     private ArrayList<Player> players;
+    private Timer updateTimer;
     private Player king;
     private BlackCard blackCard;
     private ArrayList<CardExpansion> cardExpansions;
     private Random r;
-    private ArrayList<WhiteCard> submittedWhiteCards;
 
     public Game(ArrayList<Player> players, ArrayList<CardExpansion> cardExpansions) {
         r = new Random();
         this.players = players;
         this.cardExpansions = cardExpansions;
-        //king = setKing();
+        king = setKing();
         pickBlackCard();
+        createDummySelections();
         distributeWhiteCards();
     }
+
+    private void createDummySelections() {
+        for (int i = 0; i < 5; i++) {
+            Player p = new Player("player");
+            for (int j = 0; j < blackCard.getPick(); j++){
+                CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
+                WhiteCard whiteCard = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
+                p.addWhiteCard(whiteCard);
+                p.addCardToSelected(whiteCard);
+                players.add(p);
+            }
+            p.submitSelection();
+            giveCardsToKing();
+        }
+    }
+
     //Call this method with what ever update frequency you want
     public void update(){
         giveCardsToKing();
@@ -69,7 +87,7 @@ public class Game implements Serializable {
         king.setSubmissions(sub);
     }
     public Boolean hasAllPlayersSubmitted(){
-        return (submittedWhiteCards.size() == (players.size()-1) * blackCard.getPick());
+        return (king.getSubmissions().size() == (players.size()-1) * blackCard.getPick());
     }
 
     public Player getPlayerByUserName(String name) {
