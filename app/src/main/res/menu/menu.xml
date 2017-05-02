@@ -19,6 +19,9 @@
         android:icon="@mipmap/ic_settings"/>
 
     <item
+        android:id="@+id/share"
+        android:title="Share this application" />
+    <item
         android:id="@+id/help"
         android:title="Help"/>
 
