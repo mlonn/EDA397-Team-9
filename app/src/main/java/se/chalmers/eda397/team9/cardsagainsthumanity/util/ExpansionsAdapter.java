@@ -60,7 +60,7 @@ public class ExpansionsAdapter extends BaseAdapter {
         }
         holder.checkBox.setFocusable(false);
         holder.checkBox.setChecked(expansions.get(position).isSelected());
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {

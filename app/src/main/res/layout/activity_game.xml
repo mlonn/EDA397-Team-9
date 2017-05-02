@@ -19,7 +19,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        tools:layout_editor_absoluteY="8dp"
+        android:id="@+id/relativeLayout">
 
 
         <TextView
@@ -43,17 +44,18 @@
             android:adjustViewBounds="true"
             android:src="@drawable/black_card"
             android:layout_below="@+id/textView"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:contentDescription="Black Card" />
 
         <TextView
             android:id="@+id/textviewBlackCard"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/imageView"
+            android:layout_alignBottom="@id/imageView"
             android:layout_alignTop="@+id/imageView"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:text="BlacCardText"
+            android:text="BlackCardText"
             android:textAlignment="center" />
 
         <TextView
@@ -68,10 +70,7 @@
         <HorizontalScrollView
             android:id="@+id/whiteCardsScroll"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:gravity="bottom">
+            android:layout_height="220dp">
 
 
             <!--
@@ -85,8 +84,8 @@
                         app:srcCompat="@mipmap/ic_favorite_border"
                         android:layout_alignTop="@+id/firstCardText"
                         android:layout_alignEnd="@+id/firstCardText" />
--->
 
+-->
 
             <LinearLayout
                 android:id="@+id/linear"
@@ -98,8 +97,16 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="Submit Cards" />
     </RelativeLayout>
+
+
 
 
 </android.support.constraint.ConstraintLayout>
