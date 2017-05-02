@@ -20,7 +20,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,11 +64,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void initKing() {
-
         setContentView(R.layout.activity_king);
         ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
-        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions()));
-
+        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions(), player));
+        Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
+        endTurnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                game.endTurn();
+            }
+        });
     }
 
     private void initPlayer() {

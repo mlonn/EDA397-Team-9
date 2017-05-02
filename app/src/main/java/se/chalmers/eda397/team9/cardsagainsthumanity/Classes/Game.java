@@ -22,9 +22,11 @@ public class Game implements Serializable {
         r = new Random();
         this.players = players;
         this.cardExpansions = cardExpansions;
-        king = setKing();
+        //king = setKing();
         pickBlackCard();
-        createDummySelections();
+        if(king != null) {
+            createDummySelections();
+        }
         distributeWhiteCards();
     }
 
@@ -47,6 +49,27 @@ public class Game implements Serializable {
     public void update(){
         giveCardsToKing();
     }
+    public boolean endTurn(){
+        if (king.getWinner() != null){
+            Player winner = king.getWinner().getPlayer();
+
+            winner.givePoint();
+            king = setKing();
+            pickBlackCard();
+            resetPlayers();
+            distributeWhiteCards();
+            return true;
+        }
+        return false;
+    }
+
+    private void resetPlayers() {
+        for (Player p : players) {
+            p.reset();
+        }
+    }
+
+
     //gives each player 10 cards from selected expansion
     private void distributeWhiteCards() {
         for (Player p : players) {
