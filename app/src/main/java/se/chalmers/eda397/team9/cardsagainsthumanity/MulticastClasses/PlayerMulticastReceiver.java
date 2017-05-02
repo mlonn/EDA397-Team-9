@@ -15,18 +15,20 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 public class PlayerMulticastReceiver extends MulticastReceiver{
 
     private PlayerInfo myPlayerInfo;
-    private boolean isJoined = false;
+    private boolean isJoined;
 
     public PlayerMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s,
                                    InetAddress group, PlayerInfo myPlayerInfo) {
         super(mcLock, s, group);
         this.myPlayerInfo = myPlayerInfo;
+        isJoined = false;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         getPropertyChangeSupport().firePropertyChange("START_REFRESHING", 0, 1);
+        getPropertyChangeSupport().firePropertyChange("REQUEST_TABLE", 0, 1);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class PlayerMulticastReceiver extends MulticastReceiver{
                 msg = Serializer.deserialize(recv.getData());
             } catch (IOException e) {
                 if(!isJoined){
-                    getPropertyChangeSupport().firePropertyChange("REQUEST_TABLE_RETRY", 0 ,1);
+                    getPropertyChangeSupport().firePropertyChange("REQUEST_TABLE", 0 ,1);
                     counter++;
                 }else{
                     getPropertyChangeSupport().firePropertyChange("SEND_PLAYER_UPDATE", 0, 1);
@@ -62,6 +64,8 @@ public class PlayerMulticastReceiver extends MulticastReceiver{
                 String type = ((MulticastPackage) msg).getPackageType();
                 Object packageObject = ((MulticastPackage) msg).getObject();
 
+                Log.d("PlayerMultRec", "Received a " + type + " from " + target);
+
                 if(target.equals(myPlayerInfo.getDeviceAddress())) {
                     if (type.equals(MulticastSender.Type.PLAYER_JOIN_ACCEPTED)) {
                         getPropertyChangeSupport().firePropertyChange("PLAYER_ACCEPTED",
@@ -72,7 +76,7 @@ public class PlayerMulticastReceiver extends MulticastReceiver{
                     if (type.equals(MulticastSender.Type.PLAYER_JOIN_DENIED)) {
                         getPropertyChangeSupport().firePropertyChange("TABLE_FULL", 0, 1);
                         getPropertyChangeSupport().firePropertyChange("STOP_REFRESHING", 0, 1);
-                        cancel(true);
+                        return null;
                     }
                     if (type.equals(MulticastSender.Type.TABLE_INTERVAL_UPDATE))
                         getPropertyChangeSupport().firePropertyChange("TABLE_INTERVAL_UPDATE",
@@ -95,6 +99,8 @@ public class PlayerMulticastReceiver extends MulticastReceiver{
     @Override
     protected void onPostExecute(Object result) {
         getPropertyChangeSupport().firePropertyChange("STOP_REFRESHING", 0, 1);
-        getPropertyChangeSupport().firePropertyChange("NO_RESPONSE", 0, 1);
+        if(isJoined == false) {
+            getPropertyChangeSupport().firePropertyChange("NO_RESPONSE", 0, 1);
+        }
     }
 }

@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -393,6 +394,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         if(propertyChangeEvent.getPropertyName().equals("TABLE_REQUESTED")){
             sendPackage(MulticastSender.Target.ALL_DEVICES,
                     MulticastSender.Type.HOST_TABLE, myTableInfo);
+            Log.d("HostTableActivity", "Sent table!");
         }
 
         if(propertyChangeEvent.getPropertyName().equals("PLAYER_JOIN_REQUESTED")){
