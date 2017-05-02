@@ -94,6 +94,7 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             public void onRefresh() {
                 Toast.makeText(LobbyActivity.this, "Searching for tables...", Toast.LENGTH_SHORT).show();
                 FindTableMulticastReceiver greeting = greetAndReceive();
+
                 greeting.addPropertyChangeListener(swipeRefreshLayout);
 
             }
@@ -140,13 +141,11 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
                 }
 
                 Toast.makeText(LobbyActivity.this, "Attempting to join selected table", Toast.LENGTH_SHORT).show();
-                Log.d("LobbyActivity", ((TableInfo) tableSpinner.getSelectedItem()).getHost().
-                        getDeviceAddress());
                 MulticastReceiver playerMulticastReceiver = new PlayerMulticastReceiver(multicastLock,
                         s, group, myPlayerInfo);
                 playerMulticastReceiver.addPropertyChangeListener(tableSpinner);
                 playerMulticastReceiver.addPropertyChangeListener(LobbyActivity.this);
-                threadMap.put(PLAYER_RECEIVER, playerMulticastReceiver.execute());
+                threadMap.put(PLAYER_RECEIVER, playerMulticastReceiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
             }
         });
     }
@@ -180,6 +179,7 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         greeting.addPropertyChangeListener(tableSpinner);
+        greeting.addPropertyChangeListener(this);
 
         threadMap.put(FIND_TABLE_RECEIVER, greeting);
         return greeting;
@@ -269,13 +269,14 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             MulticastPackage mPackage = new MulticastPackage(MulticastSender.Target.ALL_DEVICES,
                     MulticastSender.Type.GREETING);
             threadMap.put(TABLE_REQUEST_SENDER, new MulticastSender(mPackage, s, group).execute());
+            Log.d("LobbyActivity", "Requesting tables...");
         }
 
         if(propertyChangeEvent.getPropertyName().equals("NO_RESPONSE")){
             Toast.makeText(this, "No response from host", Toast.LENGTH_SHORT).show();
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("TABLE_REQUEST_RETRY")){
+        if(propertyChangeEvent.getPropertyName().equals("REQUEST_TABLE")){
             if(selectedTable == null){
                 throw new NullPointerException("Cannot request table information from a null object");
             }
@@ -298,8 +299,8 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             Intent intent = new Intent(this, PlayerTableActivity.class);
             intent.putExtra(IntentType.THIS_TABLE, hostTable);
             intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
-            intent.putExtra(IntentType.MULTICAST_RECEIVER, (MulticastReceiver) threadMap.get(PLAYER_RECEIVER));
-            startActivity(intent);
+//            intent.putExtra(IntentType.MULTICAST_RECEIVER, (MulticastReceiver) threadMap.get(PLAYER_RECEIVER));
+//            startActivity(intent);
         }
 
         if(propertyChangeEvent.getPropertyName().equals("PLAYER_DENIED")){

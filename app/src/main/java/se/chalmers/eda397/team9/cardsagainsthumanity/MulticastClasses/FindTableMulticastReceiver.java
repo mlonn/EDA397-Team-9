@@ -55,7 +55,7 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
 
     /* Receives messages from tables and registers them */
     private void receiveAndRegisterTable(){
-        byte[] buf = new byte[1000];
+        byte[] buf = new byte[10000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
 
         boolean keepGoing = true;
@@ -63,7 +63,7 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
         int marginOfError = 3;
 
         try {
-            getSocket().setSoTimeout(2000);
+            getSocket().setSoTimeout(500);
         } catch (SocketException e) {
             counter++;
         }
@@ -75,7 +75,7 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
                 getSocket().receive(recv);
                 msg = Serializer.deserialize(recv.getData());
             } catch (IOException e) {
-                if(newTables.equals(tables) && counter < marginOfError){
+                if(/* !newTables.equals(tables) && */ counter < marginOfError) {
                     getPropertyChangeSupport().firePropertyChange("REQUEST_TABLES", 0, 1);
                 }
                 Log.d("CMReceiver", "Trying to receive datagram again (try " + counter + ")");
@@ -91,7 +91,7 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
                 String targetAddress = (String) ((MulticastPackage) msg).getTarget();
                 String packageName = (String) ((MulticastPackage) msg).getPackageType();
                 Object packageObject = ((MulticastPackage) msg).getObject();
-
+                Log.d("FindTableReceiver", packageName);
                 if(targetAddress.equals(MulticastSender.Target.ALL_DEVICES)){
                     if(packageName.equals(MulticastSender.Type.HOST_TABLE)){
                         Log.d("CMReceiver", "Message received: " + msg);
