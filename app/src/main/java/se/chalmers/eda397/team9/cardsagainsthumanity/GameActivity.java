@@ -12,24 +12,28 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
+import se.chalmers.eda397.team9.cardsagainsthumanity.util.BlackCardAdapter;
 
 
 /**
@@ -49,13 +53,28 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-        LinearLayout layout = (LinearLayout) findViewById(R.id.linear);
         game = (Game) getIntent().getExtras().get(IntentType.THIS_GAME);
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         player = game.getPlayerByUserName(prefs.getString("name", null));
+        if (player.isKing()) {
+            initKing();
+        } else {
+            initPlayer();
+        }
+    }
+
+    private void initKing() {
+
+        setContentView(R.layout.activity_king);
+        ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
+        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions()));
+
+    }
+
+    private void initPlayer() {
+        setContentView(R.layout.activity_game);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.linear);
         TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
         blackCardTextView.setText(Html.fromHtml(game.getBlackCard().getText()));
         TextView pickTextView = (TextView) findViewById(R.id.pickTextView);
@@ -118,10 +137,20 @@ public class GameActivity extends AppCompatActivity {
             favoriteButtons[i] = imgFavoriteBorder;
 
         }
-
+        Button submitButton = (Button) findViewById(R.id.submit_button);
+        submitButton.setOnClickListener(submitCards);
     }
 
-
+    View.OnClickListener submitCards = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (game.getBlackCard().getPick() == player.getSelectedCards().size()) {
+                player.submitSelection();
+            } else {
+                Toast.makeText(getApplicationContext(), "Please select " + game.getBlackCard().getPick() + " cards.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
     //Button listener with method onClick for favorite buttons
     View.OnClickListener favoriteClick = new View.OnClickListener() {
 
@@ -153,7 +182,11 @@ public class GameActivity extends AppCompatActivity {
                         }
                     }
                 }
-                updateBlackCardText();
+                String blackCardText = updateBlackCardText(player.getSelectedCards());
+                if (blackCardText != null) {
+                    TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
+                    blackCardTextView.setText(Html.fromHtml(blackCardText));
+                }
             } else {
                 Toast.makeText(getApplicationContext(), "You can only select " + game.getBlackCard().getPick() + " cards.", Toast.LENGTH_SHORT).show();
             }
@@ -199,21 +232,21 @@ public class GameActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void updateBlackCardText() {
+    private String updateBlackCardText(List<WhiteCard> whiteCards) {
         String[] blackText = game.getBlackCard().getText().split("_");
         if (blackText.length>1) {
             StringBuilder sb = new StringBuilder();
             for (int j = 0; j < blackText.length; j++) {
                 sb.append(blackText[j]);
-                if (j < player.getSelectedCards().size()) {
-                    sb.append(player.getSelectedCards().get(j).getWord());
+                if (j < whiteCards.size()) {
+                    sb.append(whiteCards.get(j).getWord());
                 } else if (j < blackText.length-1) {
                     sb.append("_");
                 }
             }
-            TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
-            blackCardTextView.setText(Html.fromHtml(sb.toString()));
+            return sb.toString();
         }
+        return null;
     }
 
     //Main menu

@@ -31,7 +31,6 @@ public class CreateTableActivity extends AppCompatActivity {
 
     private ArrayList<CardExpansion> expansions;
 
-    private ListView expansionList;
     private Button createTableButton;
 
     private WifiManager.MulticastLock multicastLock;
@@ -47,7 +46,7 @@ public class CreateTableActivity extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         final EditText tableNameText = (EditText)findViewById(R.id.tablename);
 
-        expansionList = (ListView) findViewById(R.id.expansion_list);
+        ListView expansionList = (ListView) findViewById(R.id.expansion_list);
         expansions = CardHandler.getExpansions(this);
         expansionList.setAdapter(new ExpansionsAdapter(this, expansions));
 
