@@ -16,6 +16,8 @@ public class Player implements Serializable {
     private ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private ArrayList<WhiteCard> selectedCards = new ArrayList<WhiteCard>();
     private Submission submission;
+
+    private Submission winner;
     private List<Submission> submissions;
 
     public Player(String username) {
@@ -66,13 +68,12 @@ public class Player implements Serializable {
     public void resetSubmission(){ submission = null; }
 
     public void resetSubmissions() {
-        submissions = null;
+        submissions = new ArrayList<Submission>();
     }
 
     public void setSubmissions(List<Submission> submissions) {
         this.submissions = submissions;
     }
-    
 
     public Submission getSubmission() {
         return submission;
@@ -84,5 +85,24 @@ public class Player implements Serializable {
 
     public List<Submission> getSubmissions() {
         return submissions;
+    }
+
+    public Submission getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Submission winner) {
+        this.winner = winner;
+    }
+
+    public void givePoint() {
+        score++;
+    }
+
+    public void reset() {
+        submission = null;
+        winner = null;
+        selectedCards = new ArrayList<WhiteCard>();
+        resetSubmissions();
     }
 }
