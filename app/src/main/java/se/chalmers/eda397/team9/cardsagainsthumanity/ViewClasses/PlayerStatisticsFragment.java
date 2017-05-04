@@ -116,7 +116,7 @@ public class PlayerStatisticsFragment extends Fragment {
     /* Adds player to the playerlist
     *  Note: This is used locally during onCreateView, and can thus
     *  not be combined with the public version. */
-    private void addPlayer(PlayerInfo newPlayer, View view){
+    public PlayerRowLayout addPlayer(PlayerInfo newPlayer){
         if(!myTableInfo.getPlayerList().contains(newPlayer)){
             myTableInfo.addPlayer(newPlayer);
         }
@@ -137,11 +137,8 @@ public class PlayerStatisticsFragment extends Fragment {
 
         playerRowList.add(playerRow);
         playerGridLayout.addView(playerRow);
-    }
 
-    /* Method for adding player from outside the class*/
-    public void addPlayer(PlayerInfo newPlayer){
-        addPlayer(newPlayer, getView());
+        return playerRow;
     }
 
     /* Adds host to the playerlist
@@ -238,19 +235,24 @@ public class PlayerStatisticsFragment extends Fragment {
         mListener = null;
     }
 
-    public void addAllPlayers(List<PlayerInfo> playerList) {
-        for(PlayerInfo current : playerList){
-            addPlayer(current);
+    public void initializePlayers(TableInfo tableInfo){
+        if(playerRowList.isEmpty()) {
+            for (PlayerInfo current : tableInfo.getPlayerList()) {
+                PlayerRowLayout currentRow = addPlayer(current);
+                currentRow.setColor(current.getColor());
+                currentRow.setConnectionStatus(CONNECTED);
+            }
         }
     }
 
     public void update(TableInfo tableInfo) {
+        //TODO: This might need to be more complex, such as looking into the
+        //TODO: class and notice differences in properties
         for(PlayerInfo current : tableInfo.getPlayerList()){
             PlayerRowLayout currentRow = findPlayerRow(playerRowList, current);
             if(currentRow == null){
                 addPlayer(current);
                 currentRow = findPlayerRow(playerRowList, current);
-                currentRow.setConnectionStatus(1);
             }
             if(!currentRow.getColor().equals(current.getColor())){
                 currentRow.setColor(current.getColor());

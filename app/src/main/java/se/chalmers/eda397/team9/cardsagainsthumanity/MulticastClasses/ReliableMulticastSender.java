@@ -33,9 +33,7 @@ public class ReliableMulticastSender extends AsyncTask{
         this.group = group;
         this.mPackage = mPackage;
         this.expectedResponse = expectedResponse;
-
         pcs = new PropertyChangeSupport(this);
-
         maxCount = maxRetries;
     }
 
