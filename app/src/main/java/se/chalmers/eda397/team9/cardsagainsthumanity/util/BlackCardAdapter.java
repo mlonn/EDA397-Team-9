@@ -63,6 +63,7 @@ public class BlackCardAdapter extends BaseAdapter {
             holder.cardImage = (ImageView) view.findViewById(R.id.blackCardImageView);
             holder.cardText = (TextView) view.findViewById(R.id.blackCardTextView);
             holder.cardRadioButton = (RadioButton) view.findViewById(R.id.blackCardRadioButton);
+            king.setWinner(submissions.get(0));
             view.setTag(holder);
         } else {
             holder = (Holder) view.getTag();

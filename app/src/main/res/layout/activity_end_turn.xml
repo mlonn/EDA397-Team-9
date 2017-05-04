@@ -48,7 +48,7 @@
             android:contentDescription="Black Card" />
 
         <TextView
-            android:id="@+id/textviewBlackCard"
+            android:id="@+id/textviewWinningBlackCard"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/imageView"
@@ -59,15 +59,15 @@
             android:textAlignment="center" />
 
         <TextView
-            android:id="@+id/pickTextView"
+            android:id="@+id/winnerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Winner: "
-            android:layout_marginTop="19dp"
-            android:textSize="24sp"
-            android:textStyle="bold"
             android:layout_below="@+id/imageView"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="19dp"
+            android:text="Winner: "
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 
