@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
 
 /**
  * Created by Mikae on 2017-04-21.
@@ -12,17 +11,18 @@ import java.util.Timer;
 
 public class Game implements Serializable {
     private ArrayList<Player> players;
-    private Timer updateTimer;
     private Player king;
+    private Submission winningSubmission;
     private BlackCard blackCard;
     private ArrayList<CardExpansion> cardExpansions;
     private Random r;
+    private boolean endTurn;
 
     public Game(ArrayList<Player> players, ArrayList<CardExpansion> cardExpansions) {
         r = new Random();
         this.players = players;
         this.cardExpansions = cardExpansions;
-        //king = setKing();
+        king = setKing();
         pickBlackCard();
         if(king != null) {
             createDummySelections();
@@ -51,8 +51,8 @@ public class Game implements Serializable {
     }
     public boolean endTurn(){
         if (king.getWinner() != null){
-            Player winner = king.getWinner().getPlayer();
-
+            winningSubmission = king.getWinner();
+            Player winner = winningSubmission.getPlayer();
             winner.givePoint();
             king = setKing();
             pickBlackCard();
@@ -124,5 +124,13 @@ public class Game implements Serializable {
 
     public BlackCard getBlackCard() {
         return blackCard;
+    }
+
+    public boolean turnEnded() {
+        return endTurn;
+    }
+
+    public Submission getWinner() {
+        return winningSubmission;
     }
 }
