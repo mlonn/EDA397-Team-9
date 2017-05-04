@@ -14,12 +14,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-
 import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -288,11 +286,13 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
 
             if(newPlayerInfo != null)
                 myPlayerInfo = newPlayerInfo;
+            for (int i = 0 ; i < 3; i++) {
+                MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
+                        Message.Response.PLAYER_JOIN_SUCCESS, myPlayerInfo);
+                threadMap.put(PLAYER_ACCEPTED, new MulticastSender(mPackage, s, group).execute());
+                System.out.println("Sent player success");
+            }
 
-            MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
-                    Message.Response.PLAYER_JOIN_SUCCESS, myPlayerInfo);
-            threadMap.put(PLAYER_ACCEPTED, new MulticastSender(mPackage, s, group).execute());
-            System.out.println("Sent player success");
 
             Intent intent = new Intent(this, PlayerTableActivity.class);
             intent.putExtra(IntentType.THIS_TABLE, hostTable);

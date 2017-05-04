@@ -5,32 +5,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,20 +29,18 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastS
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
-import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
-import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
-public class PlayerTableActivity extends AppCompatActivity implements PropertyChangeListener{
+public class PlayerTableActivity extends AppCompatActivity implements PropertyChangeListener {
 
     private P2pManager p2pManager;
-    
+
     private int p2pPort = 9888;
 
     /* Multicast variables */
@@ -80,12 +67,12 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
 
     /* Method for initializing the multicast socket*/
     private void initMulticastSocket() {
-        if(multicastLock == null || !multicastLock.isHeld()) {
+        if (multicastLock == null || !multicastLock.isHeld()) {
             WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             multicastLock = wifi.createMulticastLock("multicastLock");
         }
 
-        if(s == null || s.isClosed()) {
+        if (s == null || s.isClosed()) {
             try {
                 group = InetAddress.getByName(ipAdress);
             } catch (UnknownHostException e) {
@@ -118,12 +105,13 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
 
         /* Initialize the playerlist */
         psFragment.addHost(tableInfo.getHost());
-        psFragment.addAllPlayers(tableInfo.getPlayerList());
+        psFragment.update(tableInfo);
 
         /* Multicast receiver */
         playerReceiver = new PlayerMulticastReceiver(multicastLock, s, group, myPlayerInfo, true);
+        playerReceiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        if(playerReceiver != null){
+        if (playerReceiver != null) {
             playerReceiver.addPropertyChangeListener(this);
         }
 
@@ -135,14 +123,14 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         readyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(myPlayerInfo.isReady()) {
+                if (myPlayerInfo.isReady()) {
                     myPlayerInfo.setReady(false);
                     psFragment.setReady(myPlayerInfo, false);
                     //TODO: Consider interval sender
                     MulticastPackage ready = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
                             Message.Type.PLAYER_READY, myPlayerInfo);
                     new MulticastSender(ready, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }else {
+                } else {
                     myPlayerInfo.setReady(true);
                     psFragment.setReady(myPlayerInfo, true);
                     MulticastPackage unReady = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
@@ -211,24 +199,29 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals(Message.Type.TABLE_INTERVAL_UPDATE)){
-            if(tableInfo.equals(propertyChangeEvent.getNewValue())){
-                return;
-            }
-            psFragment.update((TableInfo) propertyChangeEvent.getNewValue());
+    public void propertyChange(final PropertyChangeEvent propertyChangeEvent) {
+
+        if (propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_SUCCESS)) {
+            android.os.Handler handler = new android.os.Handler(getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    PlayerInfo player = (PlayerInfo) propertyChangeEvent.getNewValue();
+                    player = tableInfo.findPlayer(player);
+                    psFragment.setConnected(player);
+                }
+            });
         }
-
-        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_INTERVAL_UPDATE)){
-            MulticastPackage playerUpdate = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
-                    Message.Type.PLAYER_INTERVAL_UPDATE, myPlayerInfo);
-            new MulticastSender(playerUpdate, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
-
-
-        if(propertyChangeEvent.getPropertyName().equals(Message.Response.OTHER_PLAYER_JOIN_ACCEPTED)){
+        if (propertyChangeEvent.getPropertyName().equals(Message.Response.OTHER_PLAYER_JOIN_ACCEPTED)) {
             tableInfo = (TableInfo) propertyChangeEvent.getNewValue();
-            psFragment.update(tableInfo);
+
+            android.os.Handler handler = new android.os.Handler(getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    psFragment.update(tableInfo);
+                }
+            });
         }
 
     }

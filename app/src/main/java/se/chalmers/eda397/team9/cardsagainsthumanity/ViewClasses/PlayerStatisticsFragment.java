@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Handler;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 
@@ -126,7 +125,7 @@ public class PlayerStatisticsFragment extends Fragment {
             assignRandomColor(newPlayer);
         }
 
-        PlayerRowLayout playerRow = new PlayerRowLayout(view.getContext());
+        PlayerRowLayout playerRow = new PlayerRowLayout(getContext());
         playerRow.setName(newPlayer.getName());
         playerRow.setImageColor(newPlayer.getColor());
         playerRow.setPlayerId(newPlayer.getDeviceAddress());
@@ -250,6 +249,8 @@ public class PlayerStatisticsFragment extends Fragment {
             PlayerRowLayout currentRow = findPlayerRow(playerRowList, current);
             if(currentRow == null){
                 addPlayer(current);
+                currentRow = findPlayerRow(playerRowList, current);
+                currentRow.setConnectionStatus(1);
             }
             if(!currentRow.getColor().equals(current.getColor())){
                 currentRow.setColor(current.getColor());
@@ -267,6 +268,11 @@ public class PlayerStatisticsFragment extends Fragment {
                 playerRowList.remove(findPlayerRow(playerRowList, player));
             }
         });
+    }
+
+    public void setConnected(PlayerInfo player) {
+        PlayerRowLayout row = findPlayerRow(playerRowList, player);
+        row.setConnectionStatus(1);
     }
 
     /**

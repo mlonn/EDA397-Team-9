@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
-
 /**
  * Created by SAMSUNG on 2017-04-07.
  */
@@ -88,5 +85,14 @@ public class TableInfo implements Serializable{
     @Override
     public String toString(){
         return getHost().getName() + " - " + getName() + " - " + getSize();
+    }
+
+    public PlayerInfo findPlayer(PlayerInfo player) {
+        for (PlayerInfo p : playerList) {
+            if (p.equals(player)) {
+                return p;
+            }
+        }
+        return null;
     }
 }

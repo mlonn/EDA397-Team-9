@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -30,11 +29,8 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
@@ -137,10 +133,10 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         addHost(hostInfo);
 
         /* Add dummy players */
-        for(int i = 0 ; i < 16 ; i++){
-            PlayerInfo dummyPlayer = new PlayerInfo("Dummy "+ i+1);
+    /*    for(int i = 0 ; i < 16 ; i++){
+            PlayerInfo dummyPlayer = new PlayerInfo("Dummy "+ (i+1));
             addNewPlayer(dummyPlayer);
-        }
+        }*/
 
         /* View Listeners */
         startTableButton.setOnClickListener(new View.OnClickListener() {
