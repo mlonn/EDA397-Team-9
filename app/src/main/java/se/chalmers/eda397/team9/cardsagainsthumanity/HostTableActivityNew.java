@@ -98,7 +98,6 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_table_new);
-
         /* Remove ? */
         expansions = (ArrayList<CardExpansion>) getIntent().getExtras().get(IntentType.THIS_EXPANSIONS);
         players = new ArrayList<Player>();
@@ -131,7 +130,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
 
         /* Add dummy players */
         for(int i = 0 ; i < 16 ; i++){
-            PlayerInfo dummyPlayer = new PlayerInfo("Dummy");
+            PlayerInfo dummyPlayer = new PlayerInfo("Dummy "+ i+1);
             addNewPlayer(dummyPlayer);
         }
 
