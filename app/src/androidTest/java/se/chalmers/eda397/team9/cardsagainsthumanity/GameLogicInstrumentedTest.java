@@ -132,20 +132,30 @@ public class GameLogicInstrumentedTest {
                 playerWhiteCard = p.getWhiteCards();
                 WhiteCard w;
                 List<WhiteCard> whiteCardsToSubmit = new ArrayList<>();
-
+                // In this stage; we have 10 player with 10 cards for each player
                 for(int i = 0; i < 10; i++){
+                    // Select 10 random whiteCards for each player.
                     w = playerWhiteCard.get(random.nextInt(10));
                     p.addCardToSelected(w);
                     whiteCardsToSubmit.add(w);
                     p.submitSelection();
-
                     Submission s = new Submission(p, whiteCardsToSubmit);
+                    //
                     assertEquals(s.getPlayer(), p.getSubmission().getPlayer());
-                    assertEquals(s.getWhiteCards(), p.getSubmission().getWhiteCards());
+                    assertEquals(s.getWhiteCards().size(), p.getSubmission().getWhiteCards().size());
                     whiteCardsToSubmit.remove(w);
                     p.removeCardFromSelected(w);
                 }
             }
         }
+        // After submission is completed, King can decide the winner!
+        // Player1 has 1 point for this round and Player1 is the winner & and Other players have Zero score.
+        player1.setScore(1);
+        for (Player p1: playerList) {
+            if (!p1.isKing()&&p1!= player1) {
+                p1.setScore(0);
+            }
+        }
+
     }
 }

@@ -74,6 +74,10 @@ public class Game implements Serializable {
         players.get(kingNumber).setKing(true);
         return players.get(kingNumber);
     }
+
+    public Player getKing(){
+        return king;
+    }
     
     //collects all submitted white cards and gives them to the king
     private void giveCardsToKing() {
