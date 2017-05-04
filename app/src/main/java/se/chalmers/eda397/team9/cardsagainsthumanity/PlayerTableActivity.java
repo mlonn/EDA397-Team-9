@@ -1,6 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
@@ -12,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -151,7 +154,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         leaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                promtAlertDialog("backPressed");
             }
         });
     }
@@ -174,15 +177,23 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
+    @Override
+    public void onBackPressed() {
+        promtAlertDialog("backPressed");
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.changeName:
-                Intent intent = new Intent(this, IndexActivity.class);
-                startActivity(intent);
-                return true;
+                try{
+                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
+                    prefsFile.delete();
+                } catch (Exception e){
+
+                }
+                promtAlertDialog("changeUsername");
             case R.id.changeTable:
                 //Do something
                 return true;
@@ -203,6 +214,47 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private void promtAlertDialog(String reason){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        switch(reason) {
+            case "backPressed":
+                builder.setMessage("Are you sure you want to leave the table?").setTitle("Table: " + tableInfo.getName());
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing
+                    }
+                });
+                break;
+            case "changeUsername":
+                builder.setMessage("Are you sure you want to change username and leave this table?").setTitle("Table: " + tableInfo.getName());
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(getBaseContext(), IndexActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing
+                    }
+                });
+                break;
+            default:
+                break;
+        }
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
