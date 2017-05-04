@@ -65,6 +65,8 @@ public class Player implements Serializable {
         whiteCards.add(whiteCard);
     }
 
+    public void resetSubmission(){ submission = null; }
+
     public void resetSubmissions() {
         submissions = new ArrayList<Submission>();
     }

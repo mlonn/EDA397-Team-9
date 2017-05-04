@@ -131,6 +131,10 @@ public class PlayerStatisticsFragment extends Fragment {
         playerRow.setImageColor(newPlayer.getColor());
         playerRow.setPlayerId(newPlayer.getDeviceAddress());
         playerRow.setConnectionStatus(0);
+        playerRow.setScore(newPlayer.getScore());
+
+        //Gives the player the crown
+        if (newPlayer.isKing()) { playerRow.setKing(); }
 
         playerRowList.add(playerRow);
         playerGridLayout.addView(playerRow);
@@ -167,7 +171,16 @@ public class PlayerStatisticsFragment extends Fragment {
         hostRow.setName(playerInfo.getName());
         hostRow.setAsHost();
         hostRow.setImageColor(playerInfo.getColor());
+        hostRow.setScore(playerInfo.getScore());
+        if (playerInfo.isKing()) { hostRow.setKing();}
         playerGridLayout.addView(hostRow);
+
+       /* Just for testing
+        //Sets the host as king to start off with
+        playerInfo.setKing();
+        hostRow.setKing();
+        */
+
         return hostRow;
     }
 

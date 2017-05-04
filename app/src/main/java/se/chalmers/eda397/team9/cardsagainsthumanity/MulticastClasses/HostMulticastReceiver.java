@@ -78,10 +78,14 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
             String targetAddress = (String) ((MulticastPackage) inMsg).getTarget();
             String packageType = (String) ((MulticastPackage) inMsg).getPackageType();
             Object packageObject = ((MulticastPackage) inMsg).getObject();
+            Log.d("HMR", "Received a " + packageType);
 
-            if (targetAddress.equals(MulticastSender.Target.ALL_DEVICES))
-                if(packageType.equals(MulticastSender.Type.GREETING))
+            if (targetAddress.equals(MulticastSender.Target.ALL_DEVICES)){
+                if(packageType.equals(MulticastSender.Type.GREETING)) {
                     getPropertyChangeSupport().firePropertyChange("TABLE_REQUESTED", 0, 1);
+                    Log.d("HMR", "Sent table");
+                }
+            }
 
             if (targetAddress.equals(hostInfo.getDeviceAddress())) {
                 if (packageType.equals(MulticastSender.Type.PLAYER_JOIN_REQUEST)) {
@@ -92,9 +96,9 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                 }
 
                 if (packageType.equals(MulticastSender.Type.PLAYER_JOIN_SUCCESS)) {
+                    removePlayerFromMap(connectingPlayers, (PlayerInfo) packageObject);
                     getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_SUCCESSFUL",
                             null, packageObject);
-                    connectingPlayers.remove(packageObject);
                 }
 
                 if (packageType.equals(MulticastSender.Type.PLAYER_READY))
@@ -112,5 +116,17 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
     protected void onCancelled(Void aVoid) {
         super.onCancelled(aVoid);
         Log.d("HostMultRec", "Receiver cancelled");
+    }
+
+    private void removePlayerFromMap(Map<PlayerInfo, Integer> connectingPlayers,PlayerInfo player){
+        PlayerInfo playerToRemove = null;
+        for(Map.Entry<PlayerInfo, Integer> current : connectingPlayers.entrySet()){
+            if(current.getKey().getDeviceAddress().equals(player.getDeviceAddress())){
+                playerToRemove = current.getKey();
+            }
+        }
+        if(playerToRemove != null){
+            connectingPlayers.remove(playerToRemove);
+        }
     }
 }
