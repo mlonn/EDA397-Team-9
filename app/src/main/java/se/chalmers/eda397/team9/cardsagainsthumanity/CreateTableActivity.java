@@ -1,6 +1,8 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,6 +27,8 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.ExpansionsAdapter;
+
+import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
 
 public class CreateTableActivity extends AppCompatActivity {
@@ -101,6 +105,9 @@ public class CreateTableActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        String username = prefs.getString("name", null);
+        menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
 
@@ -108,13 +115,11 @@ public class CreateTableActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.changeName:
-                Intent intent = new Intent(this, IndexActivity.class);
+            case profile:
+                Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.changeTable:
-                //Do something
-                return true;
+
             case R.id.settings:
                 //Do something
                 return true;
@@ -132,7 +137,6 @@ public class CreateTableActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
 }
