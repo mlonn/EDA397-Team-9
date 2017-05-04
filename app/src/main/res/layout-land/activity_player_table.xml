@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_port">
+    android:background="@drawable/background_land">
 
     <LinearLayout
         xmlns:tools="http://schemas.android.com/tools"
@@ -19,7 +19,7 @@
             tools:layout="@layout/fragment_player_statistics">
         </fragment>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/playerlist_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,30 +28,25 @@
             android:layout_below="@+id/playerlist_grid"
             >
 
-
             <Button
-                android:id="@+id/start_button"
-                android:layout_width="175dp"
+                android:id="@+id/ready_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="0dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-smallcaps"
-                android:text="Start game"
-                android:layout_alignParentBottom="true"
-                />
+                android:text="Ready" />
 
             <Button
-                android:id="@+id/close_button"
-                android:layout_width="175dp"
+                android:id="@+id/leave_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="0dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-smallcaps"
-                android:text="Close table"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="185dp"/>
+                android:text="Leave table" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </LinearLayout>
 </RelativeLayout>

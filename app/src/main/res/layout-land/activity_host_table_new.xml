@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_port">
+    android:background="@drawable/background_land">
 
     <LinearLayout
         xmlns:tools="http://schemas.android.com/tools"
@@ -23,33 +23,32 @@
             android:id="@+id/playerlist_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="bottom"
             android:layout_below="@+id/playerlist_grid"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal"
             >
 
 
             <Button
                 android:id="@+id/start_button"
-                android:layout_width="175dp"
+                android:layout_width="290dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="0dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-smallcaps"
                 android:text="Start game"
-                android:layout_alignParentBottom="true"
-                />
+                android:layout_alignParentBottom="true" />
 
             <Button
                 android:id="@+id/close_button"
-                android:layout_width="175dp"
+                android:layout_width="290dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="0dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-smallcaps"
                 android:text="Close table"
                 android:layout_alignParentBottom="true"
-                android:layout_marginLeft="185dp"/>
+                android:layout_marginLeft="300dp"/>
 
         </RelativeLayout>
 

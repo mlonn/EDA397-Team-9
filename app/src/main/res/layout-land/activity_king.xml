@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:background="@drawable/background_port"
+    android:background="@drawable/background_land"
 
     android:baselineAligned="false"
     android:orientation="vertical"
@@ -24,7 +24,9 @@
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/textView7"
@@ -32,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:fontFamily="serif-monospace"
-            android:text="Create table"
+            android:text="What card will win?"
             android:textAlignment="center"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -40,45 +42,21 @@
             tools:layout_editor_absoluteY="8dp"
             android:layout_marginTop="20dp"/>
 
-        <EditText
-            android:id="@+id/tablename"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:fontFamily="monospace"
-            android:hint="Table Name"
-            android:inputType="textPersonName"
-            android:textAlignment="center"
-            android:textStyle="italic"
-            android:imeOptions="actionDone"/>
-
-        <TextView
-            android:id="@+id/expansionsTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="serif-monospace"
-            android:text="Select expansions"
-            android:textAlignment="center"
-            android:textAppearance="@android:style/TextAppearance.Material.Small"
-            android:textSize="24sp"
-            android:textStyle="bold" />
 
         <ListView
-            android:id="@+id/expansion_list"
+            android:id="@+id/black_card_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1    "/>
-
+            android:layout_weight="1"
+            android:divider="@null"
+            android:dividerHeight="0dp" />
 
         <Button
-            android:id="@+id/btn_startTable"
+            android:id="@+id/btn_selectWinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-smallcaps"
-            android:text="Start"/>
+            android:text="Select Winner"/>
 
     </LinearLayout>
 

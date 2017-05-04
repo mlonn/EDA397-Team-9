@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -127,22 +128,22 @@ public class GameActivity extends AppCompatActivity {
             imgFavoriteBorder.setId(i);
 
             //Layout settings of the images
-            imgWhiteCard.setPadding(convertDpToPixels(2,this), convertDpToPixels(2,this), convertDpToPixels(2,this), convertDpToPixels(2,this)); //.setPadding(left, top, right, bottom)
-            RelativeLayout.LayoutParams paramsWhiteCard = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(360,this)); //.LayoutParams(width, height) for white cards
+            imgWhiteCard.setPadding(0, 0, 0, 0); //.setPadding(left, top, right, bottom)
+            RelativeLayout.LayoutParams paramsWhiteCard = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(450,this)); //.LayoutParams(width, height) for white cards
             paramsWhiteCard.setMargins(convertDpToPixels(10,this), convertDpToPixels(10,this), convertDpToPixels(1,this), convertDpToPixels(7,this)); //.setMargins(left, top, right, bottom)
             //paramsWhiteCard.setMargins(1, 1, 1, 75); //.setMargins(left, top, right, bottom)
             imgWhiteCard.setLayoutParams(paramsWhiteCard);
 
-            imgFavoriteBorder.setPadding(convertDpToPixels(2,this), convertDpToPixels(2,this), convertDpToPixels(2,this), convertDpToPixels(2,this)); //.setPadding(left, top, right, bottom)
-            RelativeLayout.LayoutParams paramsFavoriteBorder = new RelativeLayout.LayoutParams(convertDpToPixels(100,this), convertDpToPixels(100,this)); //(width,height) for favorite border
-            paramsFavoriteBorder.setMargins(convertDpToPixels(5,this), convertDpToPixels(10,this), convertDpToPixels(1,this), convertDpToPixels(1,this)); //.setMargins(left, top, right, bottom)
+            imgFavoriteBorder.setPadding(0, 0, 0, 0); //.setPadding(left, top, right, bottom)
+            RelativeLayout.LayoutParams paramsFavoriteBorder = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(65,this)); //(width,height) for favorite border
+            paramsFavoriteBorder.setMargins(convertDpToPixels(59,this), convertDpToPixels(1,this), 0, 0); //.setMargins(left, top, right, bottom)
             imgFavoriteBorder.getBackground().setAlpha(0); //ImageButton background full transparent
             imgFavoriteBorder.setLayoutParams(paramsFavoriteBorder);
 
-            cardText.setPadding(convertDpToPixels(30,this),0,convertDpToPixels(30,this),0);
-            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(360,this)); //.LayoutParams(width, height) for text in white card
+            cardText.setPadding(convertDpToPixels(40,this),0,convertDpToPixels(30,this),0);
+            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(450,this)); //.LayoutParams(width, height) for text in white card
             cardText.setLayoutParams(paramsText);
-            paramsText.setMargins(0,convertDpToPixels(100,this),0,0);
+            paramsText.setMargins(0,convertDpToPixels(80,this),0,0);
             cardText.setText(Html.fromHtml(whiteCards.get(i).getWord()));
             cardText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             cardText.setTextColor(Color.BLACK);
