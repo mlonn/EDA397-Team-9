@@ -5,12 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
-        android:id="@+id/changeName"
-        android:title="Change name" />
-
-    <item
-        android:id="@+id/changeTable"
-        android:title="Change table"/>
+        android:id="@+id/profile"
+        android:title="Profile" />
 
     <item
         android:id="@+id/settings"

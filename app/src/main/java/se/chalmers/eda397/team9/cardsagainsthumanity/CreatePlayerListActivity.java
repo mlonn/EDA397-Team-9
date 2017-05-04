@@ -1,6 +1,8 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
+
+import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
 public class CreatePlayerListActivity extends AppCompatActivity {
 
@@ -22,6 +26,9 @@ public class CreatePlayerListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        String username = prefs.getString("name", null);
+        menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
 
@@ -29,12 +36,11 @@ public class CreatePlayerListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.changeName:
-                //Do something
+            case profile:
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
                 return true;
-            case R.id.changeTable:
-                //Do something
-                return true;
+
             case R.id.settings:
                 //Do something
                 return true;
