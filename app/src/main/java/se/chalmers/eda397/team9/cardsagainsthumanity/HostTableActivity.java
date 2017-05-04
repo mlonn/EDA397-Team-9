@@ -43,6 +43,8 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
+import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
+
 public class HostTableActivity extends AppCompatActivity implements PropertyChangeListener{
 
     /* Multicast variables */
@@ -272,6 +274,9 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        String username = prefs.getString("name", null);
+        menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
 
@@ -279,15 +284,11 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.changeName:
-                //Do something
+            case profile:
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
+                return true;
 
-                //Example message (only for test)
-                Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.changeTable:
-                //Do something
-                return true;
             case R.id.settings:
                 //Do something
                 return true;
