@@ -9,10 +9,6 @@
         android:title="Change name" />
 
     <item
-        android:id="@+id/changeTable"
-        android:title="Change table"/>
-
-    <item
         android:id="@+id/settings"
         app:showAsAction="ifRoom"
         android:title="Settings"

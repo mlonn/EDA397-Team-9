@@ -149,7 +149,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         closeTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openCloseTableDialog();
+                promtAlertDialog("backPressed");
             }
         });
     }
@@ -266,29 +266,52 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         }
     }
 
-    private void openCloseTableDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to close this table?").setTitle("Table: " + myTableInfo.getName());
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
-            }
-        });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                // Do nothing
-            }
-        });
+    private void promtAlertDialog(String reason){
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        switch(reason) {
+            case "backPressed":
+                builder.setMessage("Are you sure you want to close this table?").setTitle("Table: " + myTableInfo.getName());
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing
+                    }
+                });
+                break;
+            case "changeUsername":
+                builder.setMessage("Are you sure you want to change username and leave this table?").setTitle("Table: " + myTableInfo.getName());
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(getBaseContext(), IndexActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing
+                    }
+                });
+                break;
+            default:
+                break;
+        }
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
     @Override
     public void onBackPressed() {
-        openCloseTableDialog();
+        promtAlertDialog("backPressed");
     }
 
     /* Main menu */
@@ -311,10 +334,9 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
                 } catch (Exception e){
 
                 }
-
-                openCloseTableDialog();
-                Intent intent = new Intent(this, IndexActivity.class);
-                startActivity(intent);
+                promtAlertDialog("changeUsername");
+//                Intent intent = new Intent(this, IndexActivity.class);
+//                startActivity(intent);
                 return true;
             case R.id.changeTable:
                 //Do something
@@ -337,6 +359,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     /* Stops p2p connection and receiver */
     private void stopP2p(){
