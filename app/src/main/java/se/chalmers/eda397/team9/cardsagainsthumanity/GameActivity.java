@@ -81,6 +81,8 @@ public class GameActivity extends AppCompatActivity {
 
     private void initKing() {
         setContentView(R.layout.activity_king);
+        TextView blackCardText = (TextView) findViewById(R.id.currentBlackCard);
+        blackCardText.setText(Html.fromHtml(game.getBlackCard().getText()));
         ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
         blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions(), player));
         Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
@@ -92,6 +94,7 @@ public class GameActivity extends AppCompatActivity {
                     intent.putExtra(IntentType.THIS_GAME, game);
                     intent.putExtra(IntentType.WINNING_STRING, updateBlackCardText(game.getWinner().getWhiteCards()));
                     startActivity(intent);
+                    finish();
                 }
             }
         });
