@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:background="@drawable/background_port"
+    android:background="@drawable/background_land"
 
     android:baselineAligned="false"
     android:orientation="vertical"
@@ -31,39 +31,40 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
+            android:layout_marginTop="2dp"
             android:fontFamily="serif-monospace"
             android:text="Create table"
             android:textAlignment="center"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="8dp"
-            android:layout_marginTop="20dp"/>
+            tools:layout_editor_absoluteY="8dp" />
 
         <EditText
             android:id="@+id/tablename"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="2dp"
             android:ems="10"
             android:fontFamily="monospace"
             android:hint="Table Name"
+            android:imeOptions="actionDone"
             android:inputType="textPersonName"
             android:textAlignment="center"
-            android:textStyle="italic"
-            android:imeOptions="actionDone"/>
+            android:textSize="16dp"
+            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/expansionsTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
             android:fontFamily="serif-monospace"
             android:text="Select expansions"
             android:textAlignment="center"
             android:textAppearance="@android:style/TextAppearance.Material.Small"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <ListView

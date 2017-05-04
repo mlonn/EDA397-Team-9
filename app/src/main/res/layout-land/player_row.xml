@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/playerlist_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_columnSpan="1"
+    android:layout_columnWeight="1"
+    >
+
+    <ImageView
+        android:id="@+id/player_image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_margin="5dp" />
+
+    <TextView
+        android:id="@+id/player_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:layout_weight="1"
+        android:fontFamily="monospace"
+        android:text="TextView"
+        android:textColor="#333333"
+        android:textSize="14dp"
+        />
+
+    <ImageView
+        android:id="@+id/king_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:srcCompat="@mipmap/ic_king"
+        android:layout_marginTop="5dp"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/player_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:fontFamily="monospace"
+        android:text="0"
+        android:textColor="#333333"
+        android:textSize="12dp"/>
+
+</LinearLayout>
