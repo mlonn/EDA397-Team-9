@@ -30,8 +30,10 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
@@ -43,10 +45,13 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastS
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
+
+import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
 public class HostTableActivityNew extends AppCompatActivity implements PropertyChangeListener{
 
@@ -83,6 +88,8 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
     private PlayerInfo hostInfo;
     private TableInfo myTableInfo;
     private List<PlayerInfo> playerList;
+    private List<PlayerInfo> connectedPlayers;
+    private Integer maxConnectionRetries = 0;
 
     /* Fragment variables */
     private FragmentManager fragmentManager;
@@ -109,6 +116,7 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         colorList = new LinkedList<>(Arrays.asList(colorArray));
         p2pManager = new P2pManager(this);
         threadList = new ArrayList<>();
+        connectedPlayers = new ArrayList<>();
 
         /* Initialize fragment variables */
         fragmentManager = getSupportFragmentManager();
@@ -173,7 +181,6 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         playerList.remove(player);
         psFragment.removePlayer(player);
     }
-
 
     /* Initialize peer to peer */
     private void initP2p() {
@@ -295,6 +302,9 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        String username = prefs.getString("name", null);
+        menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
 
@@ -302,22 +312,11 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.changeName:
-                //Do something
-                try{
-                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
-                    prefsFile.delete();
-                } catch (Exception e){
-
-                }
-
-                openCloseTableDialog();
-                Intent intent = new Intent(this, IndexActivity.class);
+            case profile:
+                Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.changeTable:
-                //Do something
-                return true;
+
             case R.id.settings:
                 //Do something
                 return true;
@@ -345,17 +344,23 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
     }
 
     /* Sends package using MulticastSender*/
-    private void sendPackage(String target, String type, Serializable object){
-        MulticastPackage mPackage = new MulticastPackage(target,
-                type, object);
-        threadList.add(new MulticastSender(mPackage, s, group).
-                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
+    private void sendPackage(final String target, final String type, final Serializable object){
+        Handler handler = new Handler(this.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                MulticastPackage mPackage = new MulticastPackage(target,
+                        type, object);
+                threadList.add(new MulticastSender(mPackage, s, group).
+                        executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
+            }
+        });
     }
 
     //TODO: Class starts to get big, might consider creating a handler class
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals("DEVICE_ADDRESS_FOUND")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.MY_DEVICE_ADDRESS_FOUND)) {
             String deviceAddress = (String) propertyChangeEvent.getNewValue();
             stopP2p();
 
@@ -367,45 +372,24 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
             threadList.add(hostMulticastReceiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
 
             Toast.makeText(this, "Table opened", Toast.LENGTH_SHORT).show();
-
-            final int interval = 3;
-
-            AsyncTask intervalSender = new AsyncTask() {
-                @Override
-                protected Object doInBackground(Object[] objects) {
-                    while(!isCancelled()){
-
-                        try {
-                            TimeUnit.SECONDS.sleep(interval);
-                        } catch (InterruptedException e) {
-                        }
-
-                        sendPackage(hostInfo.getDeviceAddress(),
-                                MulticastSender.Type.TABLE_INTERVAL_UPDATE, myTableInfo);
-
-                    }
-                    return null;
-                }
-            };
-            threadList.add(intervalSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("TABLE_REQUESTED")){
-            sendPackage(MulticastSender.Target.ALL_DEVICES,
-                    MulticastSender.Type.HOST_TABLE, myTableInfo);
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.REQUEST_ALL_TABLES)){
+            sendPackage(Message.Target.ALL_DEVICES,
+                    Message.Response.HOST_TABLE, myTableInfo);
             Log.d("HostTableActivity", "Sent table!");
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("PLAYER_JOIN_REQUESTED")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_JOIN_REQUEST)){
             final PlayerInfo newPlayer = (PlayerInfo) propertyChangeEvent.getNewValue();
             if(!myTableInfo.getPlayerList().contains(newPlayer)) {
                 if(myTableInfo.getPlayerList().size() >= 19){
                     sendPackage(newPlayer.getDeviceAddress(),
-                            MulticastSender.Type.PLAYER_JOIN_DENIED, null);
+                            Message.Response.PLAYER_JOIN_DENIED, null);
 
                 }else if(findPlayer(playerList, newPlayer) != null){
                     sendPackage(newPlayer.getDeviceAddress(),
-                            MulticastSender.Type.PLAYER_JOIN_DENIED, null);
+                            Message.Response.PLAYER_JOIN_DENIED, null);
 
                 }else if(myTableInfo.getPlayerList().size() <= 19) {
                     //Updates view on the main UI thread
@@ -416,21 +400,22 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
                                 addNewPlayer(newPlayer);
                             }
                         });
-                        sendPackage(newPlayer.getDeviceAddress(),
-                                MulticastSender.Type.PLAYER_JOIN_ACCEPTED, myTableInfo);
+                    connectedPlayers.add(newPlayer);
+                    sendPackage(myTableInfo.getHost().getDeviceAddress(),
+                            Message.Response.PLAYER_JOIN_ACCEPTED, myTableInfo);
                 }
             }
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("PLAYER_JOIN_SUCCESSFUL")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_SUCCESS)){
             setConnectionStatus((PlayerInfo) propertyChangeEvent.getNewValue(), PlayerRowLayout.CONNECTED);
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("PLAYER_TIMED_OUT")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_TIMED_OUT)){
             removePlayer((PlayerInfo) propertyChangeEvent.getNewValue());
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("PLAYER_READY")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_READY)){
             PlayerInfo player = findPlayer(playerList, (PlayerInfo) propertyChangeEvent.getNewValue());
             if(!player.isReady()) {
                 player.setReady(true);
@@ -438,9 +423,35 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
             }
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("PLAYER_NOT_READY")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_NOT_READY)){
             PlayerInfo player = findPlayer(playerList, (PlayerInfo) propertyChangeEvent.getNewValue());
             if(player.isReady()) {
+                player.setReady(false);
+                psFragment.setReady(player, false);
+            }
+        }
+
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_INTERVAL_UPDATE)){
+            PlayerInfo playerUpdate = (PlayerInfo) propertyChangeEvent.getNewValue();
+            PlayerInfo player = findPlayer(playerList, playerUpdate);
+
+            //Check if anything changed since last interval update of the player
+            if(player == null){
+                sendPackage(player.getDeviceAddress(),
+                        Message.Response.PLAYER_DISCONNECTED, null);
+                return;
+            }
+
+            if(findPlayer(connectedPlayers, player) == null){
+                connectedPlayers.add(player);
+            }
+
+            if(playerUpdate.isReady() && !player.isReady()){
+                player.setReady(true);
+                psFragment.setReady(player, true);
+            }
+
+            if(!playerUpdate.isReady() && player.isReady()){
                 player.setReady(false);
                 psFragment.setReady(player, false);
             }

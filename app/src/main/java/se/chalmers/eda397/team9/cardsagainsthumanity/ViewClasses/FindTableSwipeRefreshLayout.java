@@ -7,10 +7,6 @@ import android.util.AttributeSet;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-/**
- * Created by SAMSUNG on 2017-04-21.
- */
-
 public class FindTableSwipeRefreshLayout extends SwipeRefreshLayout implements PropertyChangeListener{
 
     public FindTableSwipeRefreshLayout(Context context) {
@@ -21,14 +17,13 @@ public class FindTableSwipeRefreshLayout extends SwipeRefreshLayout implements P
         super(context, attrs);
     }
 
-
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals("START_REFRESHING")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.START_REFRESHING)){
             if(!isRefreshing())
                 setRefreshing(true);
         }
-        if(propertyChangeEvent.getPropertyName().equals("STOP_REFRESHING")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.STOP_REFRESHING)){
             if(isRefreshing()){
                 setRefreshing(false);
             }

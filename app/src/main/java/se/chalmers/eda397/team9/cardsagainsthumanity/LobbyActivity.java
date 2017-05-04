@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,8 +37,11 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinner;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
+
+import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
 public class LobbyActivity extends AppCompatActivity implements PropertyChangeListener{
 
@@ -72,7 +76,7 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
         setContentView(R.layout.activity_lobby);
 
         /* Get my player information from intent */
-        myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra("PLAYER_INFO");
+        myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra(IntentType.MY_PLAYER_INFO);
 
         /* Initialize presenter (Used to separate view from model) */
         tpresenter = new TablePresenter(this);
@@ -93,10 +97,8 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             @Override
             public void onRefresh() {
                 Toast.makeText(LobbyActivity.this, "Searching for tables...", Toast.LENGTH_SHORT).show();
-                FindTableMulticastReceiver greeting = greetAndReceive();
-
+                FindTableMulticastReceiver greeting = requestTables();
                 greeting.addPropertyChangeListener(swipeRefreshLayout);
-
             }
         });
 
@@ -173,16 +175,16 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
     }
 
     /* Starts the FindTableMulticastReceiver */
-    private FindTableMulticastReceiver greetAndReceive(){
-        FindTableMulticastReceiver greeting = (FindTableMulticastReceiver)
+    private FindTableMulticastReceiver requestTables(){
+        FindTableMulticastReceiver tableFinder = (FindTableMulticastReceiver)
                 new FindTableMulticastReceiver(multicastLock, s, group, tpresenter, tables)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        greeting.addPropertyChangeListener(tableSpinner);
-        greeting.addPropertyChangeListener(this);
+        tableFinder.addPropertyChangeListener(tableSpinner);
+        tableFinder.addPropertyChangeListener(this);
 
-        threadMap.put(FIND_TABLE_RECEIVER, greeting);
-        return greeting;
+        threadMap.put(FIND_TABLE_RECEIVER, tableFinder);
+        return tableFinder;
     }
 
 
@@ -218,32 +220,27 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
         s.close();
     }
 
-    /* Main menu */
+    //Main menu
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //Inflate the menu; this adds items to the action bar if it is present
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
+
+        public boolean onCreateOptionsMenu(Menu menu) {
+            //Inflate the menu; this adds items to the action bar if it is present
+            getMenuInflater().inflate(R.menu.menu, menu);
+            SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+            String username = prefs.getString("name", null);
+            menu.findItem(R.id.profile).setTitle(username);
+            return true;
+        }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.changeName:
-                try{
-                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
-                    prefsFile.delete();
-                } catch (Exception e){
-
-                }
-
-                Intent intent = new Intent(this, IndexActivity.class);
+            case profile:
+                Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.changeTable:
-                //Do something
-                return true;
+
             case R.id.settings:
                 //Do something
                 return true;
@@ -265,27 +262,27 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals("REQUEST_TABLES")){
-            MulticastPackage mPackage = new MulticastPackage(MulticastSender.Target.ALL_DEVICES,
-                    MulticastSender.Type.GREETING);
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.REQUEST_ALL_TABLES)){
+            MulticastPackage mPackage = new MulticastPackage(Message.Target.ALL_DEVICES,
+                    Message.Type.REQUEST_ALL_TABLES);
             threadMap.put(TABLE_REQUEST_SENDER, new MulticastSender(mPackage, s, group).execute());
             Log.d("LobbyActivity", "Requesting tables...");
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("NO_RESPONSE")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.NO_RESPONSE)){
             Toast.makeText(this, "No response from host", Toast.LENGTH_SHORT).show();
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("REQUEST_TABLE")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.REQUEST_TABLE)){
             if(selectedTable == null){
                 throw new NullPointerException("Cannot request table information from a null object");
             }
             MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
-                    MulticastSender.Type.PLAYER_JOIN_REQUEST, myPlayerInfo);
+                    Message.Type.PLAYER_JOIN_REQUEST, myPlayerInfo);
             threadMap.put(TABLE_REQUEST_RETRY, new MulticastSender(mPackage, s, group).execute());
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("PLAYER_ACCEPTED")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Response.SELF_PLAYER_JOIN_ACCEPTED)){
             TableInfo hostTable = ((TableInfo) propertyChangeEvent.getNewValue());
             PlayerInfo newPlayerInfo = findPlayer(hostTable.getPlayerList(), myPlayerInfo);
 
@@ -293,17 +290,17 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
                 myPlayerInfo = newPlayerInfo;
 
             MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
-                    MulticastSender.Type.PLAYER_JOIN_SUCCESS, myPlayerInfo);
+                    Message.Response.PLAYER_JOIN_SUCCESS, myPlayerInfo);
             threadMap.put(PLAYER_ACCEPTED, new MulticastSender(mPackage, s, group).execute());
+            System.out.println("Sent player success");
 
             Intent intent = new Intent(this, PlayerTableActivity.class);
             intent.putExtra(IntentType.THIS_TABLE, hostTable);
             intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
-//            intent.putExtra(IntentType.MULTICAST_RECEIVER, (MulticastReceiver) threadMap.get(PLAYER_RECEIVER));
-//            startActivity(intent);
+            startActivity(intent);
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("PLAYER_DENIED")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_DENIED)){
             Toast.makeText(this, "Table is full", Toast.LENGTH_SHORT).show();
         }
     }

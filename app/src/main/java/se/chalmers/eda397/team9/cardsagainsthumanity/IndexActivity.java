@@ -1,5 +1,6 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.File;
+import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
@@ -22,7 +24,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
  */
 
 public class IndexActivity extends AppCompatActivity {
-
+    public String username;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,7 @@ public class IndexActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText usernameInput = (EditText) findViewById(R.id.txt_username);
                 createUsernameFile(usernameInput.getText().toString());
+                username = usernameInput.getText().toString();
                 goToLobby();
             }
         });
@@ -80,50 +83,5 @@ public class IndexActivity extends AppCompatActivity {
         finish();
     }
 
-    //Main menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //Inflate the menu; this adds items to the action bar if it is present
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.changeName:
-                try{
-                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
-                    prefsFile.delete();
-                } catch (Exception e){
-
-                }
-
-                Intent intent = new Intent(this, IndexActivity.class);
-                startActivity(intent);
-
-                return true;
-            case R.id.changeTable:
-                //Do something
-                return true;
-            case R.id.settings:
-                //Do something
-                return true;
-            case R.id.share:
-                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                sharingIntent.setType("text/plain");
-                String shareBody = "Hi! I'm playing this wonderful game called King of Cards. Please download it you too from Play store so we can play together!";
-                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "King of Cards");
-                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                startActivity(Intent.createChooser(sharingIntent, "Share via"));
-                return true;
-            case R.id.help:
-                //Do something
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
 }
