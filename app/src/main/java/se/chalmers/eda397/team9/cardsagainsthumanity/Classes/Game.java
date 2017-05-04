@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
 
 /**
  * Created by Mikae on 2017-04-21.
@@ -12,11 +11,12 @@ import java.util.Timer;
 
 public class Game implements Serializable {
     private ArrayList<Player> players;
-    private Timer updateTimer;
     private Player king;
+    private Submission winningSubmission;
     private BlackCard blackCard;
     private ArrayList<CardExpansion> cardExpansions;
     private Random r;
+    private boolean endTurn;
 
     public Game(ArrayList<Player> players, ArrayList<CardExpansion> cardExpansions) {
         r = new Random();
@@ -24,7 +24,9 @@ public class Game implements Serializable {
         this.cardExpansions = cardExpansions;
         king = setKing();
         pickBlackCard();
-        createDummySelections();
+        if(king != null) {
+            createDummySelections();
+        }
         distributeWhiteCards();
     }
 
@@ -50,6 +52,27 @@ public class Game implements Serializable {
     public void update(){
         giveCardsToKing();
     }
+    public boolean endTurn(){
+        if (king.getWinner() != null){
+            winningSubmission = king.getWinner();
+            Player winner = winningSubmission.getPlayer();
+            winner.givePoint();
+            king = setKing();
+            pickBlackCard();
+            resetPlayers();
+            distributeWhiteCards();
+            return true;
+        }
+        return false;
+    }
+
+    private void resetPlayers() {
+        for (Player p : players) {
+            p.reset();
+        }
+    }
+
+
     //gives each player 10 cards from selected expansion
     private void distributeWhiteCards() {
         for (Player p : players) {
@@ -120,5 +143,13 @@ public class Game implements Serializable {
 
     public BlackCard getBlackCard() {
         return blackCard;
+    }
+
+    public boolean turnEnded() {
+        return endTurn;
+    }
+
+    public Submission getWinner() {
+        return winningSubmission;
     }
 }

@@ -24,11 +24,4 @@ public class Submission implements Serializable{
     public List<WhiteCard> getWhiteCards() {
         return whiteCards;
     }
-
-    public void setSelection(boolean selection) {
-        this.selected = selection;
-    }
-    public boolean isSelected() {
-        return selected;
-    }
 }
