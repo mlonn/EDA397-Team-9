@@ -156,7 +156,5 @@ public class GameLogicInstrumentedTest {
                 p1.setScore(0);
             }
         }
-
-
     }
 }
