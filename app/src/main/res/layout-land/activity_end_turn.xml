@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:background="@drawable/background_port"
+    android:background="@drawable/background_land"
     android:baselineAligned="false"
     android:orientation="vertical"
     android:scaleType="centerCrop"
@@ -27,11 +27,11 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="2dp"
             android:fontFamily="serif-monospace"
             android:text="End turn"
             android:textAlignment="center"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="0dp" />
@@ -40,12 +40,12 @@
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:adjustViewBounds="true"
             android:src="@drawable/black_card"
             android:layout_below="@+id/textView"
-            android:layout_centerHorizontal="true"
-            android:contentDescription="Black Card" />
+            android:contentDescription="Black Card"
+            android:layout_marginLeft="30dp"/>
 
         <TextView
             android:id="@+id/textviewWinningBlackCard"
@@ -53,7 +53,8 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/imageView"
             android:layout_alignTop="@+id/imageView"
-            android:layout_centerHorizontal="true"
+            android:layout_alignLeft="@+id/imageView"
+            android:layout_alignRight="@+id/imageView"
             android:gravity="center"
             android:text="BlackCardText"
             android:textAlignment="center" />
@@ -62,12 +63,12 @@
             android:id="@+id/winnerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/imageView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="19dp"
             android:text="Winner: "
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_alignTop="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView"
+            android:layout_marginStart="163dp" />
 
     </RelativeLayout>
 

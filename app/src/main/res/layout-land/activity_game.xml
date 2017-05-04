@@ -7,53 +7,57 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:background="@drawable/background_port"
+    android:background="@drawable/background_land"
     android:baselineAligned="false"
     android:orientation="vertical"
     android:scaleType="centerCrop"
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="25dp">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp"
-        android:id="@+id/relativeLayout">
+        tools:layout_editor_absoluteY="12dp">
 
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:fontFamily="serif-monospace"
             android:text="Choose a white card"
             android:textAlignment="center"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="0dp"
-            android:layout_marginTop="20dp"/>
+            tools:layout_editor_absoluteY="0dp" />
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
             android:adjustViewBounds="true"
+            android:contentDescription="Black Card"
             android:src="@drawable/black_card"
             android:layout_below="@+id/textView"
-            android:layout_centerHorizontal="true"
-            android:contentDescription="Black Card" />
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="25dp" />
 
         <TextView
             android:id="@+id/textviewBlackCard"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/imageView"
+            android:layout_alignBottom="@+id/imageView"
+            android:layout_alignLeft="@+id/imageView"
+            android:layout_alignRight="@+id/imageView"
             android:layout_alignTop="@+id/imageView"
-            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:gravity="center"
             android:text="BlackCardText"
             android:textAlignment="center" />
@@ -62,16 +66,20 @@
             android:id="@+id/pickTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
             android:text="Pick : X"
-            android:layout_marginTop="150dp"
-            android:layout_marginLeft="280dp" />
+            android:layout_alignTop="@+id/submit_button"
+            android:layout_alignStart="@+id/imageView"
+            android:layout_marginStart="55dp" />
 
         <HorizontalScrollView
             android:id="@+id/whiteCardsScroll"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
-            android:layout_above="@+id/submit_button"
-            android:layout_alignParentStart="true">
+            android:layout_height="200dp"
+            android:layout_marginLeft="200dp"
+            android:layout_alignTop="@+id/imageView"
+            android:layout_alignBottom="@+id/imageView"
+            android:layout_above="@+id/submit_button">
 
 
             <!--
@@ -102,13 +110,12 @@
             android:id="@+id/submit_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif-smallcaps"
-            android:text="Submit Cards" />
+            android:text="Submit Cards"
+            android:layout_marginStart="134dp"
+            android:layout_below="@+id/imageView"
+            android:layout_alignStart="@+id/whiteCardsScroll" />
     </RelativeLayout>
-
-
 
 
 </android.support.constraint.ConstraintLayout>
