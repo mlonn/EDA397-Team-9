@@ -7,12 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
@@ -23,13 +25,16 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 
 public class BlackCardAdapter extends BaseAdapter {
     private final BlackCard blackCard;
+    private final Player king;
     private Context context;
     private ArrayList<Submission> submissions;
     private static LayoutInflater inflater = null;
-    public BlackCardAdapter(Context context, BlackCard blackCard, List<Submission> submissions){
+    private int selectedPosition = 0;
+    public BlackCardAdapter(Context context, BlackCard blackCard, List<Submission> submissions, Player king){
         this.context = context;
         this.submissions = (ArrayList<Submission>) submissions;
         this.blackCard = blackCard;
+        this.king = king;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     @Override
@@ -49,6 +54,7 @@ public class BlackCardAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+
         View view = convertView;
         Holder holder = null;
         if (view == null) {
@@ -56,10 +62,24 @@ public class BlackCardAdapter extends BaseAdapter {
             holder = new Holder();
             holder.cardImage = (ImageView) view.findViewById(R.id.blackCardImageView);
             holder.cardText = (TextView) view.findViewById(R.id.blackCardTextView);
+            holder.cardRadioButton = (RadioButton) view.findViewById(R.id.blackCardRadioButton);
+            king.setWinner(submissions.get(0));
             view.setTag(holder);
         } else {
             holder = (Holder) view.getTag();
+            holder.cardRadioButton.setOnCheckedChangeListener(null);
         }
+        holder.cardRadioButton.setFocusable(false);
+        holder.cardRadioButton.setTag(position);
+        holder.cardRadioButton.setChecked(selectedPosition == position);
+        holder.cardRadioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedPosition = (Integer) v.getTag();
+                king.setWinner(submissions.get(selectedPosition));
+                notifyDataSetChanged();
+            }
+        });
         holder.cardText.setText(Html.fromHtml(getBlackCardText(blackCard, submissions.get(position).getWhiteCards())));
         return view;
     }
@@ -84,6 +104,7 @@ public class BlackCardAdapter extends BaseAdapter {
     private static class Holder {
         TextView cardText;
         ImageView cardImage;
+        RadioButton cardRadioButton;
     }
 }
 
