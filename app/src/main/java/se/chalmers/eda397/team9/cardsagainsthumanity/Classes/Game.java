@@ -36,8 +36,11 @@ public class Game implements Serializable {
             for (int j = 0; j < blackCard.getPick(); j++){
                 CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
                 WhiteCard whiteCard = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
+                WhiteCard whiteCard2 = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
                 p.addWhiteCard(whiteCard);
+                p.addWhiteCard(whiteCard2);
                 p.addCardToSelected(whiteCard);
+                p.addCardToSelected(whiteCard2);
                 players.add(p);
             }
             p.submitSelection();
@@ -82,10 +85,26 @@ public class Game implements Serializable {
             }
         }
     }
-    //Selects a random black card from selected expansioons
+    //Selects a random black card from selected expansions
     private void pickBlackCard() {
+        //Remove temporarily all expansions which don't possess any black cards from being picked
+        List<CardExpansion> tempRemovedExp = new ArrayList<>();
+        for (CardExpansion expansion:cardExpansions)
+        {
+            if(expansion.getBlackCards().size() == 0){
+                tempRemovedExp.add(expansion);
+            }
+        }
+        cardExpansions.removeAll(tempRemovedExp);
+
+        //Pick black card
         CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
         blackCard = exp.getBlackCards().get(r.nextInt(exp.getBlackCards().size()));
+
+        //Add expansions back again to list of picked card expansions
+        for (CardExpansion expansion:tempRemovedExp){
+            cardExpansions.add(expansion);
+        }
     }
     private Player setKing() {
         //Set all players to not being king

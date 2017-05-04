@@ -28,6 +28,8 @@ public class PlayerRowLayout extends LinearLayout {
     private String color;
     private String deviceAddress;
 
+    private int margin = convertDpToPixels(5, getContext());
+
     public static final Integer CONNECTING = 0;
     public static final Integer CONNECTED = 1;
 
@@ -43,7 +45,7 @@ public class PlayerRowLayout extends LinearLayout {
         imageView = (ImageView) findViewById(R.id.player_image);
 
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        param.setMargins(10,10,10,10); //Margins for the boxes that contain the players' names (except king)
+        param.setMargins(margin/2, margin, margin/2, margin); //Margins for the boxes that contain the players' names (except king)
         param.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1);
         setLayoutParams(param);
 
@@ -54,7 +56,7 @@ public class PlayerRowLayout extends LinearLayout {
 
         //int test = ((Layout) this.getParent()).getWidth();
         this.setMinimumWidth(screenWidth/2-50); // Pixel (screenWidth/2-50) !!!!!!! Change with dpMin
-        param.width = screenWidth/2-(convertDpToPixels(15, getContext()));
+        param.width = screenWidth/2-2*margin;
 
         textView.setWidth(screenWidth/2-(convertDpToPixels(90, getContext())));
         setBackgroundResource(R.drawable.player_row_item_background);
@@ -91,18 +93,15 @@ public class PlayerRowLayout extends LinearLayout {
         init();
     }
 
-    //King's row
+    //Host's row
     public void setAsHost(){
 
-        //ImageView imgKing = (ImageView) findViewById(R.id.kingIcon);
-
         setMinimumWidth(screenWidth);
-
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        param.setMargins(10,10,10,10); //Margins for the boxe that contain the king's name
+        param.setMargins(margin/2, margin, margin/2, margin); //Margins for the boxe that contain the host's name
         param.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 2);
         setLayoutParams(param);
-
+        textView.setWidth(screenWidth-(convertDpToPixels(90, getContext())));
         setBackgroundResource(R.drawable.host_row_item_background);
 
     }
@@ -128,6 +127,18 @@ public class PlayerRowLayout extends LinearLayout {
         if(status == CONNECTED){
             textView.setTextColor(Color.parseColor(CONNECTED_COLOR));
         }
+    }
+
+    public void setKing () {
+        ImageView kingIcon = (ImageView) findViewById(R.id.king_icon);
+        kingIcon.setVisibility(VISIBLE);
+
+    }
+
+    public void setScore (int score) {
+        TextView scoreText = (TextView) findViewById(R.id.player_score);
+        scoreText.setText("" + score);
+
     }
 
     public String getPlayerId(){

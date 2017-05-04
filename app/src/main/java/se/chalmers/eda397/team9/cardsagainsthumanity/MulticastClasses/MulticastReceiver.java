@@ -17,14 +17,12 @@ public abstract class MulticastReceiver<A, B, C> extends AsyncTask<A, B, C> impl
     private InetAddress group;
     private PropertyChangeSupport pcs;
 
-
     public MulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s, InetAddress group){
         this.mcLock = mcLock;
         this.s = s;
         this.group = group;
         pcs = new PropertyChangeSupport(this);
         startMulticastLock();
-
     }
 
     public InetAddress getGroup(){
