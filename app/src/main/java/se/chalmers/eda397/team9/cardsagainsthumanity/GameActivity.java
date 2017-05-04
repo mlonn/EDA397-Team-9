@@ -20,7 +20,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +27,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
@@ -46,12 +47,11 @@ public class GameActivity extends AppCompatActivity {
 
     public ArrayList<WhiteCard> whiteCards;
 
-
     ImageButton favoriteButtons[];
-
     private Game game;
     private Player player;
     private Boolean[] selectedCards;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,14 +64,39 @@ public class GameActivity extends AppCompatActivity {
         } else {
             initPlayer();
         }
+
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                updateGame();
+            }
+
+        }, 0, 200);
+
+    }
+
+    private void updateGame() {
+        game.update();
     }
 
     private void initKing() {
-
         setContentView(R.layout.activity_king);
         ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
-        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions()));
-
+        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions(), player));
+        Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
+        endTurnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (game.endTurn()) {
+                    Intent intent = new Intent(getApplicationContext(), EndTurnActivity.class);
+                    intent.putExtra(IntentType.THIS_GAME, game);
+                    intent.putExtra(IntentType.WINNING_STRING, updateBlackCardText(game.getWinner().getWhiteCards()));
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     private void initPlayer() {
@@ -149,7 +174,7 @@ public class GameActivity extends AppCompatActivity {
             if (game.getBlackCard().getPick() == player.getSelectedCards().size()) {
                 player.submitSelection();
             } else {
-                Toast.makeText(getApplicationContext(), "Please select " + game.getBlackCard().getPick() + " cards.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Please select a winner", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -236,8 +261,8 @@ public class GameActivity extends AppCompatActivity {
 
     private String updateBlackCardText(List<WhiteCard> whiteCards) {
         String[] blackText = game.getBlackCard().getText().split("_");
+        StringBuilder sb = new StringBuilder();
         if (blackText.length>1) {
-            StringBuilder sb = new StringBuilder();
             for (int j = 0; j < blackText.length; j++) {
                 sb.append(blackText[j]);
                 if (j < whiteCards.size()) {
@@ -246,9 +271,8 @@ public class GameActivity extends AppCompatActivity {
                     sb.append("_");
                 }
             }
-            return sb.toString();
         }
-        return null;
+        return sb.toString();
     }
 
     //Main menu

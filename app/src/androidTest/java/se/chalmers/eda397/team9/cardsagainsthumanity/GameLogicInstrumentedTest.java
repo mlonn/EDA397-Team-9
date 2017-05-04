@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.support.test.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
@@ -56,6 +58,7 @@ public class GameLogicInstrumentedTest {
     boolean kingExists;
 
     Random random;
+    BlackCard blackCard;
 
     @Before
     public void setUpInitGame(){
@@ -119,33 +122,91 @@ public class GameLogicInstrumentedTest {
         }
         assertEquals(kingExists, true);
     }
+
+    @After
+    public void tearDownInitGame(){
+        game = null;
+        cardExpansions = null;
+        kingExists = false;
+    }
+
     @Before
     public void setUpPlayGame(){
         random = new Random();
+        cardExpansions = CardHandler.getExpansions(InstrumentationRegistry.getTargetContext());
+        CardExpansion expansion = cardExpansions.get(random.nextInt(cardExpansions.size()));
+        blackCard = expansion.getBlackCards().get(random.nextInt(expansion.getBlackCards().size()));
     }
 
     @Test
     public void testPlayGame(){
         for (Player p: playerList) {
             if(!p.isKing()){
+                //If dummy players exists and are added to the playerlist outside this class, reset their selected cards
+                p.resetSubmission();
+                while(p.getSelectedCards().size() != 0){
+                    p.removeCardFromSelected(p.getSelectedCards().get(0));
+                }
+
                 ArrayList<WhiteCard> playerWhiteCard;
                 playerWhiteCard = p.getWhiteCards();
-                WhiteCard w;
+                WhiteCard w = playerWhiteCard.get(random.nextInt(10));;
                 List<WhiteCard> whiteCardsToSubmit = new ArrayList<>();
 
-                for(int i = 0; i < 10; i++){
-                    w = playerWhiteCard.get(random.nextInt(10));
-                    p.addCardToSelected(w);
-                    whiteCardsToSubmit.add(w);
+                for(int i = 0; i < 1; i++){
+                    pickBlackCard();
+                    assertTrue(blackCard.getPick() > 0 && blackCard.getPick() < 4);
+
+                    while(p.getSelectedCards().size() < blackCard.getPick()){
+                        w = playerWhiteCard.get(random.nextInt(10));
+                        p.addCardToSelected(w);
+                        whiteCardsToSubmit.add(w);
+                    }
+
                     p.submitSelection();
 
+                    assertEquals(p.getSubmission().getWhiteCards().size(), blackCard.getPick());
+
                     Submission s = new Submission(p, whiteCardsToSubmit);
+                    int expected  = s.getWhiteCards().size();
+                    int actual = p.getSubmission().getWhiteCards().size();
+
                     assertEquals(s.getPlayer(), p.getSubmission().getPlayer());
-                    assertEquals(s.getWhiteCards(), p.getSubmission().getWhiteCards());
+                    assertEquals(s.getWhiteCards().size(), p.getSubmission().getWhiteCards().size());
+
                     whiteCardsToSubmit.remove(w);
                     p.removeCardFromSelected(w);
                 }
             }
+        }
+    }
+
+    @After
+    public void tearDownPlayGame(){
+        for (Player p: playerList){
+            p.resetSubmissions();
+            blackCard = null;
+        }
+    }
+
+    private void pickBlackCard(){
+        //Remove temporarily all expansions which don't possess any black cards from being picked
+        List<CardExpansion> tempRemovedExp = new ArrayList<>();
+        for (CardExpansion expansion:cardExpansions)
+        {
+            if(expansion.getBlackCards().size() == 0){
+                tempRemovedExp.add(expansion);
+            }
+        }
+        cardExpansions.removeAll(tempRemovedExp);
+
+        //Pick black card
+        CardExpansion exp = cardExpansions.get(random.nextInt(cardExpansions.size()));
+        blackCard = exp.getBlackCards().get(random.nextInt(exp.getBlackCards().size()));
+
+        //Add expansions back again to list of picked card expansions
+        for (CardExpansion expansion:tempRemovedExp){
+            cardExpansions.add(expansion);
         }
     }
 }
