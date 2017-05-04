@@ -31,6 +31,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastP
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ReliableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinner;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout;
@@ -284,9 +285,8 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             TableInfo hostTable = ((TableInfo) propertyChangeEvent.getNewValue());
             PlayerInfo newPlayerInfo = findPlayer(hostTable.getPlayerList(), myPlayerInfo);
 
-            if(newPlayerInfo != null)
+            if(newPlayerInfo != null) {
                 myPlayerInfo = newPlayerInfo;
-            for (int i = 0 ; i < 3; i++) {
                 MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
                         Message.Response.PLAYER_JOIN_SUCCESS, myPlayerInfo);
                 threadMap.put(PLAYER_ACCEPTED, new MulticastSender(mPackage, s, group).execute());

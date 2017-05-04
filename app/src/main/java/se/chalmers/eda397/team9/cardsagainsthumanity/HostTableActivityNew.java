@@ -38,6 +38,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ReliableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
@@ -353,6 +354,21 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
         });
     }
 
+    private void sendReliablePackage(final MulticastPackage object, final MulticastPackage expectedResponse,
+                                     final int maxRetries) {
+        Handler handler = new Handler(this.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                MulticastPackage mPackage = new MulticastPackage(object.getTarget(),
+                        object.getPackageType(), object);
+                threadList.add(new ReliableMulticastSender(mPackage, expectedResponse, maxRetries, s, group).
+                        executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
+            }
+        });
+    }
+
+
     //TODO: Class starts to get big, might consider creating a handler class
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
@@ -397,8 +413,12 @@ public class HostTableActivityNew extends AppCompatActivity implements PropertyC
                             }
                         });
                     connectedPlayers.add(newPlayer);
-                    sendPackage(myTableInfo.getHost().getDeviceAddress(),
+                    //TODO: Testing reliable multicast sender
+                    MulticastPackage mPackage = new MulticastPackage(newPlayer.getDeviceAddress(),
                             Message.Response.PLAYER_JOIN_ACCEPTED, myTableInfo);
+                    MulticastPackage expectedResponse = new MulticastPackage(myTableInfo.getHost().getDeviceAddress(),
+                            Message.Response.PLAYER_JOIN_SUCCESS, null);
+                    sendReliablePackage(mPackage, expectedResponse, 7);
                 }
             }
         }

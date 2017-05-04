@@ -105,7 +105,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
 
         /* Initialize the playerlist */
         psFragment.addHost(tableInfo.getHost());
-        psFragment.update(tableInfo);
+        psFragment.initializePlayers(tableInfo);
 
         /* Multicast receiver */
         playerReceiver = new PlayerMulticastReceiver(multicastLock, s, group, myPlayerInfo, true);
@@ -200,7 +200,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
 
     @Override
     public void propertyChange(final PropertyChangeEvent propertyChangeEvent) {
-
+        //If other player joins successfully, update my table
         if (propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_SUCCESS)) {
             android.os.Handler handler = new android.os.Handler(getMainLooper());
             handler.post(new Runnable() {
@@ -223,6 +223,11 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                 }
             });
         }
+        if (propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_READY)){
 
+        }
+        if (propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_NOT_READY)){
+
+        }
     }
 }
