@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 
@@ -54,11 +55,11 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                     for (Map.Entry<PlayerInfo, Integer> current : connectingPlayers.entrySet()) {
                         if (current.getValue() < maxRetries) {
                             current.setValue(current.getValue() + 1);
-                            getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_REQUESTED",
+                            getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_JOIN_REQUEST,
                                     null, current.getKey());
                         } else {
                             playersToRemove.add(current.getKey());
-                            getPropertyChangeSupport().firePropertyChange("PLAYER_TIMED_OUT",
+                            getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_TIMED_OUT,
                                     null, current.getKey());
                         }
                     }
@@ -80,33 +81,37 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
             Object packageObject = ((MulticastPackage) inMsg).getObject();
             Log.d("HMR", "Received a " + packageType);
 
-            if (targetAddress.equals(MulticastSender.Target.ALL_DEVICES)){
-                if(packageType.equals(MulticastSender.Type.GREETING)) {
-                    getPropertyChangeSupport().firePropertyChange("TABLE_REQUESTED", 0, 1);
+            if (targetAddress.equals(Message.Target.ALL_DEVICES)){
+                if(packageType.equals(Message.Type.REQUEST_ALL_TABLES)) {
+                    getPropertyChangeSupport().firePropertyChange(Message.Type.REQUEST_ALL_TABLES, 0, 1);
                     Log.d("HMR", "Sent table");
                 }
             }
 
             if (targetAddress.equals(hostInfo.getDeviceAddress())) {
-                if (packageType.equals(MulticastSender.Type.PLAYER_JOIN_REQUEST)) {
-                    getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_REQUESTED",
+                if (packageType.equals(Message.Type.PLAYER_JOIN_REQUEST)) {
+                    getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_JOIN_REQUEST,
                             null, packageObject);
                     connectingPlayers.put((PlayerInfo) packageObject, 0);
                     Log.d("HMR", "Player " + ((PlayerInfo) packageObject).getName() + " sent join request");
                 }
 
-                if (packageType.equals(MulticastSender.Type.PLAYER_JOIN_SUCCESS)) {
+                if (packageType.equals(Message.Response.PLAYER_JOIN_SUCCESS)) {
                     removePlayerFromMap(connectingPlayers, (PlayerInfo) packageObject);
-                    getPropertyChangeSupport().firePropertyChange("PLAYER_JOIN_SUCCESSFUL",
+                    getPropertyChangeSupport().firePropertyChange(Message.Response.PLAYER_JOIN_SUCCESS,
                             null, packageObject);
                 }
 
-                if (packageType.equals(MulticastSender.Type.PLAYER_READY))
-                    getPropertyChangeSupport().firePropertyChange("PLAYER_READY",
+                if (packageType.equals(Message.Type.PLAYER_READY))
+                    getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_READY,
                             null, packageObject);
 
-                if (packageType.equals(MulticastSender.Type.PLAYER_NOT_READY))
-                    getPropertyChangeSupport().firePropertyChange("PLAYER_NOT_READY",
+                if (packageType.equals(Message.Type.PLAYER_NOT_READY))
+                    getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_NOT_READY,
+                            null, packageObject);
+
+                if (packageType.equals(Message.Type.PLAYER_INTERVAL_UPDATE))
+                    getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_INTERVAL_UPDATE,
                             null, packageObject);
             }
         }

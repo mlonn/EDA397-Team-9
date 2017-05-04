@@ -1,14 +1,8 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses;
 
 import android.net.wifi.WifiManager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.Toast;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -20,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
-import se.chalmers.eda397.team9.cardsagainsthumanity.R;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
@@ -43,8 +37,8 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        getPropertyChangeSupport().firePropertyChange("REQUEST_TABLES", 0, 1);
-        getPropertyChangeSupport().firePropertyChange("START_REFRESHING", 0, 1);
+        getPropertyChangeSupport().firePropertyChange(Message.Type.REQUEST_ALL_TABLES, 0, 1);
+        getPropertyChangeSupport().firePropertyChange(Message.Type.START_REFRESHING, 0, 1);
     }
 
     @Override
@@ -63,7 +57,7 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
         int marginOfError = 3;
 
         try {
-            getSocket().setSoTimeout(500);
+            getSocket().setSoTimeout(1000);
         } catch (SocketException e) {
             counter++;
         }
@@ -76,7 +70,7 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
                 msg = Serializer.deserialize(recv.getData());
             } catch (IOException e) {
                 if(/* !newTables.equals(tables) && */ counter < marginOfError) {
-                    getPropertyChangeSupport().firePropertyChange("REQUEST_TABLES", 0, 1);
+                    getPropertyChangeSupport().firePropertyChange(Message.Type.REQUEST_ALL_TABLES, 0, 1);
                 }
                 Log.d("CMReceiver", "Trying to receive datagram again (try " + counter + ")");
                 counter++;
@@ -88,12 +82,14 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
             }
 
             if (msg instanceof MulticastPackage) {
-                String targetAddress = (String) ((MulticastPackage) msg).getTarget();
-                String packageName = (String) ((MulticastPackage) msg).getPackageType();
+                String targetAddress = ((MulticastPackage) msg).getTarget();
+                String packageName = ((MulticastPackage) msg).getPackageType();
                 Object packageObject = ((MulticastPackage) msg).getObject();
+
                 Log.d("FindTableReceiver", packageName);
-                if(targetAddress.equals(MulticastSender.Target.ALL_DEVICES)){
-                    if(packageName.equals(MulticastSender.Type.HOST_TABLE)){
+
+                if(targetAddress.equals(Message.Target.ALL_DEVICES)){
+                    if(packageName.equals(Message.Response.HOST_TABLE)){
                         Log.d("CMReceiver", "Message received: " + msg);
                         newTables.put(((TableInfo) packageObject).getName(), (TableInfo) packageObject);
                     }
@@ -105,7 +101,7 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
     @Override
     protected void onPostExecute(Map<String, TableInfo> tables) {
         super.onPostExecute(tables);
-        getPropertyChangeSupport().firePropertyChange("STOP_REFRESHING", 0, 1);
+        getPropertyChangeSupport().firePropertyChange(Message.Type.STOP_REFRESHING, 0, 1);
         updateTable();
     }
 
@@ -121,7 +117,7 @@ public class FindTableMulticastReceiver extends MulticastReceiver<Object, Void, 
             list.add(current.getValue());
         }
 
-        getPropertyChangeSupport().firePropertyChange("TABLES_UPDATED", null, list);
+        getPropertyChangeSupport().firePropertyChange(Message.Type.SPINNER_UPDATE_TABLE, null, list);
     }
 
     @Override

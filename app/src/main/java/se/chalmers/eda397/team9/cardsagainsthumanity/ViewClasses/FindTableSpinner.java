@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +44,7 @@ public class FindTableSpinner extends android.support.v7.widget.AppCompatSpinner
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals("TABLES_UPDATED")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.SPINNER_UPDATE_TABLE)){
             if(propertyChangeEvent.getNewValue() instanceof List) {
                 @SuppressWarnings("unchecked")
                 List<TableInfo> list = (List<TableInfo>) propertyChangeEvent.getNewValue();
