@@ -3,6 +3,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -46,6 +47,8 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
+
+import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
 public class PlayerTableActivity extends AppCompatActivity implements PropertyChangeListener{
 
@@ -173,6 +176,9 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        String username = prefs.getString("name", null);
+        menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
 
@@ -180,13 +186,11 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.changeName:
-                Intent intent = new Intent(this, IndexActivity.class);
+            case profile:
+                Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.changeTable:
-                //Do something
-                return true;
+
             case R.id.settings:
                 //Do something
                 return true;
