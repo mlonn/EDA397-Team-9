@@ -1,20 +1,17 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.File;
-import java.util.List;
+import java.util.UUID;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
@@ -68,7 +65,8 @@ public class IndexActivity extends AppCompatActivity {
     private void goToLobby() {
         /* Get device address */
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        String deviceAddress = wifiManager.getConnectionInfo().getMacAddress();
+        String deviceAddress = UUID.randomUUID().toString();
+
 
         /* Get stored username */
         SharedPreferences prefs = getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
