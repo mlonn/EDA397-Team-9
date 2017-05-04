@@ -156,7 +156,7 @@ public class GameLogicInstrumentedTest {
                 p1.setScore(0);
             }
         }
-        // Now, we can try another round!
+
 
     }
 }
