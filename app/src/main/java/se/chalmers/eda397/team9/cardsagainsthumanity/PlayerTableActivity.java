@@ -41,6 +41,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
@@ -117,8 +118,8 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         psFragment.addAllPlayers(tableInfo.getPlayerList());
 
         /* Multicast receiver */
-        playerReceiver = (PlayerMulticastReceiver) getIntent().
-                getSerializableExtra(IntentType.MULTICAST_RECEIVER);
+        playerReceiver = new PlayerMulticastReceiver(multicastLock, s, group, myPlayerInfo, true);
+
         if(playerReceiver != null){
             playerReceiver.addPropertyChangeListener(this);
         }
@@ -136,13 +137,13 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                     psFragment.setReady(myPlayerInfo, false);
                     //TODO: Consider interval sender
                     MulticastPackage ready = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
-                            MulticastSender.Type.PLAYER_READY, myPlayerInfo);
+                            Message.Type.PLAYER_READY, myPlayerInfo);
                     new MulticastSender(ready, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }else {
                     myPlayerInfo.setReady(true);
                     psFragment.setReady(myPlayerInfo, true);
                     MulticastPackage unReady = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
-                            MulticastSender.Type.PLAYER_NOT_READY, myPlayerInfo);
+                            Message.Type.PLAYER_NOT_READY, myPlayerInfo);
                     new MulticastSender(unReady, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             }
@@ -207,17 +208,24 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals("TABLE_INTERVAL_UPDATE")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.TABLE_INTERVAL_UPDATE)){
             if(tableInfo.equals(propertyChangeEvent.getNewValue())){
                 return;
             }
             psFragment.update((TableInfo) propertyChangeEvent.getNewValue());
         }
 
-        if(propertyChangeEvent.getPropertyName().equals("SEND_PLAYER_UPDATE")){
+        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_INTERVAL_UPDATE)){
             MulticastPackage playerUpdate = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
-                    MulticastSender.Type.PLAYER_INTERVAL_UPDATE, myPlayerInfo);
+                    Message.Type.PLAYER_INTERVAL_UPDATE, myPlayerInfo);
             new MulticastSender(playerUpdate, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
+
+
+        if(propertyChangeEvent.getPropertyName().equals(Message.Response.OTHER_PLAYER_JOIN_ACCEPTED)){
+            tableInfo = (TableInfo) propertyChangeEvent.getNewValue();
+            psFragment.update(tableInfo);
+        }
+
     }
 }

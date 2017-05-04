@@ -10,6 +10,8 @@ import android.util.Log;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
+
 public class WiFiBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager wifiManager;
@@ -53,7 +55,7 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
             if(deviceAddress == null) {
                 WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
                 deviceAddress = device.deviceAddress;
-                pcs.firePropertyChange("DEVICE_ADDRESS_FOUND", null, deviceAddress);
+                pcs.firePropertyChange(Message.Type.MY_DEVICE_ADDRESS_FOUND, null, deviceAddress);
             }
         }
     }
