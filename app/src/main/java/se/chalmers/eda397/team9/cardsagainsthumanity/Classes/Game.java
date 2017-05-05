@@ -134,9 +134,9 @@ public class Game implements Serializable {
         return (king.getSubmissions().size() == (players.size()-1) * blackCard.getPick());
     }
 
-    public PlayerInfo getPlayerByUserName(String name) {
+    public PlayerInfo getPlayerByUUID(String UUID) {
         for (PlayerInfo p : players) {
-            if (p.getName().equals(name)) {
+            if (p.getUUID().equals(UUID)) {
                 return p;
             }
         }

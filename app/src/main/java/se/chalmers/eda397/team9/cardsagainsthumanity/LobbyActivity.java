@@ -140,12 +140,13 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
                     intent.putExtra(IntentType.THIS_TABLE, fakeTable);
                     intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
                     startActivity(intent);
+                    finish();
                     return;
                 }
 
                 Toast.makeText(LobbyActivity.this, "Attempting to join selected table", Toast.LENGTH_SHORT).show();
                 MulticastReceiver playerMulticastReceiver = new PlayerMulticastReceiver(multicastLock,
-                        s, group, myPlayerInfo);
+                        s, group, myPlayerInfo, selectedTable);
                 playerMulticastReceiver.addPropertyChangeListener(tableSpinner);
                 playerMulticastReceiver.addPropertyChangeListener(LobbyActivity.this);
                 threadMap.put(PLAYER_RECEIVER, playerMulticastReceiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
@@ -203,11 +204,13 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
     public void onResume(){
         super.onResume();
         initMulticastSocket();
+        playerTableActivityOpened = false;
     }
 
     @Override
     public void onPause(){
         super.onPause();
+        playerTableActivityOpened = false;
         closeConnection();
     }
 

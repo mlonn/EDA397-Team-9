@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,6 +17,7 @@ public class P2pManager {
     private WifiP2pManager.Channel channel;
     private IntentFilter mIntentFilter;
     private AppCompatActivity activity;
+    private WifiP2pGroup group;
     WiFiBroadcastReceiver receiver;
 
     public P2pManager(AppCompatActivity activity){
@@ -46,7 +48,9 @@ public class P2pManager {
     public void connect(WifiP2pConfig config, WifiP2pManager.ActionListener actionListener){
         manager.connect(channel, config, actionListener);
     }
-
+    public WifiP2pManager getManager(){
+        return manager;
+    }
     public void disconnect(){
         manager.cancelConnect(channel, new WifiP2pManager.ActionListener(){
 
@@ -110,5 +114,9 @@ public class P2pManager {
                 }
             });
         }
+    }
+
+    public WifiP2pManager.Channel getChannel() {
+        return channel;
     }
 }

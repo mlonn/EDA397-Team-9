@@ -24,6 +24,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
@@ -32,6 +36,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
+import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 
 import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
@@ -57,8 +62,10 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     private PlayerStatisticsFragment psFragment;
 
     /* Class variables */
+    private boolean gameStarted;
     private TableInfo tableInfo;
     private PlayerInfo myPlayerInfo;
+    private ArrayList<CardExpansion> expansions;
     private IntentFilter mIntentFilter;
     private WiFiBroadcastReceiver receiver;
     private ArrayList<WifiP2pDevice> peers;
@@ -106,7 +113,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         psFragment.initializePlayers(tableInfo);
 
         /* Multicast receiver */
-        playerReceiver = new PlayerMulticastReceiver(multicastLock, s, group, myPlayerInfo, true);
+        playerReceiver = new PlayerMulticastReceiver(multicastLock, s, group, myPlayerInfo, true,tableInfo);
         playerReceiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         if (playerReceiver != null) {
@@ -122,6 +129,10 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                 finish();
             }
         });
+
+        expansions = new ArrayList<CardExpansion>();
+
+        gameStarted = false;
     }
 
     /* Activity overrides */
@@ -145,6 +156,8 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -175,6 +188,39 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     @Override
     public void propertyChange(final PropertyChangeEvent propertyChangeEvent) {
         //If other player joins successfully, update my table
+        if (propertyChangeEvent.getPropertyName().equals(Message.Type.GAME_STARTED)) {
+            ArrayList<CardExpansion> exp = CardHandler.getExpansions(getApplicationContext());
+            ArrayList<String> expansionNames = (ArrayList<String>) propertyChangeEvent.getNewValue();
+            for (CardExpansion e : exp) {
+                for (String s : expansionNames) {
+                    if (e.getName().equals(s)) {
+                        expansions.add(e);
+                    }
+                }
+            }
+
+            android.os.Handler handler = new android.os.Handler(getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    MulticastPackage mPackage = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
+                    new MulticastSender(mPackage, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+
+            });
+            if (!gameStarted) {
+                ArrayList<PlayerInfo> playerList = new ArrayList<PlayerInfo>();
+                playerList.addAll(tableInfo.getPlayerList());
+                playerList.add(tableInfo.getHost());
+                Intent intent = new Intent(PlayerTableActivity.this.getApplicationContext(), GameActivity.class);
+                Game game = new Game(playerList, expansions);
+                intent.putExtra(IntentType.THIS_GAME, game);
+                intent.putExtra(IntentType.TABLE_ADDRESS, tableInfo.getHost().getDeviceAddress());
+                startActivity(intent);
+                gameStarted = true;
+                finish();
+            }
+        }
         if (propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_CONFIRM)) {
             android.os.Handler handler = new android.os.Handler(getMainLooper());
             handler.post(new Runnable() {

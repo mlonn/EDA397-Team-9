@@ -62,15 +62,18 @@ public class CreateTableActivity extends AppCompatActivity {
                 TableInfo tableInfo = new TableInfo(tableNameText.getText().toString(), myPlayerInfo);
 
                 ArrayList<CardExpansion> exp = new ArrayList<CardExpansion>();
+                ArrayList<String> expansionNames = new ArrayList<String>();
                 for (CardExpansion e : expansions) {
                     if (e.isSelected())
                         exp.add(e);
+                    expansionNames.add(e.getName());
                 }
 
                 Intent intent = new Intent(view.getContext(), HostTableActivity.class);
 
                 intent.putExtra(IntentType.THIS_TABLE, tableInfo);
                 intent.putExtra(IntentType.THIS_EXPANSIONS, exp);
+                intent.putExtra(IntentType.THIS_EXPANSION_NAMES, expansionNames);
 
                 if (exp.size()>0) {
                     startActivity(intent);
