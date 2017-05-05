@@ -5,19 +5,25 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_port">
 
-    <LinearLayout
+    <RelativeLayout
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="6dp"
         android:orientation="vertical">
 
-        <fragment android:name="se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment"
-            android:id="@+id/playerFragment"
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_player_statistics">
-        </fragment>
+            android:fillViewport="true">
+            <fragment android:name="se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment"
+                android:id="@+id/playerFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout="@layout/fragment_player_statistics">
+            </fragment>
+        </ScrollView>
 
         <RelativeLayout
             android:id="@+id/playerlist_linear_layout"
@@ -53,6 +59,6 @@
 
         </RelativeLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>
 
