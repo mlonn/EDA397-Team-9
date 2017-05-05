@@ -29,15 +29,6 @@
             >
 
             <Button
-                android:id="@+id/ready_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="0dp"
-                android:layout_weight="1"
-                android:fontFamily="sans-serif-smallcaps"
-                android:text="Ready" />
-
-            <Button
                 android:id="@+id/leave_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

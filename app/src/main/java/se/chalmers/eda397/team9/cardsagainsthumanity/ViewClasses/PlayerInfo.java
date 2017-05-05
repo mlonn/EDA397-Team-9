@@ -14,8 +14,6 @@ public class PlayerInfo implements Serializable{
     int score;
     boolean isKing = false;
 
-    boolean isReady = false;
-
     public PlayerInfo(String name){
         this.name = name;
         color = "#000000";
@@ -50,16 +48,8 @@ public class PlayerInfo implements Serializable{
         return deviceAddress;
     }
 
-    public void setReady(boolean ready){
-        isReady = ready;
-    }
-
     public synchronized void setDeviceAddress(String deviceAddress){
         this.deviceAddress = deviceAddress;
-    }
-
-    public boolean isReady() {
-        return isReady;
     }
 
     @Override
@@ -73,9 +63,6 @@ public class PlayerInfo implements Serializable{
             return false;
         if(!color.equals(playerInfo.getColor()))
             return false;
-        if(isReady != playerInfo.isReady()){
-            return false;
-        }
         return true;
     }
 

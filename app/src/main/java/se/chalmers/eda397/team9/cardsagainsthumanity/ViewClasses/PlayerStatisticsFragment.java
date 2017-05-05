@@ -188,15 +188,7 @@ public class PlayerStatisticsFragment extends Fragment {
         playerInfo.setColor(color);
     }
 
-    /* Sets the player as ready */
-    public void setReady(PlayerInfo player, boolean ready){
-        PlayerRowLayout playerRow = findPlayerRow(playerRowList, player);
 
-        if(playerRow == null)
-            return;
-
-        playerRow.setReady(ready);
-    }
 
     /* Sets connection status of a player */
     public void setConnectionStatus(PlayerInfo player, int status){

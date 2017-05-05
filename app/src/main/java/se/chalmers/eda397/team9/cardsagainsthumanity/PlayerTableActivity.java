@@ -24,8 +24,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastReceiver;
@@ -116,29 +114,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         }
 
         /* Initialize views */
-        Button readyButton = (Button) findViewById(R.id.ready_button);
         Button leaveButton = (Button) findViewById(R.id.leave_button);
-
-        /* View listeners */
-        readyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (myPlayerInfo.isReady()) {
-                    myPlayerInfo.setReady(false);
-                    psFragment.setReady(myPlayerInfo, false);
-                    //TODO: Consider interval sender
-                    MulticastPackage ready = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
-                            Message.Type.PLAYER_READY, myPlayerInfo);
-                    new MulticastSender(ready, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                } else {
-                    myPlayerInfo.setReady(true);
-                    psFragment.setReady(myPlayerInfo, true);
-                    MulticastPackage unReady = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
-                            Message.Type.PLAYER_NOT_READY, myPlayerInfo);
-                    new MulticastSender(unReady, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-            }
-        });
 
         leaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -222,12 +198,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                     psFragment.update(tableInfo);
                 }
             });
-        }
-        if (propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_READY)){
-
-        }
-        if (propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_NOT_READY)){
-
         }
     }
 }

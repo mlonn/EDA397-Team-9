@@ -431,22 +431,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
             removePlayer((PlayerInfo) propertyChangeEvent.getNewValue());
         }
 
-        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_READY)){
-            PlayerInfo player = findPlayer(playerList, (PlayerInfo) propertyChangeEvent.getNewValue());
-            if(!player.isReady()) {
-                player.setReady(true);
-                psFragment.setReady(player, true);
-            }
-        }
-
-        if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_NOT_READY)){
-            PlayerInfo player = findPlayer(playerList, (PlayerInfo) propertyChangeEvent.getNewValue());
-            if(player.isReady()) {
-                player.setReady(false);
-                psFragment.setReady(player, false);
-            }
-        }
-
         if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_INTERVAL_UPDATE)){
             PlayerInfo playerUpdate = (PlayerInfo) propertyChangeEvent.getNewValue();
             PlayerInfo player = findPlayer(playerList, playerUpdate);
@@ -460,16 +444,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
 
             if(findPlayer(connectedPlayers, player) == null){
                 connectedPlayers.add(player);
-            }
-
-            if(playerUpdate.isReady() && !player.isReady()){
-                player.setReady(true);
-                psFragment.setReady(player, true);
-            }
-
-            if(!playerUpdate.isReady() && player.isReady()){
-                player.setReady(false);
-                psFragment.setReady(player, false);
             }
         }
     }
