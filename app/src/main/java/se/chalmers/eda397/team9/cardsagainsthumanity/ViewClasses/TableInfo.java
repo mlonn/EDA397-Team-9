@@ -37,7 +37,7 @@ public class TableInfo implements Serializable{
     public synchronized void addPlayer(PlayerInfo player) {
         boolean found = false;
         for(PlayerInfo current : playerList){
-            if(current.getDeviceAddress().equals(player.deviceAddress))
+            if(current.getDeviceAddress().equals(player.getDeviceAddress()))
                 found = true;
         }
 

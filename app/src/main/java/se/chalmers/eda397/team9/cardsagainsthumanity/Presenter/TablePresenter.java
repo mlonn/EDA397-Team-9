@@ -7,8 +7,6 @@ import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
@@ -20,17 +18,17 @@ public class TablePresenter {
     private AppCompatActivity activity;
 
     //Temporary, should exist in the game class.
-    private Map<String, Table> tables;
+    private Map<String, TableInfo> tables;
 
     private PropertyChangeSupport pcs;
 
     public TablePresenter(AppCompatActivity app){
-        tables = new HashMap<String, Table>();
+        tables = new HashMap<String, TableInfo>();
         pcs = new PropertyChangeSupport(this);
         activity = app;
     }
 
-    public TablePresenter(AppCompatActivity app, Map<String, Table> tables){
+    public TablePresenter(AppCompatActivity app, Map<String, TableInfo> tables){
         this(app);
         this.tables = tables;
     }
@@ -39,19 +37,11 @@ public class TablePresenter {
         pcs.addPropertyChangeListener(listener);
     }
 
-    private TableInfo convertToTableInfo(Table table){
-        return new TableInfo(table.getName(), new PlayerInfo(table.getHost()), table.getSize());
-    }
-
-    private Table convertToTable(TableInfo tableInfo){
-        PlayerInfo hostInfo = tableInfo.getHost();
-        return new Table(tableInfo.getName(), new Player(hostInfo.getName()));
-    }
 
     public TableInfo createTable(String name, PlayerInfo host){
-        Table table = new Table(name, activity);
+        TableInfo table = new TableInfo(name, host);
         tables.put(name, table);
-        return convertToTableInfo(table);
+        return table;
     }
 
     public void clearTables() {
@@ -60,7 +50,7 @@ public class TablePresenter {
 
     public void insertAll(Map<String, TableInfo> newTables) {
         for(Map.Entry<String, TableInfo> current : newTables.entrySet()){
-            Table toTable = convertToTable(current.getValue());
+            TableInfo toTable = current.getValue();
             tables.put(current.getValue().getName(), toTable);
         }
     }

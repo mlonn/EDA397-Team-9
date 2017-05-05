@@ -5,34 +5,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
+
 /**
  * Created by Mikae on 2017-04-21.
  */
 
 public class Game implements Serializable {
-    private ArrayList<Player> players;
-    private Player king;
+    private List<PlayerInfo> players;
+    private PlayerInfo king;
     private Submission winningSubmission;
     private BlackCard blackCard;
     private ArrayList<CardExpansion> cardExpansions;
     private Random r;
     private boolean endTurn;
 
-    public Game(ArrayList<Player> players, ArrayList<CardExpansion> cardExpansions) {
+    public Game(List<PlayerInfo> players, ArrayList<CardExpansion> cardExpansions) {
         r = new Random();
         this.players = players;
         this.cardExpansions = cardExpansions;
         king = setKing();
         pickBlackCard();
-        if(king != null) {
-            createDummySelections();
-        }
         distributeWhiteCards();
     }
 
     private void createDummySelections() {
         for (int i = 0; i < 5; i++) {
-            Player p = new Player("player");
+            PlayerInfo p = new PlayerInfo("player");
             for (int j = 0; j < blackCard.getPick(); j++){
                 CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
                 WhiteCard whiteCard = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
@@ -55,7 +54,7 @@ public class Game implements Serializable {
     public boolean endTurn(){
         if (king.getWinner() != null){
             winningSubmission = king.getWinner();
-            Player winner = winningSubmission.getPlayer();
+            PlayerInfo winner = winningSubmission.getPlayer();
             winner.givePoint();
             king = setKing();
             pickBlackCard();
@@ -67,7 +66,7 @@ public class Game implements Serializable {
     }
 
     private void resetPlayers() {
-        for (Player p : players) {
+        for (PlayerInfo p : players) {
             p.reset();
         }
     }
@@ -75,7 +74,7 @@ public class Game implements Serializable {
 
     //gives each player 10 cards from selected expansion
     private void distributeWhiteCards() {
-        for (Player p : players) {
+        for (PlayerInfo p : players) {
             while(p.getWhiteCards().size() < 10) {
                 CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
                 WhiteCard whiteCard = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
@@ -104,14 +103,14 @@ public class Game implements Serializable {
             cardExpansions.add(expansion);
         }
     }
-    public void setKing(Player player) {
+    public void setKing(PlayerInfo player) {
         players.remove(player);
-        Player king = setKing();
+        PlayerInfo king = setKing();
         players.add(player);
     }
-    public Player setKing() {
+    public PlayerInfo setKing() {
         //Set all players to not being king
-        for (Player p : players) {
+        for (PlayerInfo p : players) {
             p.setKing(false);
         }
         //Assign new king
@@ -124,7 +123,7 @@ public class Game implements Serializable {
     private void giveCardsToKing() {
         List<Submission> sub = new ArrayList<Submission>();
         king.resetSubmissions();
-        for (Player p : players) {
+        for (PlayerInfo p : players) {
             if(!p.equals(king)) {
                 sub.add(p.getSubmission());
             }
@@ -135,9 +134,9 @@ public class Game implements Serializable {
         return (king.getSubmissions().size() == (players.size()-1) * blackCard.getPick());
     }
 
-    public Player getPlayerByUserName(String name) {
-        for (Player p : players) {
-            if (p.getUsername().equals(name)) {
+    public PlayerInfo getPlayerByUserName(String name) {
+        for (PlayerInfo p : players) {
+            if (p.getName().equals(name)) {
                 return p;
             }
         }
