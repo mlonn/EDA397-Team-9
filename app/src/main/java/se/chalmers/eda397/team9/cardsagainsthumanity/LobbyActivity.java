@@ -31,7 +31,6 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastP
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ReliableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Presenter.TablePresenter;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSpinner;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.FindTableSwipeRefreshLayout;
@@ -52,6 +51,7 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
     private TablePresenter tpresenter;
     private PlayerInfo myPlayerInfo;
     private TableInfo selectedTable;
+    private boolean playerTableActivityOpened;
 
     /* MulticastSenders and MulticastReceivers */
     private final Integer FIND_TABLE_RECEIVER = 0;
@@ -73,6 +73,8 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
+
+        playerTableActivityOpened = false;
 
         /* Get my player information from intent */
         myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra(IntentType.MY_PLAYER_INFO);
@@ -216,7 +218,8 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
                     if(current.getKey() != PLAYER_RECEIVER)
                         current.getValue().cancel(true);
         }
-        s.close();
+        //TODO: Find solution here
+        //s.close();
     }
 
     //Main menu
@@ -285,19 +288,21 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             TableInfo hostTable = ((TableInfo) propertyChangeEvent.getNewValue());
             PlayerInfo newPlayerInfo = findPlayer(hostTable.getPlayerList(), myPlayerInfo);
 
+
             if(newPlayerInfo != null) {
                 myPlayerInfo = newPlayerInfo;
                 MulticastPackage mPackage = new MulticastPackage(selectedTable.getHost().getDeviceAddress(),
-                        Message.Response.PLAYER_JOIN_SUCCESS, myPlayerInfo);
+                        Message.Response.PLAYER_JOIN_CONFIRM, myPlayerInfo);
                 threadMap.put(PLAYER_ACCEPTED, new MulticastSender(mPackage, s, group).execute());
                 System.out.println("Sent player success");
             }
-
-
-            Intent intent = new Intent(this, PlayerTableActivity.class);
-            intent.putExtra(IntentType.THIS_TABLE, hostTable);
-            intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
-            startActivity(intent);
+            if(!playerTableActivityOpened) {
+                Intent intent = new Intent(this, PlayerTableActivity.class);
+                intent.putExtra(IntentType.THIS_TABLE, hostTable);
+                intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
+                startActivity(intent);
+            }
+            playerTableActivityOpened = true;
         }
 
         if(propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_DENIED)){

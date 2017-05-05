@@ -1,12 +1,4 @@
-import android.util.Log;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -17,7 +9,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
-import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
@@ -66,7 +57,7 @@ public class ReceiveMulticast {
         }
 
         MulticastPackage joinSuccessful = new MulticastPackage(hostTable.getHost().getDeviceAddress(),
-                Message.Response.PLAYER_JOIN_SUCCESS, player);
+                Message.Response.PLAYER_JOIN_CONFIRM, player);
 /*
         try {
             for(int i = 0; i < 3; i++){

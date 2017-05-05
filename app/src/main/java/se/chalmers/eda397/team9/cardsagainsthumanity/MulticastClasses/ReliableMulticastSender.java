@@ -47,7 +47,7 @@ public class ReliableMulticastSender extends AsyncTask{
         } catch (IOException e) {
             e.printStackTrace();
         }
-            Log.d("MultiSender", "Sent a " + mPackage.getPackageType() + " to " + mPackage.getTarget());
+            Log.d("ReliableMultiSender", "Sent a " + mPackage.getPackageType() + " to " + mPackage.getTarget());
     }
 
     @Override

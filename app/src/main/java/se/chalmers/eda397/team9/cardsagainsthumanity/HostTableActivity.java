@@ -44,7 +44,6 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.WiFiBroadcastRec
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
-import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerRowLayout;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
@@ -360,9 +359,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         handler.post(new Runnable() {
             @Override
             public void run() {
-                MulticastPackage mPackage = new MulticastPackage(object.getTarget(),
-                        object.getPackageType(), object);
-                threadList.add(new ReliableMulticastSender(mPackage, expectedResponse, maxRetries, s, group).
+                threadList.add(new ReliableMulticastSender(object, expectedResponse, maxRetries, s, group).
                         executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
             }
         });
@@ -410,21 +407,24 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
                             @Override
                             public void run() {
                                 addNewPlayer(newPlayer);
+
                             }
                         });
                     connectedPlayers.add(newPlayer);
                     //TODO: Testing reliable multicast sender
-                    MulticastPackage mPackage = new MulticastPackage(newPlayer.getDeviceAddress(),
+
+                    myTableInfo.addPlayer(newPlayer);
+
+                    MulticastPackage mPackage = new MulticastPackage(myTableInfo.getHost().getDeviceAddress(),
                             Message.Response.PLAYER_JOIN_ACCEPTED, myTableInfo);
                     MulticastPackage expectedResponse = new MulticastPackage(myTableInfo.getHost().getDeviceAddress(),
-                            Message.Response.PLAYER_JOIN_SUCCESS, null);
+                            Message.Response.PLAYER_JOIN_CONFIRM, null);
                     sendReliablePackage(mPackage, expectedResponse, 7);
                 }
             }
         }
 
-        if(propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_SUCCESS)){
-            setConnectionStatus((PlayerInfo) propertyChangeEvent.getNewValue(), PlayerRowLayout.CONNECTED);
+        if(propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_CONFIRM)){
         }
 
         if(propertyChangeEvent.getPropertyName().equals(Message.Type.PLAYER_TIMED_OUT)){
@@ -445,28 +445,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
             if(findPlayer(connectedPlayers, player) == null){
                 connectedPlayers.add(player);
             }
-        }
-    }
-
-    /* Sets the connection status of a player */
-    private void setConnectionStatus(final PlayerInfo player, int connectionStatus){
-        if (connectionStatus == PlayerRowLayout.CONNECTED) {
-            Handler mainHandler = new Handler(this.getMainLooper());
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                psFragment.setConnectionStatus(player, PlayerRowLayout.CONNECTED);
-                }
-            });
-        }
-        if (connectionStatus == PlayerRowLayout.CONNECTING){
-            Handler mainHandler = new Handler(this.getMainLooper());
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                psFragment.setConnectionStatus(player, PlayerRowLayout.CONNECTING);
-                }
-            });
         }
     }
 

@@ -43,10 +43,6 @@ public class PlayerStatisticsFragment extends Fragment {
     private PlayerRowLayout hostRow;
     private GridLayout playerGridLayout;
 
-    /* Connection status */
-    private final int CONNECTING = 0;
-    private final int CONNECTED = 1;
-
     /* Colors */
     private String[] colorArray = {
             "#f8c82d", "#fbcf61", "#ff6f6f",
@@ -129,7 +125,6 @@ public class PlayerStatisticsFragment extends Fragment {
         playerRow.setName(newPlayer.getName());
         playerRow.setImageColor(newPlayer.getColor());
         playerRow.setPlayerId(newPlayer.getDeviceAddress());
-        playerRow.setConnectionStatus(0);
         playerRow.setScore(newPlayer.getScore());
 
         //Gives the player the crown
@@ -144,8 +139,10 @@ public class PlayerStatisticsFragment extends Fragment {
     /* Adds host to the playerlist
     *  NOTE: Cannot be combined with the public version. */
     private void addHost(PlayerInfo hostInfo, View view){
-        assignRandomColor(hostInfo);
-        hostRow = addHostRow(hostInfo, view);
+        if(hostInfo.getColor().equals("#000000")){
+            assignRandomColor(hostInfo);
+        }
+        hostRow = addHostRow(hostInfo);
     }
 
     public void addHost(PlayerInfo hostInfo){
@@ -162,8 +159,8 @@ public class PlayerStatisticsFragment extends Fragment {
     }
 
     /* Adds a host row */
-    private PlayerRowLayout addHostRow(PlayerInfo playerInfo, View view){
-        PlayerRowLayout hostRow = new PlayerRowLayout(view.getContext());
+    private PlayerRowLayout addHostRow(PlayerInfo playerInfo){
+        PlayerRowLayout hostRow = new PlayerRowLayout(getContext());
         hostRow.setName(playerInfo.getName());
         hostRow.setAsHost();
         hostRow.setImageColor(playerInfo.getColor());
@@ -186,19 +183,6 @@ public class PlayerStatisticsFragment extends Fragment {
         String color = colorList.get(randomNumber);
         colorList.remove(randomNumber);
         playerInfo.setColor(color);
-    }
-
-
-
-    /* Sets connection status of a player */
-    public void setConnectionStatus(PlayerInfo player, int status){
-        PlayerRowLayout playerRow = findPlayerRow(playerRowList, player);
-        if(status == CONNECTED){
-            playerRow.setConnectionStatus(CONNECTED);
-        }
-        if(status == CONNECTING){
-            playerRow.setConnectionStatus(CONNECTING);
-        }
     }
 
     /* Currently not used */
@@ -232,7 +216,6 @@ public class PlayerStatisticsFragment extends Fragment {
             for (PlayerInfo current : tableInfo.getPlayerList()) {
                 PlayerRowLayout currentRow = addPlayer(current);
                 currentRow.setColor(current.getColor());
-                currentRow.setConnectionStatus(CONNECTED);
             }
         }
     }
@@ -262,11 +245,6 @@ public class PlayerStatisticsFragment extends Fragment {
                 playerRowList.remove(findPlayerRow(playerRowList, player));
             }
         });
-    }
-
-    public void setConnected(PlayerInfo player) {
-        PlayerRowLayout row = findPlayerRow(playerRowList, player);
-        row.setConnectionStatus(1);
     }
 
     /**
