@@ -177,14 +177,13 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     @Override
     public void propertyChange(final PropertyChangeEvent propertyChangeEvent) {
         //If other player joins successfully, update my table
-        if (propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_SUCCESS)) {
+        if (propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_CONFIRM)) {
             android.os.Handler handler = new android.os.Handler(getMainLooper());
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     PlayerInfo player = (PlayerInfo) propertyChangeEvent.getNewValue();
                     player = tableInfo.findPlayer(player);
-                    psFragment.setConnected(player);
                 }
             });
         }

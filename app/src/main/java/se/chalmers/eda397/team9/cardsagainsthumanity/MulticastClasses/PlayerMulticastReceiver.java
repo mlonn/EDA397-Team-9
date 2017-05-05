@@ -51,7 +51,7 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
             Object msg = null;
 
             try {
-                getSocket().setSoTimeout(500);
+                getSocket().setSoTimeout(1000);
             } catch (SocketException e) {
             }
 
@@ -70,9 +70,9 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
                 String type = ((MulticastPackage) msg).getPackageType();
                 Object packageObject = ((MulticastPackage) msg).getObject();
 
-                Log.d("PlayerMultRec", "Received a " + type + " from " + target);
-
+                Log.d("PlayerMultRec", "Received a " + type + " with destination " + target + " joined " + isJoined);
                 if(packageObject instanceof TableInfo) {
+                    Log.d("PlayerMultRec", target + " | " + ((TableInfo) packageObject).getHost().getDeviceAddress());
                     if (target.equals(((TableInfo) packageObject).getHost().getDeviceAddress())) {
                         //Someone else joins
                         if (isJoined) {
@@ -85,7 +85,6 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
                             if (type.equals(Message.Response.PLAYER_JOIN_ACCEPTED)) {
                                 getPropertyChangeSupport().firePropertyChange(Message.Response.SELF_PLAYER_JOIN_ACCEPTED,
                                         null, packageObject);
-                                isJoined = true;
                                 getPropertyChangeSupport().firePropertyChange(Message.Type.STOP_REFRESHING, 0, 1);
                             }
 

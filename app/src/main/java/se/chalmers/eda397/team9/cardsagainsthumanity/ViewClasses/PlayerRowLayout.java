@@ -22,19 +22,14 @@ public class PlayerRowLayout extends LinearLayout {
     private int screenWidth;
     private String color;
     private String deviceAddress;
-
-    private int margin = convertDpToPixels(5, getContext());
-
-    public static final Integer CONNECTING = 0;
-    public static final Integer CONNECTED = 1;
-
-    private static final String CONNECTED_COLOR = "#333333";
-    private static final String CONNECTING_COLOR = "#bbbbbb";
-
+    private int margin;
+    private Context context;
 
     //Players' rows
-    private void init(){
-        View.inflate(getContext(), R.layout.player_row, this);
+    private void init(Context context){
+        this.context = context;
+        margin = convertDpToPixels(5, context);
+        View.inflate(context, R.layout.player_row, this);
         textView = (TextView) findViewById(R.id.player_name);
         imageView = (ImageView) findViewById(R.id.player_image);
 
@@ -52,7 +47,7 @@ public class PlayerRowLayout extends LinearLayout {
         this.setMinimumWidth(screenWidth/2-50); // Pixel (screenWidth/2-50) !!!!!!! Change with dpMin
         param.width = screenWidth/2-2*margin;
 
-        textView.setWidth(screenWidth/2-(convertDpToPixels(90, getContext())));
+        textView.setWidth(screenWidth/2-(convertDpToPixels(90, context)));
         setBackgroundResource(R.drawable.player_row_item_background);
     }
 
@@ -69,33 +64,32 @@ public class PlayerRowLayout extends LinearLayout {
 
     public PlayerRowLayout(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public PlayerRowLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public PlayerRowLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
     public PlayerRowLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(context);
     }
 
     //Host's row
     public void setAsHost(){
-
         setMinimumWidth(screenWidth);
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
         param.setMargins(margin/2, margin, margin/2, margin); //Margins for the boxe that contain the host's name
         param.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 2);
         setLayoutParams(param);
-        textView.setWidth(screenWidth-(convertDpToPixels(90, getContext())));
+        textView.setWidth(screenWidth-(convertDpToPixels(90, context)));
         setBackgroundResource(R.drawable.host_row_item_background);
 
     }
@@ -111,16 +105,6 @@ public class PlayerRowLayout extends LinearLayout {
 
     public String getColor() {
         return color;
-    }
-
-    public void setConnectionStatus(int status){
-        if(status == CONNECTING){
-            textView.setTextColor(Color.parseColor(CONNECTING_COLOR));
-        }
-
-        if(status == CONNECTED){
-            textView.setTextColor(Color.parseColor(CONNECTED_COLOR));
-        }
     }
 
     public void setKing () {

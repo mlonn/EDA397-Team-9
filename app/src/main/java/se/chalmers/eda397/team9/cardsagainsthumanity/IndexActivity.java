@@ -58,6 +58,7 @@ public class IndexActivity extends AppCompatActivity {
     protected void createUsernameFile(String username2Save){
         SharedPreferences.Editor editor = getSharedPreferences("usernameFile", MODE_PRIVATE).edit();
         editor.putString("name", username2Save);
+        editor.putString("UUID", UUID.randomUUID().toString());
         editor.commit();
     }
 
@@ -65,11 +66,9 @@ public class IndexActivity extends AppCompatActivity {
     private void goToLobby() {
         /* Get device address */
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        String deviceAddress = UUID.randomUUID().toString();
-
-
         /* Get stored username */
         SharedPreferences prefs = getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        String deviceAddress = prefs.getString("UUID", null);
         String username = prefs.getString("name", null);
         PlayerInfo playerInfo = new PlayerInfo(username, deviceAddress);
 

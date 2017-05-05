@@ -20,7 +20,7 @@ public class Message {
         public static final String HOST_TABLE = "host_table_info";
         public static final String PLAYER_JOIN_ACCEPTED = "player_join_accepted";
         public static final String PLAYER_JOIN_DENIED = "player_join_denied";
-        public static final String PLAYER_JOIN_SUCCESS = "table_join_success";
+        public static final String PLAYER_JOIN_CONFIRM = "table_join_confirm";
         public static final String PLAYER_DISCONNECTED = "player_disconnected";
         public static final String OTHER_PLAYER_JOIN_ACCEPTED = "other_player_join_accepted";
         public static final String SELF_PLAYER_JOIN_ACCEPTED = "self_player_join_accepted";

@@ -8,7 +8,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +18,8 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>{
 
     private PlayerInfo hostInfo;
-    private Map<PlayerInfo, Integer> connectingPlayers;
     private final int maxRetries = 10;
+    private Map<PlayerInfo, Integer> connectingPlayers;
 
     public HostMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s,
                                  InetAddress group, PlayerInfo hostInfo) {
@@ -51,20 +50,12 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                  /* If join acceptance from player doesn't arrive, try sending out the table again.
                     After maxRetries, stop sending and inform listeners that the player timed out */
                 if(!connectingPlayers.isEmpty()) {
-                    ArrayList<PlayerInfo> playersToRemove = new ArrayList<>();
                     for (Map.Entry<PlayerInfo, Integer> current : connectingPlayers.entrySet()) {
                         if (current.getValue() < maxRetries) {
                             current.setValue(current.getValue() + 1);
                             getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_JOIN_REQUEST,
                                     null, current.getKey());
-                        } else {
-                            playersToRemove.add(current.getKey());
-                            getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_TIMED_OUT,
-                                    null, current.getKey());
                         }
-                    }
-                    for(PlayerInfo current : playersToRemove) {
-                        connectingPlayers.remove(current);
                     }
                 }
             }
@@ -92,13 +83,11 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                 if (packageType.equals(Message.Type.PLAYER_JOIN_REQUEST)) {
                     getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_JOIN_REQUEST,
                             null, packageObject);
-                    connectingPlayers.put((PlayerInfo) packageObject, 0);
                     Log.d("HMR", "Player " + ((PlayerInfo) packageObject).getName() + " sent join request");
                 }
 
-                if (packageType.equals(Message.Response.PLAYER_JOIN_SUCCESS)) {
-                    removePlayerFromMap(connectingPlayers, (PlayerInfo) packageObject);
-                    getPropertyChangeSupport().firePropertyChange(Message.Response.PLAYER_JOIN_SUCCESS,
+                if (packageType.equals(Message.Response.PLAYER_JOIN_CONFIRM)) {
+                    getPropertyChangeSupport().firePropertyChange(Message.Response.PLAYER_JOIN_CONFIRM,
                             null, packageObject);
                 }
 
