@@ -15,13 +15,13 @@ import java.util.Random;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo
+        ;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -32,27 +32,27 @@ import static junit.framework.Assert.assertTrue;
 public class GameLogicInstrumentedTest {
 
     Game game;
-    Player player1;
-    Player player2;
-    Player player3;
-    Player player4;
-    Player player5;
-    Player player6;
-    Player player7;
-    Player player8;
-    Player player9;
-    Player player10;
-    Player player11;
-    Player player12;
-    Player player13;
-    Player player14;
-    Player player15;
-    Player player16;
-    Player player17;
-    Player player18;
-    Player player19;
-    Player player20;
-    ArrayList<Player> playerList;
+    PlayerInfo player1;
+    PlayerInfo player2;
+    PlayerInfo player3;
+    PlayerInfo player4;
+    PlayerInfo player5;
+    PlayerInfo player6;
+    PlayerInfo player7;
+    PlayerInfo player8;
+    PlayerInfo player9;
+    PlayerInfo player10;
+    PlayerInfo player11;
+    PlayerInfo player12;
+    PlayerInfo player13;
+    PlayerInfo player14;
+    PlayerInfo player15;
+    PlayerInfo player16;
+    PlayerInfo player17;
+    PlayerInfo player18;
+    PlayerInfo player19;
+    PlayerInfo player20;
+    ArrayList<PlayerInfo> playerList;
     ArrayList<CardExpansion> cardExpansions;
     ArrayList<WhiteCard> whiteCards;
     boolean kingExists;
@@ -64,26 +64,26 @@ public class GameLogicInstrumentedTest {
     public void setUpInitGame(){
         whiteCards = new ArrayList<>();
         playerList = new ArrayList<>();
-        player1 = new Player("p1");
-        player2 = new Player("p2");
-        player3 = new Player("p3");
-        player4 = new Player("p4");
-        player5 = new Player("p5");
-        player6 = new Player("p6");
-        player7 = new Player("p7");
-        player8 = new Player("p8");
-        player9 = new Player("p9");
-        player10 = new Player("p10");
-        player11 = new Player("p11");
-        player12 = new Player("p12");
-        player13 = new Player("p13");
-        player14 = new Player("p14");
-        player15 = new Player("p15");
-        player16 = new Player("p16");
-        player17 = new Player("p17");
-        player18 = new Player("p18");
-        player19 = new Player("p19");
-        player20 = new Player("p20");
+        player1 = new PlayerInfo("p1");
+        player2 = new PlayerInfo("p2");
+        player3 = new PlayerInfo("p3");
+        player4 = new PlayerInfo("p4");
+        player5 = new PlayerInfo("p5");
+        player6 = new PlayerInfo("p6");
+        player7 = new PlayerInfo("p7");
+        player8 = new PlayerInfo("p8");
+        player9 = new PlayerInfo("p9");
+        player10 = new PlayerInfo("p10");
+        player11 = new PlayerInfo("p11");
+        player12 = new PlayerInfo("p12");
+        player13 = new PlayerInfo("p13");
+        player14 = new PlayerInfo("p14");
+        player15 = new PlayerInfo("p15");
+        player16 = new PlayerInfo("p16");
+        player17 = new PlayerInfo("p17");
+        player18 = new PlayerInfo("p18");
+        player19 = new PlayerInfo("p19");
+        player20 = new PlayerInfo("p20");
         playerList.add(player1);
         playerList.add(player2);
         playerList.add(player3);
@@ -111,7 +111,7 @@ public class GameLogicInstrumentedTest {
 
     @Test
     public void testInitGame(){
-        for (Player p:playerList) {
+        for (PlayerInfo p:playerList) {
             if(p.isKing()){
                 kingExists = true;
                 assertEquals(0, p.getWhiteCards().size());
@@ -140,7 +140,7 @@ public class GameLogicInstrumentedTest {
 
     @Test
     public void testPlayGame(){
-        for (Player p: playerList) {
+        for (PlayerInfo p: playerList) {
             if(!p.isKing()){
                 //If dummy players exists and are added to the playerlist outside this class, reset their selected cards
                 p.resetSubmission();
@@ -183,7 +183,7 @@ public class GameLogicInstrumentedTest {
 
     @After
     public void tearDownPlayGame(){
-        for (Player p: playerList){
+        for (PlayerInfo p: playerList){
             p.resetSubmissions();
             blackCard = null;
         }

@@ -1,6 +1,11 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 
 /**
  * Created by SAMSUNG on 2017-04-25.
@@ -8,11 +13,17 @@ import java.io.Serializable;
 
 public class PlayerInfo implements Serializable{
 
-    String name;
-    String color;
-    String deviceAddress;
-    int score;
-    boolean isKing = false;
+    private String name;
+    private String color;
+    private String deviceAddress;
+    private int score;
+    private boolean isKing;
+    private ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
+    private ArrayList<WhiteCard> selectedCards = new ArrayList<WhiteCard>();
+    private Submission submission;
+
+    private Submission winner;
+    private List<Submission> submissions;
 
     public PlayerInfo(String name){
         this.name = name;
@@ -82,4 +93,69 @@ public class PlayerInfo implements Serializable{
         isKing = true;
     }
 
+    public void setKing(boolean king) {
+        isKing = king;
+    }
+
+    public void addCardToSelected(WhiteCard whiteCard) {
+        selectedCards.add(whiteCard);
+    }
+
+    public void removeCardFromSelected(WhiteCard whiteCard) {
+        selectedCards.remove(whiteCard);
+    }
+
+    public void submitSelection() {
+        submission = new Submission(this, selectedCards);
+    }
+
+
+    public ArrayList<WhiteCard> getWhiteCards() {
+        return whiteCards;
+    }
+
+    public void addWhiteCard(WhiteCard whiteCard) {
+        whiteCards.add(whiteCard);
+    }
+
+    public void resetSubmission(){ submission = null; }
+
+    public void resetSubmissions() {
+        submissions = new ArrayList<Submission>();
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
+    }
+
+    public Submission getSubmission() {
+        return submission;
+    }
+
+    public ArrayList<WhiteCard> getSelectedCards() {
+        return selectedCards;
+    }
+
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
+
+    public Submission getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Submission winner) {
+        this.winner = winner;
+    }
+
+    public void givePoint() {
+        score++;
+    }
+
+    public void reset() {
+        submission = null;
+        winner = null;
+        selectedCards = new ArrayList<WhiteCard>();
+        resetSubmissions();
+    }
 }

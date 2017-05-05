@@ -12,7 +12,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 
 /**
@@ -24,14 +24,14 @@ public class GameTest {
     Context mockContext;
 
     private Game game;
-    private ArrayList<Player> players = new ArrayList<Player>();
+    private ArrayList<PlayerInfo> players = new ArrayList<PlayerInfo>();
     @Before
     public void Setup(){
         String S = "s";
         mockContext = new MockContext();
-        players.add(new Player("Mike"));
-        players.add(new Player("Ike"));
-        players.add(new Player("Carl"));
+        players.add(new PlayerInfo("Mike"));
+        players.add(new PlayerInfo("Ike"));
+        players.add(new PlayerInfo("Carl"));
         game = new Game(players , CardHandler.getExpansions(mockContext));
         String str = "";
     }

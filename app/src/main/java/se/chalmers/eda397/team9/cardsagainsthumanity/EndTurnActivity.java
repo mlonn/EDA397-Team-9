@@ -20,7 +20,7 @@ public class EndTurnActivity extends AppCompatActivity {
         TextView blackCardText = (TextView) findViewById(R.id.textviewWinningBlackCard);
         TextView winner = (TextView) findViewById(R.id.winnerTextView);
         blackCardText.setText(str);
-        winner.setText(game.getWinner().getPlayer().getUsername());
+        winner.setText(game.getWinner().getPlayer().getName());
         new Handler().postDelayed(new Runnable() {
 
             @Override

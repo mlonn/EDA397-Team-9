@@ -1,6 +1,5 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,9 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
@@ -40,7 +37,6 @@ import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastReceiver;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
@@ -85,7 +81,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     int port = 9879;
 
     /* Class variables */
-    private ArrayList<Player> players;
     private ArrayList<CardExpansion> expansions;
     private PlayerInfo hostInfo;
     private TableInfo myTableInfo;
@@ -109,9 +104,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         setContentView(R.layout.activity_host_table_new);
         /* Remove ? */
         expansions = (ArrayList<CardExpansion>) getIntent().getExtras().get(IntentType.THIS_EXPANSIONS);
-        players = new ArrayList<Player>();
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        players.add(new Player(prefs.getString("name", null)));
+
 
         /* Initialize class variables */
         playerList = new ArrayList<>();
@@ -147,18 +140,14 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         hostInfo = myTableInfo.getHost();
         addHost(hostInfo);
 
-        /* Add dummy players */
-       for(int i = 0 ; i < 16 ; i++){
-            PlayerInfo dummyPlayer = new PlayerInfo("Dummy "+ (i+1));
-            addNewPlayer(dummyPlayer);
-        }
 
         /* View Listeners */
         startTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                playerList.add(myTableInfo.getHost());
                 Intent intent = new Intent(v.getContext(), GameActivity.class);
-                Game game = new Game(players,expansions);
+                Game game = new Game(playerList,expansions);
                 intent.putExtra(IntentType.THIS_GAME, game);
                 startActivity(intent);
                 finish();

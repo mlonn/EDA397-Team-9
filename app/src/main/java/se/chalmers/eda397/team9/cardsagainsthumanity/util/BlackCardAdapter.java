@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 
 /**
  * Created by Mikae on 2017-04-20.
@@ -25,12 +25,12 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.R;
 
 public class BlackCardAdapter extends BaseAdapter {
     private final BlackCard blackCard;
-    private final Player king;
+    private final PlayerInfo king;
     private Context context;
     private ArrayList<Submission> submissions;
     private static LayoutInflater inflater = null;
     private int selectedPosition = 0;
-    public BlackCardAdapter(Context context, BlackCard blackCard, List<Submission> submissions, Player king){
+    public BlackCardAdapter(Context context, BlackCard blackCard, List<Submission> submissions, PlayerInfo king){
         this.context = context;
         this.submissions = (ArrayList<Submission>) submissions;
         this.blackCard = blackCard;
@@ -80,7 +80,9 @@ public class BlackCardAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             }
         });
-        holder.cardText.setText(Html.fromHtml(getBlackCardText(blackCard, submissions.get(position).getWhiteCards())));
+        if (submissions != null) {
+            holder.cardText.setText(Html.fromHtml(getBlackCardText(blackCard, submissions.get(position).getWhiteCards())));
+        }
         return view;
     }
 

@@ -4,20 +4,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
+
 /**
  * Created by Mikae on 2017-04-24.
  */
 
 public class Submission implements Serializable{
-    private Player player;
+    private PlayerInfo player;
     private List<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private boolean selected;
-    public Submission (Player player, List<WhiteCard> whiteCards) {
+    public Submission (PlayerInfo player, List<WhiteCard> whiteCards) {
         this.player = player;
         this.whiteCards = whiteCards;
     }
 
-    public Player getPlayer() {
+    public PlayerInfo getPlayer() {
         return player;
     }
 
