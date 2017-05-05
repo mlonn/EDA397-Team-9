@@ -16,6 +16,7 @@ public class PlayerInfo implements Serializable{
     private String name;
     private String color;
     private String deviceAddress;
+    private String UUID;
     private int score;
     private boolean isKing;
     private ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
@@ -31,9 +32,14 @@ public class PlayerInfo implements Serializable{
         deviceAddress = "Test_Address";
     }
 
+    public String getUUID() {
+        return UUID;
+    }
+
     public PlayerInfo(String name, String deviceAddress){
         this.name = name;
         color = "#000000";
+        this.UUID = deviceAddress;
         this.deviceAddress = deviceAddress;
     }
 

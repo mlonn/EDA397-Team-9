@@ -8,4 +8,6 @@ public class IntentType {
     public static final String MULTICAST_RECEIVER = "MULTICAST_RECEIVER";
     public static final String P2P_MANAGER = "P2P_MANAGER";
     public static final String WINNING_STRING = "WINNING_STRING";
+    public static final String THIS_EXPANSION_NAMES = "THIS.EXPANSION.NAMES";
+    public static final String TABLE_ADDRESS = "table_address";
 }

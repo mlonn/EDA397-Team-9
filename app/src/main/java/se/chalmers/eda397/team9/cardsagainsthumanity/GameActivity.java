@@ -24,6 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -31,7 +33,9 @@ import java.util.TimerTask;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.BlackCardAdapter;
 
@@ -42,25 +46,29 @@ import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
  * Created by emy on 23/04/17.
  */
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements PropertyChangeListener {
     public ArrayList<WhiteCard> whiteCards;
 
     ImageButton favoriteButtons[];
     private Game game;
-    private PlayerInfo player;
+    private PlayerInfo myPlayerInfo;
     private Boolean[] selectedCards;
     private Timer timer;
+    private String tableAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         game = (Game) getIntent().getExtras().get(IntentType.THIS_GAME);
+        tableAddress = (String) getIntent().getStringExtra(IntentType.TABLE_ADDRESS);
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        player = game.getPlayerByUserName(prefs.getString("name", null));
+        myPlayerInfo = game.getPlayerByUUID(prefs.getString("UUID", null));
         /* Get table info */
 
-        if (player.isKing()) {
+        if (myPlayerInfo.isKing()) {
             openCloseTableDialog();
+        } else {
+            initPlayer();
         }
 
         timer = new Timer();
@@ -71,7 +79,6 @@ public class GameActivity extends AppCompatActivity {
             }
 
         }, 0, 200);
-
     }
 
     private void openCloseTableDialog(){
@@ -86,7 +93,7 @@ public class GameActivity extends AppCompatActivity {
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                game.setKing(player);
+                game.setKing(myPlayerInfo);
                 initPlayer();
                 }
 
@@ -105,7 +112,7 @@ public class GameActivity extends AppCompatActivity {
         TextView blackCardText = (TextView) findViewById(R.id.currentBlackCard);
         blackCardText.setText(Html.fromHtml(game.getBlackCard().getText()));
         ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
-        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions(), player));
+        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), myPlayerInfo.getSubmissions(), myPlayerInfo));
         Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
         endTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +136,7 @@ public class GameActivity extends AppCompatActivity {
         TextView pickTextView = (TextView) findViewById(R.id.pickTextView);
         String t = "Pick: " + game.getBlackCard().getPick();
         pickTextView.setText(t);
-        whiteCards = player.getWhiteCards();
+        whiteCards = myPlayerInfo.getWhiteCards();
         favoriteButtons = new ImageButton[whiteCards.size()];
         selectedCards = new Boolean[whiteCards.size()];
         for (int i = 0; i < whiteCards.size(); i++) {
@@ -193,8 +200,8 @@ public class GameActivity extends AppCompatActivity {
     View.OnClickListener submitCards = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (game.getBlackCard().getPick() == player.getSelectedCards().size()) {
-                player.submitSelection();
+            if (game.getBlackCard().getPick() == myPlayerInfo.getSelectedCards().size()) {
+                myPlayerInfo.submitSelection();
             } else {
                 Toast.makeText(getApplicationContext(), "Please select a winner", Toast.LENGTH_SHORT).show();
             }
@@ -224,14 +231,14 @@ public class GameActivity extends AppCompatActivity {
                         selectedCards[i] = !selectedCards[i];
                         if (selectedCards[i]) {
                             favoriteButtons[i].setImageResource(R.mipmap.ic_favorite);
-                            player.getSelectedCards().add(whiteCards.get(i));
+                            myPlayerInfo.getSelectedCards().add(whiteCards.get(i));
                         } else {
                             favoriteButtons[i].setImageResource(R.mipmap.ic_favorite_border);
-                            player.getSelectedCards().remove(whiteCards.get(i));
+                            myPlayerInfo.getSelectedCards().remove(whiteCards.get(i));
                         }
                     }
                 }
-                String blackCardText = updateBlackCardText(player.getSelectedCards());
+                String blackCardText = updateBlackCardText(myPlayerInfo.getSelectedCards());
                 if (blackCardText != null) {
                     TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
                     blackCardTextView.setText(Html.fromHtml(blackCardText));
@@ -336,6 +343,19 @@ public class GameActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(Message.Type.GAME_STARTED)) {
+            android.os.Handler handler = new android.os.Handler(getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    new MulticastPackage(tableAddress, Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
+                }
+            });
         }
     }
 }

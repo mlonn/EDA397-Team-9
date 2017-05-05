@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
@@ -18,18 +19,20 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
 
     private PlayerInfo myPlayerInfo;
     private boolean isJoined;
+    private TableInfo table;
 
     public PlayerMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s,
-                                   InetAddress group, PlayerInfo myPlayerInfo, boolean isJoined) {
+                                   InetAddress group, PlayerInfo myPlayerInfo, boolean isJoined, TableInfo table) {
         super(mcLock, s, group);
         this.myPlayerInfo = myPlayerInfo;
+        this.table = table;
         this.isJoined = isJoined;
     }
 
 
     public PlayerMulticastReceiver(WifiManager.MulticastLock mcLock, MulticastSocket s,
-                                   InetAddress group, PlayerInfo myPlayerInfo) {
-        this(mcLock, s, group, myPlayerInfo, false);
+                                   InetAddress group, PlayerInfo myPlayerInfo, TableInfo table) {
+        this(mcLock, s, group, myPlayerInfo, false, table);
     }
 
     @Override
@@ -51,7 +54,7 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
             Object msg = null;
 
             try {
-                getSocket().setSoTimeout(1000);
+                getSocket().setSoTimeout(500);
             } catch (SocketException e) {
             }
 
@@ -71,9 +74,16 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
                 Object packageObject = ((MulticastPackage) msg).getObject();
 
                 Log.d("PlayerMultRec", "Received a " + type + " with destination " + target + " joined " + isJoined);
-                if(packageObject instanceof TableInfo) {
+                if (packageObject instanceof ArrayList) {
+                    if (target.equals(table.getHost().getDeviceAddress())) {
+                        if (type.equals(Message.Type.GAME_STARTED)) {
+                            getPropertyChangeSupport().firePropertyChange(Message.Type.GAME_STARTED, null, packageObject);
+                        }
+                    }
+                }
+                if (packageObject instanceof TableInfo) {
                     Log.d("PlayerMultRec", target + " | " + ((TableInfo) packageObject).getHost().getDeviceAddress());
-                    if (target.equals(((TableInfo) packageObject).getHost().getDeviceAddress())) {
+                    if (target.equals(table.getHost().getDeviceAddress())) {
                         //Someone else joins
                         if (isJoined) {
                             if (type.equals(Message.Response.PLAYER_JOIN_ACCEPTED)) {
