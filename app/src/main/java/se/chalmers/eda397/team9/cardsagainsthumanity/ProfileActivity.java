@@ -29,8 +29,6 @@ import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
 public class ProfileActivity extends AppCompatActivity {
     private Menu menu;
-    private String inMenuTitle = "Set to In";
-    private String outMenuTitle = "Set to Out";
     private boolean flag = false;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,23 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    public boolean onCreateOptionsMen(Menu menu) {
-        super.onCreateOptionsMenu(menu);
 
-        // Create your menu...
-
-        this.menu = menu;
-        return true;
-    }
-
-    private void updateMenuTitles() {
-        MenuItem menuItem = menu.findItem(profile);
-        if (flag) {
-            menuItem .setTitle("ciao");
-        } else {
-            menuItem .setTitle(inMenuTitle);
-        }
-    }
 
     //Main menu
     @Override

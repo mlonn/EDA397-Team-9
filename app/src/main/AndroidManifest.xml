@@ -39,10 +39,8 @@
         <activity
             android:name=".PlayerTableActivity"
             android:label="@string/title_activity_player_table" />
-
         <activity android:name=".ProfileActivity" />
-
-
+        <activity android:name=".WannaBeKingActivity" />
         <activity
             android:name=".GameActivity"
             android:label="@string/title_activity_player_table" />

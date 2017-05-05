@@ -76,12 +76,10 @@ public class Game implements Serializable {
     //gives each player 10 cards from selected expansion
     private void distributeWhiteCards() {
         for (Player p : players) {
-            if (!p.isKing()) {
-                while(p.getWhiteCards().size() < 10) {
-                    CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
-                    WhiteCard whiteCard = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
-                    p.addWhiteCard(whiteCard);
-                }
+            while(p.getWhiteCards().size() < 10) {
+                CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
+                WhiteCard whiteCard = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
+                p.addWhiteCard(whiteCard);
             }
         }
     }
@@ -106,7 +104,12 @@ public class Game implements Serializable {
             cardExpansions.add(expansion);
         }
     }
-    private Player setKing() {
+    public void setKing(Player player) {
+        players.remove(player);
+        Player king = setKing();
+        players.add(player);
+    }
+    public Player setKing() {
         //Set all players to not being king
         for (Player p : players) {
             p.setKing(false);
