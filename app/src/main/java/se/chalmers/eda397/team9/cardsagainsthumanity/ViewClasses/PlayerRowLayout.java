@@ -4,18 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.text.Layout;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.R;
@@ -35,7 +30,6 @@ public class PlayerRowLayout extends LinearLayout {
 
     private static final String CONNECTED_COLOR = "#333333";
     private static final String CONNECTING_COLOR = "#bbbbbb";
-    private static final String READY_COLOR = "#6fa54f";
 
 
     //Players' rows
@@ -149,12 +143,6 @@ public class PlayerRowLayout extends LinearLayout {
         this.deviceAddress = deviceAddress;
     }
 
-    public void setReady(boolean ready) {
-        if(ready)
-            textView.setTextColor(Color.parseColor(READY_COLOR));
-        else
-            textView.setTextColor(Color.parseColor(CONNECTED_COLOR));
-    }
 
     public void setColor(String color) {
         this.color = color;

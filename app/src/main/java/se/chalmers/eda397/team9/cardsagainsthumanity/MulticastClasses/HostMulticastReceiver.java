@@ -102,14 +102,6 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
                             null, packageObject);
                 }
 
-                if (packageType.equals(Message.Type.PLAYER_READY))
-                    getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_READY,
-                            null, packageObject);
-
-                if (packageType.equals(Message.Type.PLAYER_NOT_READY))
-                    getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_NOT_READY,
-                            null, packageObject);
-
                 if (packageType.equals(Message.Type.PLAYER_INTERVAL_UPDATE))
                     getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_INTERVAL_UPDATE,
                             null, packageObject);
