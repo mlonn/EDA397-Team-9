@@ -70,7 +70,7 @@ public class ExpansionsAdapter extends BaseAdapter {
                 }
             }
         });
-        holder.expansionName.setText(expansions.get(position).getName());
+        holder.checkBox.setText(expansions.get(position).getName());
         holder.nbrBlackCards.setText(String.valueOf(expansions.get(position).getBlackCards().size()));
         holder.nbrWhiteCards.setText(String.valueOf(expansions.get(position).getWhiteCards().size()));
 

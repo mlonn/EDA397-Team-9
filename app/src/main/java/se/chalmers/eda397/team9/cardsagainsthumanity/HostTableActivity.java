@@ -1,11 +1,13 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,11 +15,15 @@ import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
@@ -114,6 +120,15 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         threadList = new ArrayList<>();
         connectedPlayers = new ArrayList<>();
 
+        /* Initialize size of the ScrollView of the fragment*/
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
+        View scrollView = (View) findViewById(R.id.scroll_view);
+        scrollView.setLayoutParams(new RelativeLayout.LayoutParams(screenWidth, (screenHeight - convertDpToPixels(150, getBaseContext()))));
+
         /* Initialize fragment variables */
         fragmentManager = getSupportFragmentManager();
         psFragment = (PlayerStatisticsFragment) fragmentManager.findFragmentById(R.id.playerFragment);
@@ -133,10 +148,10 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         addHost(hostInfo);
 
         /* Add dummy players */
-    /*    for(int i = 0 ; i < 16 ; i++){
+       for(int i = 0 ; i < 16 ; i++){
             PlayerInfo dummyPlayer = new PlayerInfo("Dummy "+ (i+1));
             addNewPlayer(dummyPlayer);
-        }*/
+        }
 
         /* View Listeners */
         startTableButton.setOnClickListener(new View.OnClickListener() {
@@ -456,4 +471,13 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         }
         return null;
     }
+
+    public static int convertDpToPixels(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        //float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, resources.getDisplayMetrics());
+        return (int)px;
+    }
+
 }

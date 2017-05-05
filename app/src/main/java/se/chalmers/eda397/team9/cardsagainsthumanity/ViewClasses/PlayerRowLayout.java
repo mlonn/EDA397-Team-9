@@ -40,7 +40,7 @@ public class PlayerRowLayout extends LinearLayout {
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        screenWidth = displayMetrics.widthPixels; // Witdth in pixels
+        screenWidth = displayMetrics.widthPixels; // Width in pixels
         //int dpMin = convertDpToPixels(screenWidth/2-5,this); Converted dp to pixel
 
         //int test = ((Layout) this.getParent()).getWidth();

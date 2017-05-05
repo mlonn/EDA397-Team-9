@@ -35,6 +35,8 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.BlackCardAdapter;
 
 import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
@@ -45,7 +47,6 @@ import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
  */
 
 public class GameActivity extends AppCompatActivity {
-
     public ArrayList<WhiteCard> whiteCards;
 
     ImageButton favoriteButtons[];
@@ -60,12 +61,11 @@ public class GameActivity extends AppCompatActivity {
         game = (Game) getIntent().getExtras().get(IntentType.THIS_GAME);
         SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
         player = game.getPlayerByUserName(prefs.getString("name", null));
-        if (player.isKing()) {
-            initKing();
-        } else {
-            initPlayer();
-        }
+        /* Get table info */
 
+        if (player.isKing()) {
+            openCloseTableDialog();
+        }
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -76,6 +76,28 @@ public class GameActivity extends AppCompatActivity {
 
         }, 0, 200);
 
+    }
+
+    private void openCloseTableDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do u wanna be the King for this round?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                initKing();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                game.setKing(player);
+                initPlayer();
+                }
+
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void updateGame() {
