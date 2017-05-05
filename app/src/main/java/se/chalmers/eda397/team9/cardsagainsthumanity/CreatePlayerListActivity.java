@@ -41,9 +41,7 @@ public class CreatePlayerListActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
 
-            case R.id.settings:
-                //Do something
-                return true;
+
             case R.id.share:
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");

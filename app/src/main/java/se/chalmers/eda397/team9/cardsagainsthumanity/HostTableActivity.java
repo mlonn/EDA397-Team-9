@@ -139,7 +139,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         myTableInfo = (TableInfo) getIntent().getSerializableExtra(IntentType.THIS_TABLE);
         hostInfo = myTableInfo.getHost();
         addHost(hostInfo);
-
+        
 
         /* View Listeners */
         startTableButton.setOnClickListener(new View.OnClickListener() {
@@ -317,9 +317,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
                 startActivity(intent);
                 return true;
 
-            case R.id.settings:
-                //Do something
-                return true;
+
             case R.id.share:
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
