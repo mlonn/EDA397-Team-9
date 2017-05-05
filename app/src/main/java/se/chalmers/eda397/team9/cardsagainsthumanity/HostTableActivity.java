@@ -147,11 +147,11 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         hostInfo = myTableInfo.getHost();
         addHost(hostInfo);
 
-        /* Add dummy players */
+       /** Add dummy players
        for(int i = 0 ; i < 16 ; i++){
             PlayerInfo dummyPlayer = new PlayerInfo("Dummy "+ (i+1));
             addNewPlayer(dummyPlayer);
-        }
+        }*/
 
         /* View Listeners */
         startTableButton.setOnClickListener(new View.OnClickListener() {
@@ -328,9 +328,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
                 startActivity(intent);
                 return true;
 
-            case R.id.settings:
-                //Do something
-                return true;
+
             case R.id.share:
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");

@@ -76,10 +76,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 return true;
-
-            case R.id.settings:
-                //Do something
-                return true;
             case R.id.share:
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
