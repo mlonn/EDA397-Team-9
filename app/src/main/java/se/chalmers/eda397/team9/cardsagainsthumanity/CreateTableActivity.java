@@ -7,7 +7,6 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,7 +67,7 @@ public class CreateTableActivity extends AppCompatActivity {
                         exp.add(e);
                 }
 
-                Intent intent = new Intent(view.getContext(), HostTableActivityNew.class);
+                Intent intent = new Intent(view.getContext(), HostTableActivity.class);
 
                 intent.putExtra(IntentType.THIS_TABLE, tableInfo);
                 intent.putExtra(IntentType.THIS_EXPANSIONS, exp);

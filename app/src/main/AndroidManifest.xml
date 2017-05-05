@@ -34,7 +34,7 @@
         <activity android:name=".CreateTableActivity" />
         <activity android:name=".CreatePlayerListActivity" />
         <activity
-            android:name=".HostTableActivityNew"
+            android:name=".HostTableActivity"
             android:label="@string/title_activity_table" />
         <activity
             android:name=".PlayerTableActivity"

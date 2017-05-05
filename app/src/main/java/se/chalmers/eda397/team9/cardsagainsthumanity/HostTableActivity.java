@@ -50,7 +50,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 
 import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
-public class HostTableActivityNew extends AppCompatActivity implements PropertyChangeListener{
+public class HostTableActivity extends AppCompatActivity implements PropertyChangeListener{
 
     /* Multicast variables */
     private InetAddress group;
