@@ -1,6 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.core.deps.guava.base.Strings;
 
 import org.junit.After;
 import org.junit.Before;
@@ -100,10 +101,31 @@ public class GameLogicInstrumentedTest {
         assertEquals(0,game.getKing().getWhiteCards().size());
         // #4 Test Case: All players should submit white cards
         assertTrue(game.hasAllPlayersSubmitted());
-        // #5 Test Case: We have one winner per  Round Game
-
+        // #5 Test Case: Check Player Score by using givePoint Method
+        game.getPlayerByUserName("player0").givePoint();
+        assertEquals("The score for Player0 should be 1",1,game.getPlayerByUserName("player0").getScore());
+        // #6 Test Case: We have one winner per  Round Game - In this case, the winner is player0
+        Submission winnerSubmission = game.getPlayerByUserName("player0").getSubmission();
+        game.getPlayerByUserName("player0").setWinner(winnerSubmission);
         int noWinner = 0;
-//        assertEquals(1, noWinner);
+        for (Player p : playerList) {
+            if(p.getWinner()!=null) noWinner++;
+        }
+        assertEquals(1, noWinner);
+        // #7 Test Case: Creating many game rounds and Checking the score
+        game = new Game(playerList, cardExpansions);
+        game.getPlayerByUserName("player0").givePoint();
+        Submission winnerSubmission1 = game.getPlayerByUserName("player0").getSubmission();
+        game.getPlayerByUserName("player0").setWinner(winnerSubmission1);
+        //
+        game = new Game(playerList, cardExpansions);
+        game.getPlayerByUserName("player1").givePoint();
+        Submission winnerSubmission2 = game.getPlayerByUserName("player1").getSubmission();
+        game.getPlayerByUserName("player1").setWinner(winnerSubmission2);
+        // The expected Score -- Player0 = 2 and Player1 = 1
+        assertEquals(2,game.getPlayerByUserName("player0").getScore());
+        assertEquals(1,game.getPlayerByUserName("player1").getScore());
+
     }
 
     @After
