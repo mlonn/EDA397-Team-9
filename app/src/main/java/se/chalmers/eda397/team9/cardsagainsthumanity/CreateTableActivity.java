@@ -65,7 +65,7 @@ public class CreateTableActivity extends AppCompatActivity {
                 ArrayList<String> expansionNames = new ArrayList<String>();
                 for (CardExpansion e : expansions) {
                     if (e.isSelected())
-                        exp.add(e);
+                    exp.add(e);
                     expansionNames.add(e.getName());
                 }
 

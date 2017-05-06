@@ -35,13 +35,7 @@ public class TableInfo implements Serializable{
     }
 
     public synchronized void addPlayer(PlayerInfo player) {
-        boolean found = false;
-        for(PlayerInfo current : playerList){
-            if(current.getDeviceAddress().equals(player.getDeviceAddress()))
-                found = true;
-        }
-
-        if (!found) {
+        if (PlayerInfo.findPlayerInList(playerList, player) == null) {
             playerList.add(player);
         }
     }
@@ -96,11 +90,6 @@ public class TableInfo implements Serializable{
     }
 
     public PlayerInfo findPlayer(PlayerInfo player) {
-        for (PlayerInfo p : playerList) {
-            if (p.equals(player)) {
-                return p;
-            }
-        }
-        return null;
+        return PlayerInfo.findPlayerInList(playerList, player);
     }
 }

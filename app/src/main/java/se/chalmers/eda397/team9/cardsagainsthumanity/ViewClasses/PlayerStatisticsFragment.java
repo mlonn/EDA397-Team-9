@@ -113,27 +113,32 @@ public class PlayerStatisticsFragment extends Fragment {
     *  Note: This is used locally during onCreateView, and can thus
     *  not be combined with the public version. */
     public PlayerRowLayout addPlayer(PlayerInfo newPlayer){
-        if(!myTableInfo.getPlayerList().contains(newPlayer)){
+        if(PlayerInfo.findPlayerInList(myTableInfo.getPlayerList(), newPlayer) == null){
             myTableInfo.addPlayer(newPlayer);
         }
 
-        if(newPlayer.getColor() == null){
-            assignRandomColor(newPlayer);
+        if(findPlayerRow(playerRowList, newPlayer) == null) {
+            if (newPlayer.getColor() == null) {
+                assignRandomColor(newPlayer);
+            }
+
+            PlayerRowLayout playerRow = new PlayerRowLayout(getContext());
+            playerRow.setName(newPlayer.getName());
+            playerRow.setImageColor(newPlayer.getColor());
+            playerRow.setPlayerId(newPlayer.getDeviceAddress());
+            playerRow.setScore(newPlayer.getScore());
+
+            //Gives the player the crown
+            if (newPlayer.isKing()) {
+                playerRow.setKing();
+            }
+
+            playerRowList.add(playerRow);
+            playerGridLayout.addView(playerRow);
+
+            return playerRow;
         }
-
-        PlayerRowLayout playerRow = new PlayerRowLayout(getContext());
-        playerRow.setName(newPlayer.getName());
-        playerRow.setImageColor(newPlayer.getColor());
-        playerRow.setPlayerId(newPlayer.getDeviceAddress());
-        playerRow.setScore(newPlayer.getScore());
-
-        //Gives the player the crown
-        if (newPlayer.isKing()) { playerRow.setKing(); }
-
-        playerRowList.add(playerRow);
-        playerGridLayout.addView(playerRow);
-
-        return playerRow;
+        return null;
     }
 
     /* Adds host to the playerlist
