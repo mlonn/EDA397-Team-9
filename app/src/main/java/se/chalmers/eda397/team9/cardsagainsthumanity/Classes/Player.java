@@ -16,7 +16,6 @@ public class Player implements Serializable {
     private ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private ArrayList<WhiteCard> selectedCards = new ArrayList<WhiteCard>();
     private Submission submission;
-
     private Submission winner;
     private List<Submission> submissions;
 
