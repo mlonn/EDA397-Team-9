@@ -64,17 +64,18 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s;
     private InetAddress group;
-
-    //Temporary
-    String ipAdress = "224.1.1.1";
-    int port = 9879;
+    private String ipAdress;
+    private int port;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
-        playerTableActivityOpened = false;
+        /* Initialize multicast port/ip */
+        SharedPreferences preferences = getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        ipAdress = preferences.getString(IndexActivity.MULTICAST_IP_ADDRESS, null);
+        port = preferences.getInt(IndexActivity.MULTICAST_PORT, 0);
 
         /* Get my player information from intent */
         myPlayerInfo = (PlayerInfo) getIntent().getSerializableExtra(IntentType.MY_PLAYER_INFO);
@@ -83,6 +84,7 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
         tpresenter = new TablePresenter(this);
 
         /* Initialize variables, views and layouts */
+        playerTableActivityOpened = false;
         tables = new HashMap<String, TableInfo>();
         final Button createTableButton = (Button) findViewById(R.id.createTable_button);
         final Button joinTableButton = (Button) findViewById(R.id.joinTable_button);
@@ -127,21 +129,21 @@ public class LobbyActivity extends AppCompatActivity implements PropertyChangeLi
             public void onClick(View v) {
                 //TODO needs to be correctly implemented. Not tested yet.
                 if(!(selectedTable instanceof TableInfo)){
-//                    Toast.makeText(LobbyActivity.this, "No table is selected", Toast.LENGTH_SHORT).show();
-//                    return;
-                    /* For testing purposes */
-                    TableInfo fakeTable = new TableInfo("Cool", new PlayerInfo("Cool Host", "test_address"));
-                    fakeTable.addPlayer(new PlayerInfo("Dummy1", "test_address", "#abcdef"));
-                    fakeTable.addPlayer(new PlayerInfo("Dummy2", "test_address", "#1aaeed"));
-                    fakeTable.addPlayer(new PlayerInfo("Dummy3", "test_address", "#1ea03e"));
-                    fakeTable.addPlayer(myPlayerInfo);
-
-                    Intent intent = new Intent(LobbyActivity.this, PlayerTableActivity.class);
-                    intent.putExtra(IntentType.THIS_TABLE, fakeTable);
-                    intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
-                    startActivity(intent);
-                    finish();
+                    Toast.makeText(LobbyActivity.this, "No table is selected", Toast.LENGTH_SHORT).show();
                     return;
+//                    /* For testing purposes */
+//                    TableInfo fakeTable = new TableInfo("Cool", new PlayerInfo("Cool Host", "test_address"));
+//                    fakeTable.addPlayer(new PlayerInfo("Dummy1", "test_address", "#abcdef"));
+//                    fakeTable.addPlayer(new PlayerInfo("Dummy2", "test_address", "#1aaeed"));
+//                    fakeTable.addPlayer(new PlayerInfo("Dummy3", "test_address", "#1ea03e"));
+//                    fakeTable.addPlayer(myPlayerInfo);
+//
+//                    Intent intent = new Intent(LobbyActivity.this, PlayerTableActivity.class);
+//                    intent.putExtra(IntentType.THIS_TABLE, fakeTable);
+//                    intent.putExtra(IntentType.MY_PLAYER_INFO, myPlayerInfo);
+//                    startActivity(intent);
+//                    finish();
+//                    return;
                 }
 
                 Toast.makeText(LobbyActivity.this, "Attempting to join selected table", Toast.LENGTH_SHORT).show();

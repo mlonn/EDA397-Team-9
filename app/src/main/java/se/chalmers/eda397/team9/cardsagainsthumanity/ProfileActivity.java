@@ -34,24 +34,23 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        String username = prefs.getString("name", null);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        String username = prefs.getString(IndexActivity.PLAYER_NAME, null);
         final TextView textViewToChange = (TextView) findViewById(R.id.textView11);
         textViewToChange.setText(username);
         Button createTableButton = (Button) findViewById(R.id.EditName);
+
         createTableButton.setOnClickListener(new View.OnClickListener() {
                                                  @Override
                                                  public void onClick(View view) {
-                try {
-                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
-                    prefsFile.delete();
-                } catch (Exception e) {
-
-
-                }
-                Intent intent = new Intent(view.getContext(), IndexActivity.class);
-                                                     startActivity(intent);
+            try {
+                File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/" + IndexActivity.GAME_SETTINGS_FILE + ".xml");
+                prefsFile.delete();
+            } catch (Exception e) {
             }
+            Intent intent = new Intent(view.getContext(), IndexActivity.class);
+            startActivity(intent);
+        }
         });
     }
 

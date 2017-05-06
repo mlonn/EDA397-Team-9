@@ -42,9 +42,9 @@ import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
 public class PlayerTableActivity extends AppCompatActivity implements PropertyChangeListener {
 
+    /* P2p variables */
     private P2pManager p2pManager;
-
-    private int p2pPort = 9888;
+    private int p2pPort;
 
     /* Multicast variables */
     private InetAddress group;
@@ -52,10 +52,8 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     private WifiManager.MulticastLock multicastLock;
     private MulticastSocket s;
     private PlayerMulticastReceiver playerReceiver;
-
-    //Temporary
-    String ipAdress = "224.1.1.1";
-    int port = 9879;
+    private String ipAdress;
+    private int port;
 
     /* Fragment variables */
     private FragmentManager fragmentManager;
@@ -96,6 +94,12 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_table);
+
+        /* Initialize multicast and p2p port/ip */
+        SharedPreferences preferences = getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        ipAdress = preferences.getString(IndexActivity.MULTICAST_IP_ADDRESS, null);
+        port = preferences.getInt(IndexActivity.MULTICAST_PORT, 0);
+        p2pPort = preferences.getInt(IndexActivity.P2P_PORT, 0);
 
         /* Initialize multicast */
         initMulticastSocket();
@@ -157,8 +161,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         return true;
     }
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -167,7 +169,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                 Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 return true;
-
 
             case R.id.share:
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -185,6 +186,17 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         }
     }
 
+    private void sendPackage(final MulticastPackage mPackage){
+        android.os.Handler handler = new android.os.Handler(getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                new MulticastSender(mPackage, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+
+        });
+    }
+
     @Override
     public void propertyChange(final PropertyChangeEvent propertyChangeEvent) {
         //If other player joins successfully, update my table
@@ -199,15 +211,10 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                 }
             }
 
-            android.os.Handler handler = new android.os.Handler(getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    MulticastPackage mPackage = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
-                    new MulticastSender(mPackage, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
+            MulticastPackage mPackage = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
+                    Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
+            sendPackage(mPackage);
 
-            });
             if (!gameStarted) {
                 ArrayList<PlayerInfo> playerList = new ArrayList<PlayerInfo>();
                 playerList.addAll(tableInfo.getPlayerList());
@@ -220,16 +227,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                 gameStarted = true;
                 finish();
             }
-        }
-        if (propertyChangeEvent.getPropertyName().equals(Message.Response.PLAYER_JOIN_CONFIRM)) {
-            android.os.Handler handler = new android.os.Handler(getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    PlayerInfo player = (PlayerInfo) propertyChangeEvent.getNewValue();
-                    player = tableInfo.findPlayer(player);
-                }
-            });
         }
         if (propertyChangeEvent.getPropertyName().equals(Message.Response.OTHER_PLAYER_JOIN_ACCEPTED)) {
             tableInfo = (TableInfo) propertyChangeEvent.getNewValue();

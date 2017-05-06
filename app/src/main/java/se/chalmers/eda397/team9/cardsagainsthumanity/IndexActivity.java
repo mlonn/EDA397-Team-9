@@ -22,6 +22,14 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 
 public class IndexActivity extends AppCompatActivity {
     public String username;
+
+    public static final String GAME_SETTINGS_FILE = "king_of_cards_settings";
+    public static final String MULTICAST_IP_ADDRESS = "multicast_ip_address";
+    public static final String P2P_PORT = "p2p_port";
+    public static final String MULTICAST_PORT = "multicast_port";
+    public static final String PLAYER_NAME = "player_name";
+    public static final String PLAYER_UUID = "player_uuid";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +54,7 @@ public class IndexActivity extends AppCompatActivity {
 
     /* Checks if username file already exists */
     protected boolean fileExists(){
-        String sharePrefName = "usernameFile.xml";
+        String sharePrefName = GAME_SETTINGS_FILE + ".xml";
         File f = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/" + sharePrefName);
         if (f.exists())
             return true;
@@ -56,20 +64,21 @@ public class IndexActivity extends AppCompatActivity {
 
     /* Creates a username file */
     protected void createUsernameFile(String username2Save){
-        SharedPreferences.Editor editor = getSharedPreferences("usernameFile", MODE_PRIVATE).edit();
-        editor.putString("name", username2Save);
-        editor.putString("UUID", UUID.randomUUID().toString());
+        SharedPreferences.Editor editor = getSharedPreferences(GAME_SETTINGS_FILE, MODE_PRIVATE).edit();
+        editor.putString(PLAYER_NAME, username2Save);
+        editor.putString(PLAYER_UUID, UUID.randomUUID().toString());
+        editor.putInt(P2P_PORT, 9888);
+        editor.putInt(MULTICAST_PORT, 9879);
+        editor.putString(MULTICAST_IP_ADDRESS, "224.1.1.1");
         editor.commit();
     }
 
     /* Go to lobby activity */
     private void goToLobby() {
-        /* Get device address */
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         /* Get stored username */
-        SharedPreferences prefs = getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        String deviceAddress = prefs.getString("UUID", null);
-        String username = prefs.getString("name", null);
+        SharedPreferences prefs = getSharedPreferences(GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        String deviceAddress = prefs.getString(PLAYER_UUID, null);
+        String username = prefs.getString(PLAYER_NAME, null);
         PlayerInfo playerInfo = new PlayerInfo(username, deviceAddress);
 
         /* Start LobbyActivity*/

@@ -61,8 +61,8 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         super.onCreate(savedInstanceState);
         game = (Game) getIntent().getExtras().get(IntentType.THIS_GAME);
         tableAddress = (String) getIntent().getStringExtra(IntentType.TABLE_ADDRESS);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        myPlayerInfo = game.getPlayerByUUID(prefs.getString("UUID", null));
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        myPlayerInfo = game.getPlayerByUUID(prefs.getString(IndexActivity.PLAYER_UUID, null));
         /* Get table info */
 
         if (myPlayerInfo.isKing()) {
@@ -309,8 +309,8 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        String username = prefs.getString("name", null);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        String username = prefs.getString(IndexActivity.PLAYER_NAME, null);
         menu.findItem(R.id.profile).setTitle(username);
         return true;
     }

@@ -26,6 +26,7 @@ public class Message {
         public static final String SELF_PLAYER_JOIN_ACCEPTED = "self_player_join_accepted";
         public static final String GAME_START_CONFIRMED = "game_start_confirmed";
         public static final String ALL_CONFIRMED = "all_confirmed";
+        public static final String GAME_START_DENIED = "game_start_denied";
     }
     public static class Target {
         public static final String ALL_DEVICES = "all_devices";

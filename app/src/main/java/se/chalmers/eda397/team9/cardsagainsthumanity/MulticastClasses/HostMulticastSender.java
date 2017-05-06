@@ -12,6 +12,7 @@ import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
@@ -24,19 +25,20 @@ public class HostMulticastSender extends AsyncTask {
     private InetAddress group;
     private MulticastPackage mPackage;
     private MulticastPackage expectedResponse;
-    private AsyncTask receiver;
     private PropertyChangeSupport pcs;
     private int maxCount;
     private Map<PlayerInfo, Boolean> playerMap;
 
     public HostMulticastSender(MulticastPackage mPackage, MulticastPackage expectedResponse,
-                               MulticastSocket s, InetAddress group, ArrayList<PlayerInfo> playerList) {
+                               MulticastSocket s, InetAddress group, List<PlayerInfo> playerList) {
         this(mPackage, expectedResponse, 10, s, group);
         this.playerMap = new HashMap<PlayerInfo, Boolean>();
         for (PlayerInfo p : playerList) {
             this.playerMap.put(p, false);
         }
 
+        System.out.println(playerList.size());
+        System.out.println(playerMap.size());
     }
 
     public HostMulticastSender(MulticastPackage mPackage, MulticastPackage expectedResponse,
@@ -47,9 +49,11 @@ public class HostMulticastSender extends AsyncTask {
         this.expectedResponse = expectedResponse;
         pcs = new PropertyChangeSupport(this);
         maxCount = maxRetries;
+
     }
 
     private void send() {
+
         byte[] msg = Serializer.serialize(mPackage);
         DatagramPacket datagramMsg = new DatagramPacket(msg, msg.length, group, s.getLocalPort());
         try {
@@ -64,6 +68,14 @@ public class HostMulticastSender extends AsyncTask {
 
     @Override
     protected Object doInBackground(Object[] objects) {
+
+        /* For testing purposes */
+        if(playerMap.size() == 0) {
+            pcs.firePropertyChange(Message.Response.ALL_CONFIRMED, 0, 1);
+            //TODO: change to pcs.firePropertyChange(Message.Response.GAME_START_DENIED, 0, 1);
+            return null;
+        }
+
         int counter = 0;
         send();
         try {
@@ -105,13 +117,13 @@ public class HostMulticastSender extends AsyncTask {
                             }
                         }
                         boolean allConnected = true;
+                        System.out.println(playerMap.entrySet().size());
                         for (Map.Entry<PlayerInfo, Boolean> current : playerMap.entrySet()) {
                             if (!current.getValue()) {
                                 allConnected = false;
                             }
                         }
                         if (allConnected) {
-                            System.out.println("ALL_CONNECTED");
                             pcs.firePropertyChange(Message.Response.ALL_CONFIRMED,0,1);
                         }
                         return null;
