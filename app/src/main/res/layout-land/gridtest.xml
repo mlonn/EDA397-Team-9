@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/grid"
     android:layout_width="match_parent"
-    android:layout_height="440dp"
-    android:columnCount="2"
-    android:layout_marginRight="5dp"
+    android:layout_height="230dp"
     android:layout_marginLeft="5dp"
-    >
+    android:layout_marginRight="5dp"
+    android:columnCount="2"
+    android:isScrollContainer="false">
 
     <LinearLayout
 
@@ -16,12 +16,12 @@
         android:layout_columnSpan="2"
         android:layout_columnWeight="1"
         android:layout_margin="0.5dp"
-        android:background="@drawable/host_row_item_background"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/host_row_item_background"
+        android:orientation="horizontal"
 
         >
 
@@ -49,11 +49,11 @@
         android:layout_height="wrap_content"
         android:layout_columnWeight="1"
         android:layout_margin="0.5dp"
-        android:background="@drawable/player_row_item_background"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/player_row_item_background"
+        android:orientation="horizontal"
 
         >
 
@@ -80,11 +80,11 @@
         android:layout_height="wrap_content"
         android:layout_columnWeight="1"
         android:layout_margin="0.5dp"
-        android:background="@drawable/player_row_item_background"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/player_row_item_background"
+        android:orientation="horizontal"
 
         >
 

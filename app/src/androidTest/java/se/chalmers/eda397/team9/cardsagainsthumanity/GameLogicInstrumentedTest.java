@@ -64,46 +64,46 @@ public class GameLogicInstrumentedTest {
     public void setUpInitGame(){
         whiteCards = new ArrayList<>();
         playerList = new ArrayList<>();
-        player1 = new Player("p1");
-        player2 = new Player("p2");
-        player3 = new Player("p3");
-        player4 = new Player("p4");
-        player5 = new Player("p5");
-        player6 = new Player("p6");
-        player7 = new Player("p7");
-        player8 = new Player("p8");
-        player9 = new Player("p9");
-        player10 = new Player("p10");
-        player11 = new Player("p11");
-        player12 = new Player("p12");
-        player13 = new Player("p13");
-        player14 = new Player("p14");
-        player15 = new Player("p15");
-        player16 = new Player("p16");
-        player17 = new Player("p17");
-        player18 = new Player("p18");
-        player19 = new Player("p19");
-        player20 = new Player("p20");
-        playerList.add(player1);
-        playerList.add(player2);
-        playerList.add(player3);
-        playerList.add(player4);
-        playerList.add(player5);
-        playerList.add(player6);
-        playerList.add(player7);
-        playerList.add(player8);
-        playerList.add(player9);
-        playerList.add(player10);
-        playerList.add(player11);
-        playerList.add(player12);
-        playerList.add(player13);
-        playerList.add(player14);
-        playerList.add(player15);
-        playerList.add(player16);
-        playerList.add(player17);
-        playerList.add(player18);
-        playerList.add(player19);
-        playerList.add(player20);
+//        player1 = new Player("p1");
+//        player2 = new Player("p2");
+//        player3 = new Player("p3");
+//        player4 = new Player("p4");
+//        player5 = new Player("p5");
+//        player6 = new Player("p6");
+//        player7 = new Player("p7");
+//        player8 = new Player("p8");
+//        player9 = new Player("p9");
+//        player10 = new Player("p10");
+//        player11 = new Player("p11");
+//        player12 = new Player("p12");
+//        player13 = new Player("p13");
+//        player14 = new Player("p14");
+//        player15 = new Player("p15");
+//        player16 = new Player("p16");
+//        player17 = new Player("p17");
+//        player18 = new Player("p18");
+//        player19 = new Player("p19");
+//        player20 = new Player("p20");
+//        playerList.add(player1);
+//        playerList.add(player2);
+//        playerList.add(player3);
+//        playerList.add(player4);
+//        playerList.add(player5);
+//        playerList.add(player6);
+//        playerList.add(player7);
+//        playerList.add(player8);
+//        playerList.add(player9);
+//        playerList.add(player10);
+//        playerList.add(player11);
+//        playerList.add(player12);
+//        playerList.add(player13);
+//        playerList.add(player14);
+//        playerList.add(player15);
+//        playerList.add(player16);
+//        playerList.add(player17);
+//        playerList.add(player18);
+//        playerList.add(player19);
+//        playerList.add(player20);
         cardExpansions = CardHandler.getExpansions(InstrumentationRegistry.getTargetContext());
         game = new Game(playerList, cardExpansions);
         boolean kingExists = false;
@@ -138,10 +138,27 @@ public class GameLogicInstrumentedTest {
         blackCard = expansion.getBlackCards().get(random.nextInt(expansion.getBlackCards().size()));
     }
 
-
     @Test
-    public void testPlayGame(){
-       game.getWinner();
+    public void testPlayGame() {
+        // After initialization -
+        // #1 Test Case: We have just one king and many players
+        int noKing = 0;
+        for (Player p : playerList) {
+            if (p.isKing()) noKing++;
+        }
+        assertEquals(1, noKing);
+        /* #2
+        The king should have one Black card per round Or more!!
+        How can I get the black cards for the king!
+        * */
+        // #3 Test Case:  King has Zero White Cards
+        // By default / Correct Case
+        assertEquals(0,game.getKing().getWhiteCards().size());
+        // New Game Round ..
+        game = new Game(playerList, cardExpansions);
+        // #4 Test Case: We have one winner per  Round Game
+        int noWinner = 0;
+        assertEquals(1, noWinner);
     }
 //
 //    @Test

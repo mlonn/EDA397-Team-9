@@ -6,69 +6,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:background="@drawable/background_port"
-
+    android:background="@drawable/background_land"
     android:baselineAligned="false"
+
     android:orientation="vertical"
+    android:scaleType="centerCrop"
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="25dp">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:orientation="vertical"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="8dp"
         app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
         tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/textView9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
             android:fontFamily="serif-monospace"
-            android:text="What card will win?"
-            android:textAlignment="center"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="8dp"
-            android:layout_marginTop="20dp"/>
-
-        <TextView
-            android:id="@+id/currentBlackCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:fontFamily="serif-monospace"
-            android:text="black_card_text"
+            android:text="Insert your username"
             android:textAlignment="center"
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <ListView
-            android:id="@+id/black_card_list"
+        <EditText
+            android:id="@+id/txt_username"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:layout_weight="0.61"/>
-
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:ems="10"
+            android:fontFamily="monospace"
+            android:hint="Username"
+            android:inputType="textPersonName"
+            android:textAlignment="textStart"
+            android:textStyle="italic" />
 
         <Button
-            android:id="@+id/btn_selectWinner"
+            android:id="@+id/btn_submitUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-smallcaps"
-            android:text="Select Winner"/>
-
+            android:text="Next" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

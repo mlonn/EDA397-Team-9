@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:background="@drawable/background_port"
+    android:background="@drawable/background_land"
 
     android:baselineAligned="false"
     android:orientation="vertical"
@@ -42,25 +42,14 @@
             tools:layout_editor_absoluteY="8dp"
             android:layout_marginTop="20dp"/>
 
-        <TextView
-            android:id="@+id/currentBlackCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:fontFamily="serif-monospace"
-            android:text="black_card_text"
-            android:textAlignment="center"
-            android:textSize="24sp"
-            android:textStyle="bold" />
 
         <ListView
             android:id="@+id/black_card_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_weight="1"
             android:divider="@null"
-            android:dividerHeight="0dp"
-            android:layout_weight="0.61"/>
-
+            android:dividerHeight="0dp" />
 
         <Button
             android:id="@+id/btn_selectWinner"

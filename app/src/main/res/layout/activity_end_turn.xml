@@ -27,20 +27,20 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:fontFamily="serif-monospace"
-            android:text="Choose a white card"
+            android:text="End turn"
             android:textAlignment="center"
             android:textSize="24sp"
             android:textStyle="bold"
             tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="0dp"
-            android:layout_marginTop="20dp"/>
+            tools:layout_editor_absoluteY="0dp" />
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:adjustViewBounds="true"
             android:src="@drawable/black_card"
             android:layout_below="@+id/textView"
@@ -48,8 +48,8 @@
             android:contentDescription="Black Card" />
 
         <TextView
-            android:id="@+id/textviewBlackCard"
-            android:layout_width="120dp"
+            android:id="@+id/textviewWinningBlackCard"
+            android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/imageView"
             android:layout_alignTop="@+id/imageView"
@@ -59,53 +59,16 @@
             android:textAlignment="center" />
 
         <TextView
-            android:id="@+id/pickTextView"
+            android:id="@+id/winnerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pick : X"
-            android:layout_marginTop="150dp"
-            android:layout_marginLeft="280dp" />
-
-        <HorizontalScrollView
-            android:id="@+id/whiteCardsScroll"
-            android:layout_width="match_parent"
-            android:layout_height="190dp"
-            android:layout_above="@+id/submit_button"
-            android:layout_alignParentStart="true">
-
-
-            <!--
-        <ImageButton
-                        android:id="@+id/favoriteBorder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginTop="32dp"
-                        android:background="@null"
-                        app:srcCompat="@mipmap/ic_favorite_border"
-                        android:layout_alignTop="@+id/firstCardText"
-                        android:layout_alignEnd="@+id/firstCardText" />
-
--->
-
-            <LinearLayout
-                android:id="@+id/linear"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="bottom"
-                android:orientation="horizontal">
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <Button
-            android:id="@+id/submit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/imageView"
             android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-smallcaps"
-            android:text="Submit Cards" />
+            android:layout_marginTop="19dp"
+            android:text="Winner: "
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
     </RelativeLayout>
 
 

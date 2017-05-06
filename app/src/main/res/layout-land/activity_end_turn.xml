@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@drawable/background_land"
+    android:baselineAligned="false"
+    android:orientation="vertical"
+    android:scaleType="centerCrop"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="25dp">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp"
+        android:id="@+id/relativeLayout">
+
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="serif-monospace"
+            android:text="End turn"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/black_card"
+            android:layout_below="@+id/textView"
+            android:contentDescription="Black Card"
+            android:layout_marginLeft="30dp"/>
+
+        <TextView
+            android:id="@+id/textviewWinningBlackCard"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/imageView"
+            android:layout_alignTop="@+id/imageView"
+            android:layout_alignLeft="@+id/imageView"
+            android:layout_alignRight="@+id/imageView"
+            android:gravity="center"
+            android:text="BlackCardText"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/winnerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Winner: "
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_alignTop="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView"
+            android:layout_marginStart="163dp" />
+
+    </RelativeLayout>
+
+
+
+
+</android.support.constraint.ConstraintLayout>

@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +21,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,12 +28,16 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.BlackCardAdapter;
+
+import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
 
 /**
@@ -44,12 +48,11 @@ public class GameActivity extends AppCompatActivity {
 
     public ArrayList<WhiteCard> whiteCards;
 
-
     ImageButton favoriteButtons[];
-
     private Game game;
     private Player player;
     private Boolean[] selectedCards;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +65,42 @@ public class GameActivity extends AppCompatActivity {
         } else {
             initPlayer();
         }
+
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                updateGame();
+            }
+
+        }, 0, 200);
+
+    }
+
+    private void updateGame() {
+        game.update();
     }
 
     private void initKing() {
-
         setContentView(R.layout.activity_king);
+        TextView blackCardText = (TextView) findViewById(R.id.currentBlackCard);
+        blackCardText.setText(Html.fromHtml(game.getBlackCard().getText()));
         ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
-        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions()));
-
+        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), player.getSubmissions(), player));
+        Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
+        endTurnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (game.endTurn()) {
+                    Intent intent = new Intent(getApplicationContext(), EndTurnActivity.class);
+                    intent.putExtra(IntentType.THIS_GAME, game);
+                    intent.putExtra(IntentType.WINNING_STRING, updateBlackCardText(game.getWinner().getWhiteCards()));
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
     }
 
     private void initPlayer() {
@@ -97,22 +128,22 @@ public class GameActivity extends AppCompatActivity {
             imgFavoriteBorder.setId(i);
 
             //Layout settings of the images
-            imgWhiteCard.setPadding(convertDpToPixels(2,this), convertDpToPixels(2,this), convertDpToPixels(2,this), convertDpToPixels(2,this)); //.setPadding(left, top, right, bottom)
-            RelativeLayout.LayoutParams paramsWhiteCard = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(360,this)); //.LayoutParams(width, height) for white cards
+            imgWhiteCard.setPadding(0, 0, 0, 0); //.setPadding(left, top, right, bottom)
+            RelativeLayout.LayoutParams paramsWhiteCard = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(450,this)); //.LayoutParams(width, height) for white cards
             paramsWhiteCard.setMargins(convertDpToPixels(10,this), convertDpToPixels(10,this), convertDpToPixels(1,this), convertDpToPixels(7,this)); //.setMargins(left, top, right, bottom)
             //paramsWhiteCard.setMargins(1, 1, 1, 75); //.setMargins(left, top, right, bottom)
             imgWhiteCard.setLayoutParams(paramsWhiteCard);
 
-            imgFavoriteBorder.setPadding(convertDpToPixels(2,this), convertDpToPixels(2,this), convertDpToPixels(2,this), convertDpToPixels(2,this)); //.setPadding(left, top, right, bottom)
-            RelativeLayout.LayoutParams paramsFavoriteBorder = new RelativeLayout.LayoutParams(convertDpToPixels(100,this), convertDpToPixels(100,this)); //(width,height) for favorite border
-            paramsFavoriteBorder.setMargins(convertDpToPixels(5,this), convertDpToPixels(10,this), convertDpToPixels(1,this), convertDpToPixels(1,this)); //.setMargins(left, top, right, bottom)
+            imgFavoriteBorder.setPadding(0, 0, 0, 0); //.setPadding(left, top, right, bottom)
+            RelativeLayout.LayoutParams paramsFavoriteBorder = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(65,this)); //(width,height) for favorite border
+            paramsFavoriteBorder.setMargins(convertDpToPixels(59,this), convertDpToPixels(1,this), 0, 0); //.setMargins(left, top, right, bottom)
             imgFavoriteBorder.getBackground().setAlpha(0); //ImageButton background full transparent
             imgFavoriteBorder.setLayoutParams(paramsFavoriteBorder);
 
-            cardText.setPadding(convertDpToPixels(30,this),0,convertDpToPixels(30,this),0);
-            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(360,this)); //.LayoutParams(width, height) for text in white card
+            cardText.setPadding(convertDpToPixels(40,this),0,convertDpToPixels(30,this),0);
+            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(450,this)); //.LayoutParams(width, height) for text in white card
             cardText.setLayoutParams(paramsText);
-            paramsText.setMargins(0,convertDpToPixels(100,this),0,0);
+            paramsText.setMargins(0,convertDpToPixels(80,this),0,0);
             cardText.setText(Html.fromHtml(whiteCards.get(i).getWord()));
             cardText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             cardText.setTextColor(Color.BLACK);
@@ -147,7 +178,7 @@ public class GameActivity extends AppCompatActivity {
             if (game.getBlackCard().getPick() == player.getSelectedCards().size()) {
                 player.submitSelection();
             } else {
-                Toast.makeText(getApplicationContext(), "Please select " + game.getBlackCard().getPick() + " cards.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Please select a winner", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -234,8 +265,8 @@ public class GameActivity extends AppCompatActivity {
 
     private String updateBlackCardText(List<WhiteCard> whiteCards) {
         String[] blackText = game.getBlackCard().getText().split("_");
+        StringBuilder sb = new StringBuilder();
         if (blackText.length>1) {
-            StringBuilder sb = new StringBuilder();
             for (int j = 0; j < blackText.length; j++) {
                 sb.append(blackText[j]);
                 if (j < whiteCards.size()) {
@@ -244,9 +275,8 @@ public class GameActivity extends AppCompatActivity {
                     sb.append("_");
                 }
             }
-            return sb.toString();
         }
-        return null;
+        return sb.toString();
     }
 
     //Main menu
@@ -254,6 +284,9 @@ public class GameActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
+        String username = prefs.getString("name", null);
+        menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
 
@@ -266,22 +299,11 @@ public class GameActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.changeName:
-                try{
-                    File prefsFile = new File("/data/data/se.chalmers.eda397.team9.cardsagainsthumanity/shared_prefs/usernameFile.xml");
-                    prefsFile.delete();
-                }
-                catch (Exception e){
-
-                }
-
-                Intent intent = new Intent(this, IndexActivity.class);
+            case profile:
+                Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
+                return true;
 
-                return true;
-            case R.id.changeTable:
-                //Do something
-                return true;
             case R.id.settings:
                 //Do something
                 return true;

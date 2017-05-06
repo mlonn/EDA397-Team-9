@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
@@ -33,8 +34,8 @@ public class ReceiveMulticast {
     Map<String, TableInfo> tables;
     Map<String, TableInfo> oldTables;
     private TableInfo hostTable;
-    private MulticastPackage greeting = new MulticastPackage(MulticastSender.Target.ALL_DEVICES,
-            MulticastSender.Type.GREETING);
+    private MulticastPackage greeting = new MulticastPackage(Message.Target.ALL_DEVICES,
+            Message.Type.REQUEST_ALL_TABLES);
 
     public ReceiveMulticast(){
         initMulticast();
@@ -53,7 +54,7 @@ public class ReceiveMulticast {
 
         PlayerInfo player = new PlayerInfo("Alex", "test_address");
         MulticastPackage joinRequest = new MulticastPackage(hostTable.getHost().getDeviceAddress(),
-                MulticastSender.Type.PLAYER_JOIN_REQUEST, player);
+                Message.Type.PLAYER_JOIN_REQUEST, player);
 
         try {
             for(int i = 0; i < 3; i++){
@@ -65,7 +66,7 @@ public class ReceiveMulticast {
         }
 
         MulticastPackage joinSuccessful = new MulticastPackage(hostTable.getHost().getDeviceAddress(),
-                MulticastSender.Type.PLAYER_JOIN_SUCCESS, player);
+                Message.Response.PLAYER_JOIN_SUCCESS, player);
 /*
         try {
             for(int i = 0; i < 3; i++){
@@ -131,8 +132,8 @@ public class ReceiveMulticast {
                 String type = ((MulticastPackage) msg).getPackageType();
                 Object packageObject = ((MulticastPackage) msg).getObject();
 
-                if (target.equals(MulticastSender.Target.ALL_DEVICES)) {
-                    if(type.equals(MulticastSender.Type.HOST_TABLE)){
+                if (target.equals(Message.Target.ALL_DEVICES)) {
+                    if(type.equals(Message.Response.HOST_TABLE)){
                         hostTable = (TableInfo) packageObject;
                         tables.put(hostTable.getName(), hostTable);
                         System.out.println("ReceiveMulticast: Received a " + type);
@@ -140,7 +141,7 @@ public class ReceiveMulticast {
                 }
 
                 if (hostTable !=  null && target.equals(hostTable.getHost().getDeviceAddress())){
-                    if(type.equals(MulticastSender.Type.PLAYER_JOIN_ACCEPTED)){
+                    if(type.equals(Message.Response.PLAYER_JOIN_ACCEPTED)){
                         //TODO: Send confirmation
                     }
                 }
