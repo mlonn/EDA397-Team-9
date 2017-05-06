@@ -2,6 +2,7 @@ package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.support.test.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
@@ -56,6 +58,7 @@ public class GameLogicInstrumentedTest {
     boolean kingExists;
 
     Random random;
+    BlackCard blackCard;
 
     @Before
     public void setUpInitGame(){
@@ -119,42 +122,99 @@ public class GameLogicInstrumentedTest {
         }
         assertEquals(kingExists, true);
     }
+
+    @After
+    public void tearDownInitGame(){
+        game = null;
+        cardExpansions = null;
+        kingExists = false;
+    }
+
     @Before
     public void setUpPlayGame(){
         random = new Random();
+        cardExpansions = CardHandler.getExpansions(InstrumentationRegistry.getTargetContext());
+        CardExpansion expansion = cardExpansions.get(random.nextInt(cardExpansions.size()));
+        blackCard = expansion.getBlackCards().get(random.nextInt(expansion.getBlackCards().size()));
     }
+
 
     @Test
     public void testPlayGame(){
-        for (Player p: playerList) {
-            if(!p.isKing()){
-                ArrayList<WhiteCard> playerWhiteCard;
-                playerWhiteCard = p.getWhiteCards();
-                WhiteCard w;
-                List<WhiteCard> whiteCardsToSubmit = new ArrayList<>();
-                // In this stage; we have 10 player with 10 cards for each player
-                for(int i = 0; i < 10; i++){
-                    // Select 10 random whiteCards for each player.
-                    w = playerWhiteCard.get(random.nextInt(10));
-                    p.addCardToSelected(w);
-                    whiteCardsToSubmit.add(w);
-                    p.submitSelection();
-                    Submission s = new Submission(p, whiteCardsToSubmit);
-                    //
-                    assertEquals(s.getPlayer(), p.getSubmission().getPlayer());
-//                    assertEquals(s.getWhiteCards().size(), p.getSubmission().getWhiteCards().size());
-                    whiteCardsToSubmit.remove(w);
-                    p.removeCardFromSelected(w);
-                }
+       game.getWinner();
+    }
+//
+//    @Test
+//    public void testPlayGame(){
+//        for (Player p: playerList) {
+//            if (!p.isKing()) {
+//                //If dummy players exists and are added to the playerlist outside this class, reset their selected cards
+//                p.resetSubmission();
+//                while (p.getSelectedCards().size() != 0) {
+//                    p.removeCardFromSelected(p.getSelectedCards().get(0));
+//                }
+//
+//                ArrayList<WhiteCard> playerWhiteCard;
+//                playerWhiteCard = p.getWhiteCards();
+//                WhiteCard w = playerWhiteCard.get(random.nextInt(10));
+//                ;
+//                List<WhiteCard> whiteCardsToSubmit = new ArrayList<>();
+//
+//                // In this stage; we have 10 player with 10 cards for each player
+//                for (int i = 0; i < 10; i++) {
+//                    // Select 10 random whiteCards for each player.
+//                    w = playerWhiteCard.get(random.nextInt(10));
+//                    p.addCardToSelected(w);
+//                    whiteCardsToSubmit.add(w);
+//                    p.submitSelection();
+//                    Submission s = new Submission(p, whiteCardsToSubmit);
+//                    assertEquals(s.getPlayer(), p.getSubmission().getPlayer());
+//                }
+//            }
+//            // After submission is completed, King can decide the winner!
+//            // Player1 has 1 point for this round and Player1 is the winner & and Other players have Zero score.
+//            Player king = game.getKing();
+//            ArrayList<Submission> sub = (ArrayList<Submission>) king.getSubmissions();
+//            king.setWinner(sub.get(19));
+//            game.endTurn();
+//            game.getWinner().getPlayer().givePoint();
+//            for (Player p1 : playerList) {
+//                if (!p1.isKing() && p1 != player1) {
+//                    p1.setScore(0);
+//                }
+//            }
+//            for (int i = 0; i < 10; i++) {
+//                game = new Game(playerList, cardExpansions);
+//            }
+//        }
+//    }
+
+    @After
+    public void tearDownPlayGame(){
+        for (Player p: playerList){
+            p.resetSubmissions();
+            blackCard = null;
+        }
+    }
+
+    private void pickBlackCard(){
+        //Remove temporarily all expansions which don't possess any black cards from being picked
+        List<CardExpansion> tempRemovedExp = new ArrayList<>();
+        for (CardExpansion expansion:cardExpansions)
+        {
+            if(expansion.getBlackCards().size() == 0){
+                tempRemovedExp.add(expansion);
             }
         }
-        // After submission is completed, King can decide the winner!
-        // Player1 has 1 point for this round and Player1 is the winner & and Other players have Zero score.
-        player1.setScore(1);
-        for (Player p1: playerList) {
-            if (!p1.isKing()&&p1!= player1) {
-                p1.setScore(0);
-            }
+        cardExpansions.removeAll(tempRemovedExp);
+
+        //Pick black card
+        CardExpansion exp = cardExpansions.get(random.nextInt(cardExpansions.size()));
+        blackCard = exp.getBlackCards().get(random.nextInt(exp.getBlackCards().size()));
+
+        //Add expansions back again to list of picked card expansions
+        for (CardExpansion expansion:tempRemovedExp){
+            cardExpansions.add(expansion);
         }
     }
 }
