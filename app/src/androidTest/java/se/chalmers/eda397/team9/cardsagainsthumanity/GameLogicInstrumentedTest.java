@@ -125,7 +125,6 @@ public class GameLogicInstrumentedTest {
         // The expected Score -- Player0 = 2 and Player1 = 1
         assertEquals(2,game.getPlayerByUserName("player0").getScore());
         assertEquals(1,game.getPlayerByUserName("player1").getScore());
-
     }
 
     @After
