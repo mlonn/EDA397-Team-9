@@ -1,27 +1,16 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v7.app.AppCompatActivity;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.ActivityUnitTestCase;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
-
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Player;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Table;
-import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
-
-import static org.junit.Assert.*;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -36,7 +25,7 @@ public class IndexActivityInstrumentTest extends ActivityInstrumentationTestCase
 
     //Test1
     IndexActivity mIndexActivity;
-    Player player;
+    PlayerInfo player;
 
     @Rule
     public ActivityTestRule<IndexActivity> rule1  = new ActivityTestRule<>(IndexActivity.class);
@@ -44,7 +33,7 @@ public class IndexActivityInstrumentTest extends ActivityInstrumentationTestCase
     @Before
     public void setUp(){
         injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-        player = new Player("");
+        player = new PlayerInfo("");
         mIndexActivity = rule1.getActivity();;
     }
 
@@ -52,12 +41,12 @@ public class IndexActivityInstrumentTest extends ActivityInstrumentationTestCase
     public void checkUsernameFile(){
 
         if(mIndexActivity.fileExists()){
-            assertNotNull(player.getUsername());
+            assertNotNull(player.getName());
         }
         else{
             mIndexActivity.createUsernameFile("Sven");
-            assertNotNull(player.getUsername());
-            assertEquals(player.getUsername(),"Sven");
+            assertNotNull(player.getName());
+            assertEquals(player.getName(),"Sven");
         }
     }
 
