@@ -118,13 +118,13 @@ public class Game implements Serializable {
         players.get(kingNumber).setKing(true);
         return players.get(kingNumber);
     }
-    
+
     //collects all submitted white cards and gives them to the king
     private void giveCardsToKing() {
         List<Submission> sub = new ArrayList<Submission>();
         king.resetSubmissions();
         for (PlayerInfo p : players) {
-            if(!p.equals(king)) {
+            if(!p.equals(king) && p.getSubmission() != null) {
                 sub.add(p.getSubmission());
             }
         }
