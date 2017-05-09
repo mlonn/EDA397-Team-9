@@ -100,6 +100,9 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         initMulticastSocket();
         myPlayerInfo = game.getPlayerByUUID(prefs.getString(IndexActivity.PLAYER_UUID, null));
         /* Get table info */
+        if(myPlayerInfo.isKing()) {
+            openCloseTableDialog();
+        }
         if (myPlayerInfo.isKing()) {
             initKing();
             /* implement ask for king
@@ -134,7 +137,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                game.setKing(myPlayerInfo);
+                game.setKing();
                 initPlayer();
                 }
 
