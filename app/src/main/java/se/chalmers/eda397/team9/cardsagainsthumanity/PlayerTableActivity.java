@@ -139,6 +139,8 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
             }
         });
 
+        expansions = new ArrayList<CardExpansion>();
+
         gameStarted = false;
     }
 
@@ -152,8 +154,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     protected void onPause() {
         super.onPause();
     }
-
-
     /* Main menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

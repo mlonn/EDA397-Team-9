@@ -11,7 +11,6 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;

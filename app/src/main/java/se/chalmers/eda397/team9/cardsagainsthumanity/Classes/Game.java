@@ -39,8 +39,9 @@ public class Game implements Serializable {
     public void update() {
         giveCardsToKing();
     }
-    public boolean endTurn(){
-        if (king.getWinner() != null){
+
+    public boolean endTurn() {
+        if (king.getWinner() != null) {
             winningSubmission = king.getWinner();
             PlayerInfo winner = winningSubmission.getPlayer();
             winner.givePoint();
@@ -63,20 +64,20 @@ public class Game implements Serializable {
     //gives each player 10 cards from selected expansion
     private void distributeWhiteCards() {
         for (PlayerInfo p : players) {
-            while(p.getWhiteCards().size() < 10) {
+            while (p.getWhiteCards().size() < 10) {
                 CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
                 WhiteCard whiteCard = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
                 p.addWhiteCard(whiteCard);
             }
         }
     }
+
     //Selects a random black card from selected expansions
     private void pickBlackCard() {
         //Remove temporarily all expansions which don't possess any black cards from being picked
         List<CardExpansion> tempRemovedExp = new ArrayList<>();
-        for (CardExpansion expansion:cardExpansions)
-        {
-            if(expansion.getBlackCards().size() == 0){
+        for (CardExpansion expansion : cardExpansions) {
+            if (expansion.getBlackCards().size() == 0) {
                 tempRemovedExp.add(expansion);
             }
         }
@@ -87,15 +88,17 @@ public class Game implements Serializable {
         blackCard = exp.getBlackCards().get(r.nextInt(exp.getBlackCards().size()));
 
         //Add expansions back again to list of picked card expansions
-        for (CardExpansion expansion:tempRemovedExp){
+        for (CardExpansion expansion : tempRemovedExp) {
             cardExpansions.add(expansion);
         }
     }
+
     public void setKing(PlayerInfo player) {
         players.remove(player);
         PlayerInfo king = setKing();
         players.add(player);
     }
+
     public PlayerInfo setKing() {
         //Set all players to not being king
         for (PlayerInfo p : players) {
@@ -112,14 +115,19 @@ public class Game implements Serializable {
         List<Submission> sub = new ArrayList<Submission>();
         king.resetSubmissions();
         for (PlayerInfo p : players) {
-            if(!p.equals(king) && p.getSubmission() != null) {
-                sub.add(p.getSubmission());
+
+
+            if (!p.equals(king)) {
+                if (!p.equals(king) && p.getSubmission() != null) {
+                    sub.add(p.getSubmission());
+                }
             }
         }
         king.setSubmissions(sub);
     }
-    public Boolean hasAllPlayersSubmitted(){
-        return (king.getSubmissions().size() == (players.size()-1) * blackCard.getPick());
+
+    public Boolean hasAllPlayersSubmitted() {
+        return (king.getSubmissions().size() == (players.size() - 1) * blackCard.getPick());
     }
 
     public PlayerInfo getPlayerByUUID(String UUID) {

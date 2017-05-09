@@ -10,7 +10,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +35,6 @@ public class HostMulticastSender extends AsyncTask {
         for (PlayerInfo p : playerList) {
             this.playerMap.put(p, false);
         }
-
-        System.out.println(playerList.size());
-        System.out.println(playerMap.size());
     }
 
     public HostMulticastSender(MulticastPackage mPackage, MulticastPackage expectedResponse,
