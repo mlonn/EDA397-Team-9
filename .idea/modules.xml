@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AgileProject.iml" filepath="$PROJECT_DIR$/AgileProject.iml" />
       <module fileurl="file://$PROJECT_DIR$/EDA397-Team-9.iml" filepath="$PROJECT_DIR$/EDA397-Team-9.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

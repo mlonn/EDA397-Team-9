@@ -1,6 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.core.deps.guava.base.Strings;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,13 +16,13 @@ import java.util.Random;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
-import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo
-        ;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -32,31 +33,16 @@ import static junit.framework.Assert.assertTrue;
 public class GameLogicInstrumentedTest {
 
     Game game;
-    PlayerInfo player1;
-    PlayerInfo player2;
-    PlayerInfo player3;
-    PlayerInfo player4;
-    PlayerInfo player5;
-    PlayerInfo player6;
-    PlayerInfo player7;
-    PlayerInfo player8;
-    PlayerInfo player9;
-    PlayerInfo player10;
-    PlayerInfo player11;
-    PlayerInfo player12;
-    PlayerInfo player13;
-    PlayerInfo player14;
-    PlayerInfo player15;
-    PlayerInfo player16;
-    PlayerInfo player17;
-    PlayerInfo player18;
-    PlayerInfo player19;
-    PlayerInfo player20;
     ArrayList<PlayerInfo> playerList;
+    PlayerInfo king = new PlayerInfo("king");
+    PlayerInfo p1 = new PlayerInfo("player1","player1","0","0");
+    PlayerInfo p2 = new PlayerInfo("player2","player2","0","0");
+    PlayerInfo p3 = new PlayerInfo("player3","player3","0","0");
+    PlayerInfo p4 = new PlayerInfo("player4","player4","0","0");
+    PlayerInfo p5 = new PlayerInfo("player5","player5","0","0");
     ArrayList<CardExpansion> cardExpansions;
     ArrayList<WhiteCard> whiteCards;
     boolean kingExists;
-
     Random random;
     BlackCard blackCard;
 
@@ -64,47 +50,18 @@ public class GameLogicInstrumentedTest {
     public void setUpInitGame(){
         whiteCards = new ArrayList<>();
         playerList = new ArrayList<>();
-        player1 = new PlayerInfo("p1");
-        player2 = new PlayerInfo("p2");
-        player3 = new PlayerInfo("p3");
-        player4 = new PlayerInfo("p4");
-        player5 = new PlayerInfo("p5");
-        player6 = new PlayerInfo("p6");
-        player7 = new PlayerInfo("p7");
-        player8 = new PlayerInfo("p8");
-        player9 = new PlayerInfo("p9");
-        player10 = new PlayerInfo("p10");
-        player11 = new PlayerInfo("p11");
-        player12 = new PlayerInfo("p12");
-        player13 = new PlayerInfo("p13");
-        player14 = new PlayerInfo("p14");
-        player15 = new PlayerInfo("p15");
-        player16 = new PlayerInfo("p16");
-        player17 = new PlayerInfo("p17");
-        player18 = new PlayerInfo("p18");
-        player19 = new PlayerInfo("p19");
-        player20 = new PlayerInfo("p20");
-        playerList.add(player1);
-        playerList.add(player2);
-        playerList.add(player3);
-        playerList.add(player4);
-        playerList.add(player5);
-        playerList.add(player6);
-        playerList.add(player7);
-        playerList.add(player8);
-        playerList.add(player9);
-        playerList.add(player10);
-        playerList.add(player11);
-        playerList.add(player12);
-        playerList.add(player13);
-        playerList.add(player14);
-        playerList.add(player15);
-        playerList.add(player16);
-        playerList.add(player17);
-        playerList.add(player18);
-        playerList.add(player19);
-        playerList.add(player20);
+        //
+        playerList.add(p1);
+        playerList.add(p2);
+        playerList.add(p3);
+        playerList.add(p4);
+        playerList.add(p5);
+        playerList.add(king);
         cardExpansions = CardHandler.getExpansions(InstrumentationRegistry.getTargetContext());
+        /*
+        When Creating new Instance from Game -->
+        Calling this method "createDummySelections" which will create Dummy 5 players and assign WhiteCards to them
+        * */
         game = new Game(playerList, cardExpansions);
         boolean kingExists = false;
     }
@@ -112,15 +69,8 @@ public class GameLogicInstrumentedTest {
     @Test
     public void testInitGame(){
         for (PlayerInfo p:playerList) {
-            if(p.isKing()){
-                kingExists = true;
-                assertEquals(0, p.getWhiteCards().size());
-            }
-            else{
                 assertEquals(10,p.getWhiteCards().size());
-            }
         }
-        assertEquals(kingExists, true);
     }
 
     @After
@@ -139,46 +89,64 @@ public class GameLogicInstrumentedTest {
     }
 
     @Test
-    public void testPlayGame(){
-        for (PlayerInfo p: playerList) {
-            if(!p.isKing()){
-                //If dummy players exists and are added to the playerlist outside this class, reset their selected cards
-                p.resetSubmission();
-                while(p.getSelectedCards().size() != 0){
-                    p.removeCardFromSelected(p.getSelectedCards().get(0));
-                }
+    public void testPlayGame() {
+        // After initialization -
+        // #1 Test Case: We have just one king and many players
+        int noKing = 0;
+        for (PlayerInfo p : playerList) {
+            if (p.isKing()) noKing++;
+        }
+        assertEquals(1, noKing);
 
-                ArrayList<WhiteCard> playerWhiteCard;
-                playerWhiteCard = p.getWhiteCards();
-                WhiteCard w = playerWhiteCard.get(random.nextInt(10));;
-                List<WhiteCard> whiteCardsToSubmit = new ArrayList<>();
-
-                for(int i = 0; i < 1; i++){
-                    pickBlackCard();
-                    assertTrue(blackCard.getPick() > 0 && blackCard.getPick() < 4);
-
-                    while(p.getSelectedCards().size() < blackCard.getPick()){
-                        w = playerWhiteCard.get(random.nextInt(10));
-                        p.addCardToSelected(w);
-                        whiteCardsToSubmit.add(w);
-                    }
-
+        // #3 Test Case:  King has Zero White Cards
+        // By default / Correct Case
+        assertEquals(10,game.getKing().getWhiteCards().size());
+        // #4 Test Case: All players should submit white cards
+        for (PlayerInfo p : playerList) {
+            for (int k = 0; k < game.getBlackCard().getPick(); k++) {
+                if(!p.isKing()){
                     p.submitSelection();
-
-                    assertEquals(p.getSubmission().getWhiteCards().size(), blackCard.getPick());
-
-                    Submission s = new Submission(p, whiteCardsToSubmit);
-                    int expected  = s.getWhiteCards().size();
-                    int actual = p.getSubmission().getWhiteCards().size();
-
-                    assertEquals(s.getPlayer(), p.getSubmission().getPlayer());
-                    assertEquals(s.getWhiteCards().size(), p.getSubmission().getWhiteCards().size());
-
-                    whiteCardsToSubmit.remove(w);
-                    p.removeCardFromSelected(w);
                 }
             }
         }
+        game.update();
+        assertTrue(game.hasAllPlayersSubmitted());
+        // #5 Test Case: Check Player Score by using givePoint Method
+        // Round 1
+        game.getPlayerByUUID("player1").givePoint();
+        assertEquals("The score for Player1 should be 1",1,game.getPlayerByUUID("player1").getScore());
+        // #6 Test Case: We have one winner per  Round Game - In this case, the winner is player0
+        Submission winnerSubmission = game.getPlayerByUUID("player1").getSubmission();
+        game.getPlayerByUUID("player1").setWinner(winnerSubmission);
+        int noWinner = 0;
+        for (PlayerInfo p : playerList) {
+            if(p.getWinner()!=null) noWinner++;
+        }
+//        assertEquals(1, noWinner);
+        // #7 Test Case: Creating many game rounds and Checking the score
+        // Round 2
+        game = new Game(playerList, cardExpansions);
+        game.getPlayerByUUID("player1").givePoint();
+        Submission winnerSubmission1 = game.getPlayerByUUID("player1").getSubmission();
+        game.getPlayerByUUID("player1").setWinner(winnerSubmission1);
+        // Round 3
+        game = new Game(playerList, cardExpansions);
+        game.getPlayerByUUID("player2").givePoint();
+        Submission winnerSubmission2 = game.getPlayerByUUID("player2").getSubmission();
+        game.getPlayerByUUID("player2").setWinner(winnerSubmission2);
+        // creating  5 rounds
+        for (int j=1;j<6;j++){
+            game = new Game(playerList, cardExpansions);
+            game.getPlayerByUUID("player"+j).givePoint();
+            Submission winnerSubmission$j = game.getPlayerByUUID("player"+j).getSubmission();
+            game.getPlayerByUUID("player"+j).setWinner(winnerSubmission2);
+        }
+        // The expected Score -- Player1 = 3 ,Player2 = 2, Player3 = 1,Player4 = 1,Player5 = 1
+        assertEquals(3,game.getPlayerByUUID("player1").getScore());
+        assertEquals(2,game.getPlayerByUUID("player2").getScore());
+        assertEquals(1,game.getPlayerByUUID("player3").getScore());
+        assertEquals(1,game.getPlayerByUUID("player4").getScore());
+        assertEquals(1,game.getPlayerByUUID("player5").getScore());
     }
 
     @After
