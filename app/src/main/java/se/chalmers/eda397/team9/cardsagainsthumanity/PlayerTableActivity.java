@@ -24,7 +24,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
+
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
@@ -65,6 +67,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     private TableInfo tableInfo;
     private PlayerInfo myPlayerInfo;
     private ArrayList<CardExpansion> expansions;
+
     private ArrayList<PlayerInfo> playerList;
     private IntentFilter mIntentFilter;
     private WiFiBroadcastReceiver receiver;
@@ -139,6 +142,9 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
             }
         });
 
+
+        expansions = new ArrayList<CardExpansion>();
+
         gameStarted = false;
     }
 
@@ -152,8 +158,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     protected void onPause() {
         super.onPause();
     }
-
-
     /* Main menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
