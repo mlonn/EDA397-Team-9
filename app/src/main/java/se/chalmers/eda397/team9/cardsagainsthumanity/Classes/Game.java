@@ -112,8 +112,15 @@ public class Game implements Serializable {
         List<Submission> sub = new ArrayList<Submission>();
         king.resetSubmissions();
         for (PlayerInfo p : players) {
+<<<<<<< 8b0713c1a51290ca3bc7a8397e9516f5fa6f8eed
             if(!p.equals(king) && p.getSubmission() != null) {
                 sub.add(p.getSubmission());
+=======
+            if(!p.equals(king)) {
+                if(!p.equals(king) && p.getSubmission() != null) {
+                    sub.add(p.getSubmission());
+                }
+>>>>>>> only add submission if not null
             }
         }
         king.setSubmissions(sub);
