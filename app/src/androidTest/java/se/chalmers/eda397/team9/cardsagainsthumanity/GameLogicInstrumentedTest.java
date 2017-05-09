@@ -114,7 +114,7 @@ public class GameLogicInstrumentedTest {
         for (PlayerInfo p:playerList) {
             if(p.isKing()){
                 kingExists = true;
-                assertEquals(0, p.getWhiteCards().size());
+                assertEquals(10, p.getWhiteCards().size());
             }
             else{
                 assertEquals(10,p.getWhiteCards().size());
