@@ -44,7 +44,7 @@ public class GameLogicInstrumentedTest {
     public void setUpInitGame(){
         whiteCards = new ArrayList<>();
         playerList = new ArrayList<>();
-        playerList.add(new Player("test"));
+        playerList.add(new Player("king"));
         cardExpansions = CardHandler.getExpansions(InstrumentationRegistry.getTargetContext());
         /*
         When Creating new Instance from Game -->
@@ -102,6 +102,7 @@ public class GameLogicInstrumentedTest {
         // #4 Test Case: All players should submit white cards
         assertTrue(game.hasAllPlayersSubmitted());
         // #5 Test Case: Check Player Score by using givePoint Method
+        // Round 1
         game.getPlayerByUserName("player0").givePoint();
         assertEquals("The score for Player0 should be 1",1,game.getPlayerByUserName("player0").getScore());
         // #6 Test Case: We have one winner per  Round Game - In this case, the winner is player0
@@ -113,18 +114,29 @@ public class GameLogicInstrumentedTest {
         }
         assertEquals(1, noWinner);
         // #7 Test Case: Creating many game rounds and Checking the score
+        // Round 2
         game = new Game(playerList, cardExpansions);
         game.getPlayerByUserName("player0").givePoint();
         Submission winnerSubmission1 = game.getPlayerByUserName("player0").getSubmission();
         game.getPlayerByUserName("player0").setWinner(winnerSubmission1);
-        //
+        // Round 3
         game = new Game(playerList, cardExpansions);
         game.getPlayerByUserName("player1").givePoint();
         Submission winnerSubmission2 = game.getPlayerByUserName("player1").getSubmission();
         game.getPlayerByUserName("player1").setWinner(winnerSubmission2);
-        // The expected Score -- Player0 = 2 and Player1 = 1
-        assertEquals(2,game.getPlayerByUserName("player0").getScore());
-        assertEquals(1,game.getPlayerByUserName("player1").getScore());
+        // creating  5 rounds
+        for (int j=0;j<5;j++){
+            game = new Game(playerList, cardExpansions);
+            game.getPlayerByUserName("player"+j).givePoint();
+            Submission winnerSubmission$j = game.getPlayerByUserName("player"+j).getSubmission();
+            game.getPlayerByUserName("player"+j).setWinner(winnerSubmission2);
+        }
+        // The expected Score -- Player0 = 3 ,Player1 = 2, Player2 = 1,Player3 = 1,Player4 = 1,Player5 = 1
+        assertEquals(3,game.getPlayerByUserName("player0").getScore());
+        assertEquals(2,game.getPlayerByUserName("player1").getScore());
+        assertEquals(1,game.getPlayerByUserName("player2").getScore());
+        assertEquals(1,game.getPlayerByUserName("player3").getScore());
+        assertEquals(1,game.getPlayerByUserName("player4").getScore());
     }
 
     @After
