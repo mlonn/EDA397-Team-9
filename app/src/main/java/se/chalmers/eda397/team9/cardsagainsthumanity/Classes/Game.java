@@ -20,7 +20,7 @@ public class Game implements Serializable {
     private Random r;
     private boolean endTurn;
 
-    public Game(List<PlayerInfo> players, ArrayList<CardExpansion> cardExpansions) {
+    public Game(ArrayList<PlayerInfo> players, ArrayList<CardExpansion> cardExpansions) {
         r = new Random();
         this.players = players;
         this.cardExpansions = cardExpansions;
@@ -28,27 +28,15 @@ public class Game implements Serializable {
         pickBlackCard();
         distributeWhiteCards();
     }
-
-    private void createDummySelections() {
-        for (int i = 0; i < 5; i++) {
-            PlayerInfo p = new PlayerInfo("player");
-            for (int j = 0; j < blackCard.getPick(); j++){
-                CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
-                WhiteCard whiteCard = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
-                WhiteCard whiteCard2 = exp.getWhiteCards().get(r.nextInt(exp.getWhiteCards().size()));
-                p.addWhiteCard(whiteCard);
-                p.addWhiteCard(whiteCard2);
-                p.addCardToSelected(whiteCard);
-                p.addCardToSelected(whiteCard2);
-                players.add(p);
-            }
-            p.submitSelection();
-            giveCardsToKing();
-        }
+    public Game(ArrayList<PlayerInfo> players, ArrayList<CardExpansion> cardExpansions, PlayerInfo king, BlackCard blackCard) {
+        this.players = players;
+        this.cardExpansions = cardExpansions;
+        this.king = king;
+        this.blackCard = blackCard;
     }
 
     //Call this method with what ever update frequency you want
-    public void update(){
+    public void update() {
         giveCardsToKing();
     }
     public boolean endTurn(){
@@ -153,5 +141,13 @@ public class Game implements Serializable {
 
     public Submission getWinner() {
         return winningSubmission;
+    }
+
+    public List<PlayerInfo> getPlayerList() {
+        return players;
+    }
+
+    public PlayerInfo getKing() {
+        return king;
     }
 }

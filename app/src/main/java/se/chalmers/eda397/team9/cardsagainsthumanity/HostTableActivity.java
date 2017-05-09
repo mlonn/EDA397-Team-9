@@ -92,6 +92,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private PlayerInfo hostInfo;
     private TableInfo myTableInfo;
     private List<PlayerInfo> connectedPlayers;
+    private boolean gameStarted = false;
 
     /* Fragment variables */
     private FragmentManager fragmentManager;
@@ -104,6 +105,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private boolean receiverIsRegistered = false;
     private ArrayList<String> expansionsNames;
     private int p2pPort;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -268,33 +270,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
             unregisterReceiver(receiver);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        closeConnection();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        initMulticastSocket();
-        if (!receiverIsRegistered) {
-            registerReceiver(receiver, mIntentFilter);
-        }
-    }
-
-    /* Method used for closing all async tasks and socket in this activity */
-    //TODO: Concurrent modification exception
-    private void closeConnection() {
-        for (AsyncTask current : threadList) {
-            if (!current.isCancelled())
-                current.cancel(true);
-        }
-
-//        TODO: Find a way to close the socket safely
-//        if(s != null || !s.isClosed())
-//            s.close();
-    }
 
 
     /* Method for initializing the multicast socket*/
@@ -413,18 +389,28 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         if (propertyChangeEvent.getPropertyName().equals(Message.Response.ALL_CONFIRMED)) {
             ArrayList<PlayerInfo> playerList = new ArrayList<>(myTableInfo.getPlayerList());
 
-            //Test
+           /*Test
             if(myTableInfo.getPlayerList().size() == 0){
                 playerList.add(new PlayerInfo("Dummy", UUID.randomUUID().toString()));
-            }
+            }*/
 
             p2pManager.discoverPeers();
-            playerList.add(myTableInfo.getHost());
-            Intent intent = new Intent(this, GameActivity.class);
-            Game game = new Game(playerList, expansions);
-            intent.putExtra(IntentType.THIS_GAME, game);
-            startActivity(intent);
-            finish();
+            if(!gameStarted) {
+                playerList.add(myTableInfo.getHost());
+                Intent intent = new Intent(this, GameActivity.class);
+                Game game = new Game(playerList, expansions);
+                playerList = (ArrayList) game.getPlayerList();
+                intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
+                intent.putExtra(IntentType.THIS_GAME, game);
+                intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
+                sendPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.PLAYER_LIST, playerList);
+                sendPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.EXPANSION_LIST, expansionsNames);
+                sendPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.KING, game.getKing());
+                sendPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.BLACK_CARD, game.getBlackCard());
+                startActivity(intent);
+                gameStarted = true;
+                finish();
+            }
         }
         if (propertyChangeEvent.getPropertyName().equals(Message.Response.GAME_START_DENIED)){
             Toast.makeText(this, "Need at least 2 players to start the game", Toast.LENGTH_SHORT).show();

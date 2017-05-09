@@ -19,27 +19,13 @@ public class CardExpansion implements Serializable{
     private String name;
     private boolean selected;
 
-    public CardExpansion(JSONObject data, JSONObject expansion) {
-        blackCardList = new ArrayList<>();
-        whiteCardList = new ArrayList<>();
+    public CardExpansion(String name, ArrayList blackCardList, ArrayList whiteCardList) {
+        this.blackCardList = blackCardList;
+        this.whiteCardList = whiteCardList;
         selected = false;
-        try {
-            name = expansion.getString("name");
-            JSONArray blackCards = data.getJSONArray("blackCards");
-            JSONArray whiteCards = data.getJSONArray("whiteCards");
-            JSONArray black = expansion.getJSONArray("black");
-            JSONArray white = expansion.getJSONArray("white");
-            for(int i = 0; i < black.length(); i++) {
-                JSONObject b = blackCards.getJSONObject(Integer.parseInt(black.get(i).toString()));
-                blackCardList.add(new BlackCard(b.getString("text"), b.getInt("pick")));
-            }
-            for(int i = 0; i < white.length(); i++) {
-                whiteCardList.add(new WhiteCard(whiteCards.getString(Integer.parseInt(white.getString(i)))));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        this.name = name;
     }
+
     public String getName() {
         return name;
     }

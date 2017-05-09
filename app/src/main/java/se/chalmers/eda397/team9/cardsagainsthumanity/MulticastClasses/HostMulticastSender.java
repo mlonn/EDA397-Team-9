@@ -107,12 +107,9 @@ public class HostMulticastSender extends AsyncTask {
                 Object object = ((MulticastPackage) inMsg).getObject();
 
                 if (target.equals(expectedResponse.getTarget())) {
-                    System.out.println("TARGET");
                     if (type.equals(expectedResponse.getPackageType())) {
-                        System.out.println("TYPE");
                         for (Map.Entry<PlayerInfo, Boolean> current : playerMap.entrySet()) {
                             if (current.getKey().getDeviceAddress().equals(((PlayerInfo) object).getDeviceAddress())) {
-                                System.out.println("EQUALS");
                                 current.setValue(true);
                             }
                         }

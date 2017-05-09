@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,17 +28,28 @@ import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GameMulticastReciever;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.BlackCardAdapter;
 
 import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
@@ -47,30 +60,58 @@ import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
  */
 
 public class GameActivity extends AppCompatActivity implements PropertyChangeListener {
-    public ArrayList<WhiteCard> whiteCards;
+    /* P2p variables */
+    private P2pManager p2pManager;
+    private int p2pPort;
 
+    public ArrayList<WhiteCard> whiteCards;
     ImageButton favoriteButtons[];
     private Game game;
     private PlayerInfo myPlayerInfo;
     private Boolean[] selectedCards;
     private Timer timer;
     private String tableAddress;
+    /* Multicast variables */
+    private InetAddress group;
+    private List<AsyncTask> threadList;
+    private WifiManager.MulticastLock multicastLock;
+    private MulticastSocket s;
+    private PlayerMulticastReceiver playerReceiver;
+    private String ipAdress;
+    private int port;
+    private GameMulticastReciever gameMulticastReciever;
+    private BlackCardAdapter blackCardAdapter;
+    private List<Submission> submissions;
+    private TableInfo myTableInfo;
+    private Submission submission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         game = (Game) getIntent().getExtras().get(IntentType.THIS_GAME);
+        myTableInfo = (TableInfo) getIntent().getExtras().get(IntentType.THIS_TABLE);
         tableAddress = (String) getIntent().getStringExtra(IntentType.TABLE_ADDRESS);
+
         SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        ipAdress = prefs.getString(IndexActivity.MULTICAST_IP_ADDRESS, null);
+        port = prefs.getInt(IndexActivity.MULTICAST_PORT, 0);
+        p2pPort = prefs.getInt(IndexActivity.P2P_PORT, 0);
+        /* Initialize multicast */
+        initMulticastSocket();
         myPlayerInfo = game.getPlayerByUUID(prefs.getString(IndexActivity.PLAYER_UUID, null));
         /* Get table info */
-
         if (myPlayerInfo.isKing()) {
-            openCloseTableDialog();
+            initKing();
+            /* implement ask for king
+            openCloseTableDialog();*/
         } else {
             initPlayer();
         }
-
+        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo,true, myTableInfo);
+        gameMulticastReciever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if (gameMulticastReciever != null){
+            gameMulticastReciever.addPropertyChangeListener(this);
+        }
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -112,7 +153,9 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         TextView blackCardText = (TextView) findViewById(R.id.currentBlackCard);
         blackCardText.setText(Html.fromHtml(game.getBlackCard().getText()));
         ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
-        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), myPlayerInfo.getSubmissions(), myPlayerInfo));
+        submissions = myPlayerInfo.getSubmissions();
+        blackCardAdapter = new BlackCardAdapter(this, game.getBlackCard(), submissions, myPlayerInfo);
+        blackCardList.setAdapter(blackCardAdapter);
         Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
         endTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,8 +245,17 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         public void onClick(View v) {
             if (game.getBlackCard().getPick() == myPlayerInfo.getSelectedCards().size()) {
                 myPlayerInfo.submitSelection();
+                MulticastPackage multicastPackage = new MulticastPackage(tableAddress, Message.Type.SUBMISSION,myPlayerInfo.getSubmission());
+                MulticastSender sender = new MulticastSender(multicastPackage,s,group);
+                sender.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             } else {
-                Toast.makeText(getApplicationContext(), "Please select a winner", Toast.LENGTH_SHORT).show();
+                int pick = game.getBlackCard().getPick();
+                if (pick == 1){
+                    Toast.makeText(getApplicationContext(), "Please select " + pick + " card", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please select " + pick + " cards", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }
     };
@@ -304,6 +356,28 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         return sb.toString();
     }
 
+    /* Method for initializing the multicast socket*/
+    private void initMulticastSocket() {
+        if (multicastLock == null || !multicastLock.isHeld()) {
+            WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            multicastLock = wifi.createMulticastLock("multicastLock");
+        }
+
+        if (s == null || s.isClosed()) {
+            try {
+                group = InetAddress.getByName(ipAdress);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            try {
+                s = new MulticastSocket(port);
+                s.joinGroup(group);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     //Main menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -348,6 +422,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        System.out.println("FIRE!");
         if (evt.getPropertyName().equals(Message.Type.GAME_STARTED)) {
             android.os.Handler handler = new android.os.Handler(getMainLooper());
             handler.post(new Runnable() {
@@ -356,6 +431,22 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                     new MulticastPackage(tableAddress, Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
                 }
             });
+        }
+        if(evt.getPropertyName().equals(Message.Type.SUBMISSION)){
+            submission = (Submission) evt.getNewValue();
+            if (myPlayerInfo.isKing()){
+                android.os.Handler handler = new android.os.Handler(getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        myPlayerInfo.getSubmissions().add(submission);
+                        submissions = myPlayerInfo.getSubmissions();
+                        blackCardAdapter.notifyDataSetChanged();
+                    }
+                });
+
+
+            }
         }
     }
 }
