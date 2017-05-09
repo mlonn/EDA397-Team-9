@@ -59,21 +59,17 @@ import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
  */
 
 public class GameActivity extends AppCompatActivity implements PropertyChangeListener {
-
     /* P2p variables */
     private P2pManager p2pManager;
     private int p2pPort;
 
     public ArrayList<WhiteCard> whiteCards;
-
-
     ImageButton favoriteButtons[];
     private Game game;
     private PlayerInfo myPlayerInfo;
     private Boolean[] selectedCards;
     private Timer timer;
     private String tableAddress;
-
     /* Multicast variables */
     private InetAddress group;
     private List<AsyncTask> threadList;
@@ -88,12 +84,10 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
     private TableInfo myTableInfo;
     private Submission submission;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         game = (Game) getIntent().getExtras().get(IntentType.THIS_GAME);
-
         myTableInfo = (TableInfo) getIntent().getExtras().get(IntentType.THIS_TABLE);
         tableAddress = (String) getIntent().getStringExtra(IntentType.TABLE_ADDRESS);
 
@@ -105,6 +99,9 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         initMulticastSocket();
         myPlayerInfo = game.getPlayerByUUID(prefs.getString(IndexActivity.PLAYER_UUID, null));
         /* Get table info */
+        if(myPlayerInfo.isKing()) {
+            openCloseTableDialog();
+        }
         if (myPlayerInfo.isKing()) {
             initKing();
             /* implement ask for king
@@ -139,7 +136,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                game.setKing(myPlayerInfo);
+                game.setKing();
                 initPlayer();
             }
 
@@ -161,7 +158,6 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         submissions = myPlayerInfo.getSubmissions();
         blackCardAdapter = new BlackCardAdapter(this, game.getBlackCard(), submissions, myPlayerInfo);
         blackCardList.setAdapter(blackCardAdapter);
-
         Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
         endTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -362,7 +358,6 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         return sb.toString();
     }
 
-
     /* Method for initializing the multicast socket*/
     private void initMulticastSocket() {
         if (multicastLock == null || !multicastLock.isHeld()) {
@@ -384,8 +379,6 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
             }
         }
     }
-
-
     //Main menu
     @Override
 
@@ -431,7 +424,6 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-
         if (evt.getPropertyName().equals(Message.Type.GAME_STARTED)) {
             android.os.Handler handler = new android.os.Handler(getMainLooper());
             handler.post(new Runnable() {

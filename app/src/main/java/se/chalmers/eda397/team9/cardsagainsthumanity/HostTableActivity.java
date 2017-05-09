@@ -88,7 +88,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private PlayerInfo hostInfo;
     private TableInfo myTableInfo;
     private List<PlayerInfo> connectedPlayers;
-
     private boolean gameStarted = false;
 
     /* Fragment variables */
@@ -265,7 +264,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         if (receiverIsRegistered)
             unregisterReceiver(receiver);
     }
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -293,7 +291,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
 //        if(s != null || !s.isClosed())
 //            s.close();
     }
-
 
 
     /* Method for initializing the multicast socket*/
@@ -349,8 +346,8 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        String username = prefs.getString("name", null);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE,  Context.MODE_PRIVATE);
+        String username = prefs.getString(IndexActivity.PLAYER_NAME, null);
         menu.findItem(R.id.profile).setTitle(username);
         return true;
     }

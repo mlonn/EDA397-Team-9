@@ -20,7 +20,6 @@ public class Game implements Serializable {
     private Random r;
     private boolean endTurn;
 
-
     public Game(ArrayList<PlayerInfo> players, ArrayList<CardExpansion> cardExpansions) {
         r = new Random();
         this.players = players;
@@ -29,7 +28,6 @@ public class Game implements Serializable {
         pickBlackCard();
         distributeWhiteCards();
     }
-
     public Game(ArrayList<PlayerInfo> players, ArrayList<CardExpansion> cardExpansions, PlayerInfo king, BlackCard blackCard) {
         this.players = players;
         this.cardExpansions = cardExpansions;
@@ -118,11 +116,11 @@ public class Game implements Serializable {
         king.resetSubmissions();
         for (PlayerInfo p : players) {
 
+
             if (!p.equals(king)) {
                 if (!p.equals(king) && p.getSubmission() != null) {
                     sub.add(p.getSubmission());
                 }
-
             }
         }
         king.setSubmissions(sub);
@@ -153,7 +151,6 @@ public class Game implements Serializable {
         return winningSubmission;
     }
 
-
     public List<PlayerInfo> getPlayerList() {
         return players;
     }
@@ -161,5 +158,4 @@ public class Game implements Serializable {
     public PlayerInfo getKing() {
         return king;
     }
-
 }

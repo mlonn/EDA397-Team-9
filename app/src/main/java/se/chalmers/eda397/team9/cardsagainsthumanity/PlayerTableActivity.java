@@ -24,9 +24,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
-
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
@@ -67,7 +65,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     private TableInfo tableInfo;
     private PlayerInfo myPlayerInfo;
     private ArrayList<CardExpansion> expansions;
-
     private ArrayList<PlayerInfo> playerList;
     private IntentFilter mIntentFilter;
     private WiFiBroadcastReceiver receiver;
@@ -142,7 +139,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
             }
         });
 
-
         expansions = new ArrayList<CardExpansion>();
 
         gameStarted = false;
@@ -163,8 +159,8 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        String username = prefs.getString("name", null);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        String username = prefs.getString(IndexActivity.PLAYER_NAME, null);
         menu.findItem(R.id.profile).setTitle(username);
         return true;
     }

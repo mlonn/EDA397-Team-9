@@ -40,7 +40,6 @@ public class CardHandler {
         return cardExpansionsList;
     }
 
-
     private static CardExpansion createExpansion(JSONObject data, JSONObject expansion) {
         ArrayList blackCardList = new ArrayList<>();
         ArrayList whiteCardList = new ArrayList<>();

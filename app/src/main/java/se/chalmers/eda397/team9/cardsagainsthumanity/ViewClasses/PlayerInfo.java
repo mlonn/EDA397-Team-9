@@ -28,7 +28,6 @@ public class PlayerInfo implements Serializable{
     public static final String UNDEFINED_ADDRESS = "undefined_address";
 
     private Submission winner;
-
     private List<Submission> submissions = new ArrayList<Submission>();
 
     public PlayerInfo(String name){

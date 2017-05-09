@@ -69,7 +69,7 @@ public class GameLogicInstrumentedTest {
     @Test
     public void testInitGame(){
         for (PlayerInfo p:playerList) {
-                assertEquals(10,p.getWhiteCards().size());
+            assertEquals(10,p.getWhiteCards().size());
         }
     }
 
