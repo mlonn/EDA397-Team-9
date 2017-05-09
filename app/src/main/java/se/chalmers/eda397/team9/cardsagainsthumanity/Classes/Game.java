@@ -125,7 +125,9 @@ public class Game implements Serializable {
         king.resetSubmissions();
         for (PlayerInfo p : players) {
             if(!p.equals(king)) {
-                sub.add(p.getSubmission());
+                if(!p.equals(king) && p.getSubmission() != null) {
+                    sub.add(p.getSubmission());
+                }
             }
         }
         king.setSubmissions(sub);
