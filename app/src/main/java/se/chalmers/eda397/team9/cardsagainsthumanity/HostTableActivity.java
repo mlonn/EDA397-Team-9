@@ -423,6 +423,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
             Intent intent = new Intent(this, GameActivity.class);
             Game game = new Game(playerList, expansions);
             intent.putExtra(IntentType.THIS_GAME, game);
+            intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
             startActivity(intent);
             finish();
         }
@@ -497,7 +498,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
                         Message.Response.PLAYER_DISCONNECTED, null);
                 return;
             }
-
             if (PlayerInfo.findPlayerInList(connectedPlayers, player) == null) {
                 connectedPlayers.add(player);
             }
