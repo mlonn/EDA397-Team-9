@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
@@ -64,9 +65,13 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     private TableInfo tableInfo;
     private PlayerInfo myPlayerInfo;
     private ArrayList<CardExpansion> expansions;
+    private ArrayList<PlayerInfo> playerList;
     private IntentFilter mIntentFilter;
     private WiFiBroadcastReceiver receiver;
     private ArrayList<WifiP2pDevice> peers;
+    private BlackCard blackCard;
+    private PlayerInfo king;
+
 
     /* Method for initializing the multicast socket*/
     private void initMulticastSocket() {
@@ -149,14 +154,13 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     protected void onPause() {
         super.onPause();
     }
-
     /* Main menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        String username = prefs.getString("name", null);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        String username = prefs.getString(IndexActivity.PLAYER_NAME, null);
         menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
@@ -200,44 +204,55 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     @Override
     public void propertyChange(final PropertyChangeEvent propertyChangeEvent) {
         //If other player joins successfully, update my table
-        if (propertyChangeEvent.getPropertyName().equals(Message.Type.GAME_STARTED)) {
-            ArrayList<CardExpansion> exp = CardHandler.getExpansions(getApplicationContext());
-            ArrayList<String> expansionNames = (ArrayList<String>) propertyChangeEvent.getNewValue();
-            for (CardExpansion e : exp) {
-                for (String s : expansionNames) {
-                    if (e.getName().equals(s)) {
-                        expansions.add(e);
+        switch (propertyChangeEvent.getPropertyName()) {
+            case Message.Type.GAME_STARTED:
+                MulticastPackage mPackage = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
+                        Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
+                sendPackage(mPackage);
+                break;
+            case Message.Type.PLAYER_LIST:
+                playerList = (ArrayList<PlayerInfo>) propertyChangeEvent.getNewValue();
+                break;
+            case Message.Type.EXPANSION_LIST:
+                expansions = CardHandler.getExpansions(this);
+                ArrayList<CardExpansion> exp = new ArrayList<CardExpansion>();
+                ArrayList<String> expansionNames  = (ArrayList<String>) propertyChangeEvent.getNewValue();
+                for (CardExpansion e : expansions){
+                    for(String s : expansionNames){
+                        if(e.getName().equals(s)){
+                            exp.add(e);
+                        }
                     }
                 }
-            }
+                expansions = exp;
+                break;
+            case Message.Type.KING:
+                king = (PlayerInfo) propertyChangeEvent.getNewValue();
+                break;
+            case Message.Type.BLACK_CARD:
+                blackCard = (BlackCard) propertyChangeEvent.getNewValue();
+                break;
+            case Message.Response.OTHER_PLAYER_JOIN_ACCEPTED:
+                tableInfo = (TableInfo) propertyChangeEvent.getNewValue();
 
-            MulticastPackage mPackage = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
-                    Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
-            sendPackage(mPackage);
-
-            if (!gameStarted) {
-                ArrayList<PlayerInfo> playerList = new ArrayList<PlayerInfo>();
-                playerList.addAll(tableInfo.getPlayerList());
-                playerList.add(tableInfo.getHost());
-                Intent intent = new Intent(PlayerTableActivity.this.getApplicationContext(), GameActivity.class);
-                Game game = new Game(playerList, expansions);
-                intent.putExtra(IntentType.THIS_GAME, game);
-                intent.putExtra(IntentType.TABLE_ADDRESS, tableInfo.getHost().getDeviceAddress());
-                startActivity(intent);
-                gameStarted = true;
-                finish();
-            }
+                android.os.Handler handler = new android.os.Handler(getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        psFragment.update(tableInfo);
+                    }
+                });
+                break;
+            default: break;
         }
-        if (propertyChangeEvent.getPropertyName().equals(Message.Response.OTHER_PLAYER_JOIN_ACCEPTED)) {
-            tableInfo = (TableInfo) propertyChangeEvent.getNewValue();
-
-            android.os.Handler handler = new android.os.Handler(getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    psFragment.update(tableInfo);
-                }
-            });
+        if (playerList != null && expansions != null && blackCard != null && king != null && !gameStarted) {
+            Intent intent = new Intent(PlayerTableActivity.this.getApplicationContext(), GameActivity.class);
+            intent.putExtra(IntentType.THIS_GAME, new Game(playerList,expansions,king,blackCard));
+            intent.putExtra(IntentType.TABLE_ADDRESS, tableInfo.getHost().getDeviceAddress());
+            intent.putExtra(IntentType.THIS_TABLE, tableInfo);
+            startActivity(intent);
+            gameStarted = true;
+            finish();
         }
     }
 }

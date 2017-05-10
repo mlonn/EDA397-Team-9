@@ -10,6 +10,7 @@ import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Serializer;
@@ -74,6 +75,30 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
                 Object packageObject = ((MulticastPackage) msg).getObject();
 
                 Log.d("PlayerMultRec", "Received a " + type + " with destination " + target + " joined " + isJoined);
+                if (packageObject instanceof ArrayList) {
+                    if (target.equals(table.getHost().getDeviceAddress())) {
+                        if (type.equals(Message.Type.PLAYER_LIST)) {
+                            getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_LIST, null, packageObject);
+                        }
+                        if (type.equals(Message.Type.EXPANSION_LIST)) {
+                            getPropertyChangeSupport().firePropertyChange(Message.Type.EXPANSION_LIST, null, packageObject);
+                        }
+                    }
+                }
+                if (packageObject instanceof PlayerInfo) {
+                    if (target.equals(table.getHost().getDeviceAddress())) {
+                        if (type.equals(Message.Type.KING)) {
+                            getPropertyChangeSupport().firePropertyChange(Message.Type.KING, null, packageObject);
+                        }
+                    }
+                }
+                if (packageObject instanceof BlackCard) {
+                    if (target.equals(table.getHost().getDeviceAddress())) {
+                        if (type.equals(Message.Type.BLACK_CARD)) {
+                            getPropertyChangeSupport().firePropertyChange(Message.Type.BLACK_CARD, null, packageObject);
+                        }
+                    }
+                }
                 if (packageObject instanceof ArrayList) {
                     if (target.equals(table.getHost().getDeviceAddress())) {
                         if (type.equals(Message.Type.GAME_STARTED)) {

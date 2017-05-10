@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -28,14 +30,23 @@ import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GameMulticastReciever;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
@@ -51,6 +62,10 @@ import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
  */
 
 public class GameActivity extends AppCompatActivity implements PropertyChangeListener {
+    /* P2p variables */
+    private P2pManager p2pManager;
+    private int p2pPort;
+
     public ArrayList<WhiteCard> whiteCards;
     ImageButton favoriteButtons[];
     private Game game;
@@ -61,25 +76,54 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
     private FragmentManager fragmentManager;
     private PlayerStatisticsFragment psFragment;
     private TableInfo mTableInfo;
+    /* Multicast variables */
+    private InetAddress group;
+    private List<AsyncTask> threadList;
+    private WifiManager.MulticastLock multicastLock;
+    private MulticastSocket s;
+    private PlayerMulticastReceiver playerReceiver;
+    private String ipAdress;
+    private int port;
+    private GameMulticastReciever gameMulticastReciever;
+    private BlackCardAdapter blackCardAdapter;
+    private List<Submission> submissions;
+    private TableInfo myTableInfo;
+    private Submission submission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         game = (Game) getIntent().getExtras().get(IntentType.THIS_GAME);
+        myTableInfo = (TableInfo) getIntent().getExtras().get(IntentType.THIS_TABLE);
         tableAddress = (String) getIntent().getStringExtra(IntentType.TABLE_ADDRESS);
+
         SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE, Context.MODE_PRIVATE);
+        ipAdress = prefs.getString(IndexActivity.MULTICAST_IP_ADDRESS, null);
+        port = prefs.getInt(IndexActivity.MULTICAST_PORT, 0);
+        p2pPort = prefs.getInt(IndexActivity.P2P_PORT, 0);
+        /* Initialize multicast */
+        initMulticastSocket();
         myPlayerInfo = game.getPlayerByUUID(prefs.getString(IndexActivity.PLAYER_UUID, null));
         /* Get table info */
         /* Initialize fragment variables */
         fragmentManager = getSupportFragmentManager();
         mTableInfo = (TableInfo) getIntent().getExtras().getSerializable(IntentType.THIS_TABLE);
 
-        if (myPlayerInfo.isKing()) {
+        if(myPlayerInfo.isKing()) {
             openCloseTableDialog();
+        }
+        if (myPlayerInfo.isKing()) {
+            initKing();
+            /* implement ask for king
+            openCloseTableDialog();*/
         } else {
             initPlayer();
         }
-
+        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo, true, myTableInfo);
+        gameMulticastReciever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if (gameMulticastReciever != null) {
+            gameMulticastReciever.addPropertyChangeListener(this);
+        }
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -90,7 +134,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         }, 0, 200);
     }
 
-    private void openCloseTableDialog(){
+    private void openCloseTableDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Do u wanna be the King for this round?");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -102,9 +146,9 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                game.setKing(myPlayerInfo);
+                game.setKing();
                 initPlayer();
-                }
+            }
 
         });
 
@@ -127,7 +171,9 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         TextView blackCardText = (TextView) findViewById(R.id.currentBlackCard);
         blackCardText.setText(Html.fromHtml(game.getBlackCard().getText()));
         ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
-        blackCardList.setAdapter(new BlackCardAdapter(this, game.getBlackCard(), myPlayerInfo.getSubmissions(), myPlayerInfo));
+        submissions = myPlayerInfo.getSubmissions();
+        blackCardAdapter = new BlackCardAdapter(this, game.getBlackCard(), submissions, myPlayerInfo);
+        blackCardList.setAdapter(blackCardAdapter);
         Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
         endTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,28 +220,28 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
 
             //Layout settings of the images
             imgWhiteCard.setPadding(0, 0, 0, 0); //.setPadding(left, top, right, bottom)
-            RelativeLayout.LayoutParams paramsWhiteCard = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(450,this)); //.LayoutParams(width, height) for white cards
-            paramsWhiteCard.setMargins(convertDpToPixels(10,this), convertDpToPixels(10,this), convertDpToPixels(1,this), convertDpToPixels(7,this)); //.setMargins(left, top, right, bottom)
+            RelativeLayout.LayoutParams paramsWhiteCard = new RelativeLayout.LayoutParams(convertDpToPixels(150, this), convertDpToPixels(450, this)); //.LayoutParams(width, height) for white cards
+            paramsWhiteCard.setMargins(convertDpToPixels(10, this), convertDpToPixels(10, this), convertDpToPixels(1, this), convertDpToPixels(7, this)); //.setMargins(left, top, right, bottom)
             //paramsWhiteCard.setMargins(1, 1, 1, 75); //.setMargins(left, top, right, bottom)
             imgWhiteCard.setLayoutParams(paramsWhiteCard);
 
             imgFavoriteBorder.setPadding(0, 0, 0, 0); //.setPadding(left, top, right, bottom)
-            RelativeLayout.LayoutParams paramsFavoriteBorder = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(65,this)); //(width,height) for favorite border
-            paramsFavoriteBorder.setMargins(convertDpToPixels(59,this), convertDpToPixels(1,this), 0, 0); //.setMargins(left, top, right, bottom)
+            RelativeLayout.LayoutParams paramsFavoriteBorder = new RelativeLayout.LayoutParams(convertDpToPixels(150, this), convertDpToPixels(65, this)); //(width,height) for favorite border
+            paramsFavoriteBorder.setMargins(convertDpToPixels(59, this), convertDpToPixels(1, this), 0, 0); //.setMargins(left, top, right, bottom)
             imgFavoriteBorder.getBackground().setAlpha(0); //ImageButton background full transparent
             imgFavoriteBorder.setLayoutParams(paramsFavoriteBorder);
 
-            cardText.setPadding(convertDpToPixels(40,this),0,convertDpToPixels(30,this),0);
-            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(convertDpToPixels(150,this), convertDpToPixels(450,this)); //.LayoutParams(width, height) for text in white card
+            cardText.setPadding(convertDpToPixels(40, this), 0, convertDpToPixels(30, this), 0);
+            RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(convertDpToPixels(150, this), convertDpToPixels(450, this)); //.LayoutParams(width, height) for text in white card
             cardText.setLayoutParams(paramsText);
-            paramsText.setMargins(0,convertDpToPixels(80,this),0,0);
+            paramsText.setMargins(0, convertDpToPixels(80, this), 0, 0);
             cardText.setText(Html.fromHtml(whiteCards.get(i).getWord()));
             cardText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             cardText.setTextColor(Color.BLACK);
 
             //Insert images in the objects
             imgWhiteCard.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.white_card));
-            imgFavoriteBorder.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_favorite_border));
+            imgFavoriteBorder.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_favorite_border));
 
             //imgFavoriteBorder.bringToFront();
 
@@ -222,8 +268,17 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         public void onClick(View v) {
             if (game.getBlackCard().getPick() == myPlayerInfo.getSelectedCards().size()) {
                 myPlayerInfo.submitSelection();
+                MulticastPackage multicastPackage = new MulticastPackage(tableAddress, Message.Type.SUBMISSION, myPlayerInfo.getSubmission());
+                MulticastSender sender = new MulticastSender(multicastPackage, s, group);
+                sender.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             } else {
-                Toast.makeText(getApplicationContext(), "Please select a winner", Toast.LENGTH_SHORT).show();
+                int pick = game.getBlackCard().getPick();
+                if (pick == 1) {
+                    Toast.makeText(getApplicationContext(), "Please select " + pick + " card", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please select " + pick + " cards", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }
     };
@@ -238,10 +293,10 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
             int picked = 0;
             boolean selected = false;
             for (int i = 0; i < whiteCards.size(); i++) {
-                if(selectedCards[i]){
+                if (selectedCards[i]) {
                     picked++;
                 }
-                if (favoriteButton == favoriteButtons[i] && selectedCards[i]){
+                if (favoriteButton == favoriteButtons[i] && selectedCards[i]) {
                     selected = true;
                 }
             }
@@ -281,15 +336,15 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
     }*/
 
     //Method that convert DP to Pixels
-    public static int convertDpToPixels(float dp, Context context){
+    public static int convertDpToPixels(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float px = dp * (metrics.densityDpi / 160f);
         //float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, resources.getDisplayMetrics());
-        return (int)px;
+        return (int) px;
     }
 
-    private void openExitGameDialog(){
+    private void openExitGameDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Are you sure you want to exit the game?").setTitle("King of cards");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -312,12 +367,12 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
     private String updateBlackCardText(List<WhiteCard> whiteCards) {
         String[] blackText = game.getBlackCard().getText().split("_");
         StringBuilder sb = new StringBuilder();
-        if (blackText.length>1) {
+        if (blackText.length > 1) {
             for (int j = 0; j < blackText.length; j++) {
                 sb.append(blackText[j]);
                 if (j < whiteCards.size()) {
                     sb.append(whiteCards.get(j).getWord());
-                } else if (j < blackText.length-1) {
+                } else if (j < blackText.length - 1) {
                     sb.append("_");
                 }
             }
@@ -325,8 +380,30 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         return sb.toString();
     }
 
+    /* Method for initializing the multicast socket*/
+    private void initMulticastSocket() {
+        if (multicastLock == null || !multicastLock.isHeld()) {
+            WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            multicastLock = wifi.createMulticastLock("multicastLock");
+        }
+
+        if (s == null || s.isClosed()) {
+            try {
+                group = InetAddress.getByName(ipAdress);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            try {
+                s = new MulticastSocket(port);
+                s.joinGroup(group);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     //Main menu
     @Override
+
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -377,6 +454,23 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                     new MulticastPackage(tableAddress, Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
                 }
             });
+        }
+
+        if (evt.getPropertyName().equals(Message.Type.SUBMISSION)) {
+            submission = (Submission) evt.getNewValue();
+            if (myPlayerInfo.isKing()) {
+                android.os.Handler handler = new android.os.Handler(getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        myPlayerInfo.getSubmissions().add(submission);
+                        submissions = myPlayerInfo.getSubmissions();
+                        blackCardAdapter.notifyDataSetChanged();
+                    }
+                });
+
+
+            }
         }
     }
 }

@@ -15,6 +15,12 @@ public class Message {
         public static final String PLAYER_TIMED_OUT = "player_timed_out";
         public static final String TABLE_FULL = "table_full";
         public static final String MY_DEVICE_ADDRESS_FOUND = "my_device_address_found";
+        public static final String SUBMISSION = "submission";
+        public static final String GAME = "game";
+        public static final String PLAYER_LIST = "player_list";
+        public static final String EXPANSION_LIST = "expansion_list";
+        public static final String KING = "king";
+        public static final String BLACK_CARD = "black_card";
     }
     public static class Response {
         public static final String HOST_TABLE = "host_table_info";

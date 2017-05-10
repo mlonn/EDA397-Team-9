@@ -28,7 +28,7 @@ public class PlayerInfo implements Serializable{
     public static final String UNDEFINED_ADDRESS = "undefined_address";
 
     private Submission winner;
-    private List<Submission> submissions;
+    private List<Submission> submissions = new ArrayList<Submission>();
 
     public PlayerInfo(String name){
         this(name, UNDEFINED_ADDRESS, UNDEFINED_ADDRESS, DEFAULT_COLOR);
@@ -177,6 +177,11 @@ public class PlayerInfo implements Serializable{
                 return current;
         }
         return null;
+    }
+
+
+    public void addSubmission(Submission submission) {
+        submissions.add(submission);
     }
 
 }

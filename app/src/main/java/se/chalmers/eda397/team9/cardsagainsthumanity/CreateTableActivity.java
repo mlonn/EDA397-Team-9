@@ -64,9 +64,10 @@ public class CreateTableActivity extends AppCompatActivity {
                 ArrayList<CardExpansion> exp = new ArrayList<CardExpansion>();
                 ArrayList<String> expansionNames = new ArrayList<String>();
                 for (CardExpansion e : expansions) {
-                    if (e.isSelected())
-                    exp.add(e);
-                    expansionNames.add(e.getName());
+                    if (e.isSelected()) {
+                        exp.add(e);
+                        expansionNames.add(e.getName());
+                    }
                 }
 
                 Intent intent = new Intent(view.getContext(), HostTableActivity.class);
@@ -108,8 +109,8 @@ public class CreateTableActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        String username = prefs.getString("name", null);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE , Context.MODE_PRIVATE);
+        String username = prefs.getString(IndexActivity.PLAYER_NAME, null);
         menu.findItem(R.id.profile).setTitle(username);
         return true;
     }

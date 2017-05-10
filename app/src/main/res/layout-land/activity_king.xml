@@ -14,7 +14,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <fragment android:name="se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment"
+            <fragment
+                android:name="se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment"
                 android:id="@+id/playerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
