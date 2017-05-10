@@ -32,7 +32,7 @@ public class HostMulticastReceiver extends MulticastReceiver<Object, Void, Void>
     protected Void doInBackground(Object... objects) {
 
         /* Handles receive message and send message */
-        byte[] buf = new byte[10000];
+        byte[] buf = new byte[100000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
 
         try {

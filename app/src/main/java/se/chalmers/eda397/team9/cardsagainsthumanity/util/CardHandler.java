@@ -1,6 +1,7 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +21,16 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.R;
  */
 
 public class CardHandler {
-
+    public static ArrayList<CardExpansion> getExpansions(ArrayList<String> expansionNames, Context ctx) {
+        try {
+            JSONObject obj;
+            obj = new JSONObject(getJsonString(ctx));
+            return createExpansions(obj, obj.getJSONArray("order"), expansionNames);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<CardExpansion>();
+    }
     public static ArrayList<CardExpansion> getExpansions(Context ctx) {
         try {
             JSONObject obj;
@@ -36,6 +46,18 @@ public class CardHandler {
         ArrayList<CardExpansion> cardExpansionsList = new ArrayList<>();
         for (int i = 0; i < order.length(); i++) {
             cardExpansionsList.add(createExpansion(data, data.getJSONObject(order.getString(i))));
+        }
+        return cardExpansionsList;
+    }
+    private static ArrayList<CardExpansion> createExpansions(JSONObject data, JSONArray order, ArrayList<String> expansionNames) throws JSONException {
+        ArrayList<CardExpansion> cardExpansionsList = new ArrayList<>();
+        for (int i = 0; i < order.length(); i++) {
+            JSONObject expansion = data.getJSONObject(order.getString(i));
+            for (String s : expansionNames){
+                if (expansion.getString("name").equals(s)){
+                    cardExpansionsList.add(createExpansion(data, expansion));
+                }
+            }
         }
         return cardExpansionsList;
     }
@@ -66,8 +88,22 @@ public class CardHandler {
     private static String getJsonString(Context ctx) {
         String json = null;
         try {
-
             InputStream is = ctx.getResources().openRawResource(R.raw.cards);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+    private static String getJsonString() {
+        String json = null;
+        try {
+            InputStream is = Resources.getSystem().openRawResource(R.raw.cards);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);

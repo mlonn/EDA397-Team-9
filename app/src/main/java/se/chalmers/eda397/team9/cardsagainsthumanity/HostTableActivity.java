@@ -1,6 +1,5 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,8 +11,6 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -40,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.CardExpansion;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
@@ -105,6 +101,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private boolean receiverIsRegistered = false;
     private ArrayList<String> expansionsNames;
     private int p2pPort;
+    private Game game;
 
 
     @Override
@@ -166,7 +163,10 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         startTableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MulticastPackage multicastPackage = new MulticastPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.GAME_STARTED, expansionsNames);
+                ArrayList<PlayerInfo> playerList = new ArrayList<>(myTableInfo.getPlayerList());
+                playerList.add(myTableInfo.getHost());
+                game = new Game(playerList, expansionsNames, getApplicationContext());
+                MulticastPackage multicastPackage = new MulticastPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.GAME_STARTED, game);
                 MulticastPackage expectedResponse = new MulticastPackage(myTableInfo.getHost().getDeviceAddress(), Message.Response.GAME_START_CONFIRMED);
                 HostMulticastSender sender = new HostMulticastSender(multicastPackage, expectedResponse, s, group, myTableInfo.getPlayerList());
                 sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -387,7 +387,7 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         if (propertyChangeEvent.getPropertyName().equals(Message.Response.ALL_CONFIRMED)) {
-            ArrayList<PlayerInfo> playerList = new ArrayList<>(myTableInfo.getPlayerList());
+            
 
            /*Test
             if(myTableInfo.getPlayerList().size() == 0){
@@ -396,17 +396,10 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
 
             p2pManager.discoverPeers();
             if(!gameStarted) {
-                playerList.add(myTableInfo.getHost());
                 Intent intent = new Intent(this, GameActivity.class);
-                Game game = new Game(playerList, expansions);
-                playerList = (ArrayList) game.getPlayerList();
                 intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
                 intent.putExtra(IntentType.THIS_GAME, game);
                 intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
-                sendPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.PLAYER_LIST, playerList);
-                sendPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.EXPANSION_LIST, expansionsNames);
-                sendPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.KING, game.getKing());
-                sendPackage(myTableInfo.getHost().getDeviceAddress(), Message.Type.BLACK_CARD, game.getBlackCard());
                 startActivity(intent);
                 gameStarted = true;
                 finish();

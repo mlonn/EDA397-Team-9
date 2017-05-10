@@ -25,6 +25,7 @@ public class ReliableMulticastSender extends AsyncTask{
     public ReliableMulticastSender(MulticastPackage mPackage, MulticastPackage expectedResponse,
                                         MulticastSocket s, InetAddress group){
         this(mPackage, expectedResponse, 5, s, group);
+
     }
 
     public ReliableMulticastSender(MulticastPackage mPackage, MulticastPackage expectedResponse,
@@ -60,7 +61,7 @@ public class ReliableMulticastSender extends AsyncTask{
         }
 
         while(!isCancelled() || counter < maxCount){
-            byte[] buf = new byte[10000];
+            byte[] buf = Serializer.serialize(mPackage);
             DatagramPacket recv = new DatagramPacket(buf, buf.length);
             Object inMsg = null;
 

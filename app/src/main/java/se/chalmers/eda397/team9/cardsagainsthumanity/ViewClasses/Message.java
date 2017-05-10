@@ -5,7 +5,6 @@ public class Message {
         public static final String REQUEST_ALL_TABLES = "request_all_tables";
         public static final String REQUEST_TABLE = "request_table";
         public static final String PLAYER_JOIN_REQUEST = "player_join_request";
-        public static final String TABLE_INTERVAL_UPDATE = "table_interval_update";
         public static final String PLAYER_INTERVAL_UPDATE = "player_interval_update";
         public static final String GAME_STARTED = "game_started";
         public static final String START_REFRESHING = "start_refreshing";
@@ -16,11 +15,7 @@ public class Message {
         public static final String TABLE_FULL = "table_full";
         public static final String MY_DEVICE_ADDRESS_FOUND = "my_device_address_found";
         public static final String SUBMISSION = "submission";
-        public static final String GAME = "game";
-        public static final String PLAYER_LIST = "player_list";
-        public static final String EXPANSION_LIST = "expansion_list";
-        public static final String KING = "king";
-        public static final String BLACK_CARD = "black_card";
+        public static final String SELECTED_WINNER = "selected_winner";
     }
     public static class Response {
         public static final String HOST_TABLE = "host_table_info";
@@ -33,6 +28,8 @@ public class Message {
         public static final String GAME_START_CONFIRMED = "game_start_confirmed";
         public static final String ALL_CONFIRMED = "all_confirmed";
         public static final String GAME_START_DENIED = "game_start_denied";
+        public static final String RECEIVED_CARDS = "received_cards";
+        public static final String RECEIVED_WINNER = "received_winner";
     }
     public static class Target {
         public static final String ALL_DEVICES = "all_devices";

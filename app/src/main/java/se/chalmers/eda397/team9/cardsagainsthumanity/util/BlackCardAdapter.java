@@ -27,7 +27,7 @@ public class BlackCardAdapter extends BaseAdapter {
     private final BlackCard blackCard;
     private final PlayerInfo king;
     private Context context;
-    private ArrayList<Submission> submissions;
+    private List<Submission> submissions;
     private static LayoutInflater inflater = null;
     private int selectedPosition = 0;
     public BlackCardAdapter(Context context, BlackCard blackCard, List<Submission> submissions, PlayerInfo king){
@@ -101,6 +101,11 @@ public class BlackCardAdapter extends BaseAdapter {
             return sb.toString();
         }
         return blackCard.getText() + "<br>" + whiteCards.get(0).getWord();
+    }
+
+    public void update(List<Submission> submissions) {
+        this.submissions = submissions;
+        notifyDataSetChanged();
     }
 
     private static class Holder {

@@ -37,7 +37,6 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
-import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 
 import static se.chalmers.eda397.team9.cardsagainsthumanity.R.id.profile;
 
@@ -71,6 +70,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     private ArrayList<WifiP2pDevice> peers;
     private BlackCard blackCard;
     private PlayerInfo king;
+    private Game game;
 
 
     /* Method for initializing the multicast socket*/
@@ -206,11 +206,21 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         //If other player joins successfully, update my table
         switch (propertyChangeEvent.getPropertyName()) {
             case Message.Type.GAME_STARTED:
+                game = (Game) propertyChangeEvent.getNewValue();
                 MulticastPackage mPackage = new MulticastPackage(tableInfo.getHost().getDeviceAddress(),
                         Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
                 sendPackage(mPackage);
+                if (!gameStarted) {
+                    Intent intent = new Intent(PlayerTableActivity.this.getApplicationContext(), GameActivity.class);
+                    intent.putExtra(IntentType.THIS_GAME, game);
+                    intent.putExtra(IntentType.TABLE_ADDRESS, tableInfo.getHost().getDeviceAddress());
+                    intent.putExtra(IntentType.THIS_TABLE, tableInfo);
+                    startActivity(intent);
+                    gameStarted = true;
+                    finish();
+                }
                 break;
-            case Message.Type.PLAYER_LIST:
+            /*case Message.Type.PLAYER_LIST:
                 playerList = (ArrayList<PlayerInfo>) propertyChangeEvent.getNewValue();
                 break;
             case Message.Type.EXPANSION_LIST:
@@ -231,7 +241,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                 break;
             case Message.Type.BLACK_CARD:
                 blackCard = (BlackCard) propertyChangeEvent.getNewValue();
-                break;
+                break;*/
             case Message.Response.OTHER_PLAYER_JOIN_ACCEPTED:
                 tableInfo = (TableInfo) propertyChangeEvent.getNewValue();
 
@@ -244,15 +254,6 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                 });
                 break;
             default: break;
-        }
-        if (playerList != null && expansions != null && blackCard != null && king != null && !gameStarted) {
-            Intent intent = new Intent(PlayerTableActivity.this.getApplicationContext(), GameActivity.class);
-            intent.putExtra(IntentType.THIS_GAME, new Game(playerList,expansions,king,blackCard));
-            intent.putExtra(IntentType.TABLE_ADDRESS, tableInfo.getHost().getDeviceAddress());
-            intent.putExtra(IntentType.THIS_TABLE, tableInfo);
-            startActivity(intent);
-            gameStarted = true;
-            finish();
         }
     }
 }

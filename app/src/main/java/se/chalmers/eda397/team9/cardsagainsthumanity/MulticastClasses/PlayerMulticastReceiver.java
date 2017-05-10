@@ -8,9 +8,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
@@ -51,7 +49,7 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
         int maxCount = 3;
 
         while (!isCancelled() && counter < maxCount) {
-            byte[] buf = new byte[10000];
+            byte[] buf = new byte[100000];
             DatagramPacket recv = new DatagramPacket(buf, buf.length);
             Object msg = null;
 
@@ -76,7 +74,7 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
                 Object packageObject = ((MulticastPackage) msg).getObject();
 
                 Log.d("PlayerMultRec", "Received a " + type + " with destination " + target + " joined " + isJoined);
-                if (packageObject instanceof ArrayList) {
+/*                if (packageObject instanceof ArrayList) {
                     if (target.equals(table.getHost().getDeviceAddress())) {
                         if (type.equals(Message.Type.PLAYER_LIST)) {
                             getPropertyChangeSupport().firePropertyChange(Message.Type.PLAYER_LIST, null, packageObject);
@@ -99,8 +97,8 @@ public class PlayerMulticastReceiver extends MulticastReceiver {
                             getPropertyChangeSupport().firePropertyChange(Message.Type.BLACK_CARD, null, packageObject);
                         }
                     }
-                }
-                if (packageObject instanceof ArrayList) {
+                }*/
+                if (packageObject instanceof Game) {
                     if (target.equals(table.getHost().getDeviceAddress())) {
                         if (type.equals(Message.Type.GAME_STARTED)) {
                             getPropertyChangeSupport().firePropertyChange(Message.Type.GAME_STARTED, null, packageObject);

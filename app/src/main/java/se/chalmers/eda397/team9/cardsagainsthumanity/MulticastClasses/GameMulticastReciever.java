@@ -8,10 +8,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
 
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.BlackCard;
-import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
@@ -48,7 +45,7 @@ public class GameMulticastReciever extends MulticastReceiver {
         int maxCount = 3;
 
         while (!isCancelled() && counter < maxCount) {
-            byte[] buf = new byte[10000];
+            byte[] buf = new byte[100000];
             DatagramPacket recv = new DatagramPacket(buf, buf.length);
             Object msg = null;
 
@@ -76,7 +73,9 @@ public class GameMulticastReciever extends MulticastReceiver {
                 if (packageObject instanceof Submission) {
                     getPropertyChangeSupport().firePropertyChange(Message.Type.SUBMISSION,0,packageObject);
                 }
-
+                if (type.equals(Message.Type.SELECTED_WINNER)) {
+                    getPropertyChangeSupport().firePropertyChange(Message.Type.SELECTED_WINNER, 0 , packageObject);
+                }
             }
         }
         return null;

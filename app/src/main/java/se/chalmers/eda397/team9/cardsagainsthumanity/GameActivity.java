@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -42,9 +41,11 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GameMulticastReciever;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.HostMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.PlayerMulticastReceiver;
+import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.ReliableMulticastSender;
 import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
@@ -84,6 +85,8 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
     private List<Submission> submissions;
     private TableInfo myTableInfo;
     private Submission submission;
+    private ArrayList<String> expansionNames;
+    private boolean turnEnded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +102,13 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         /* Initialize multicast */
         initMulticastSocket();
         myPlayerInfo = game.getPlayerByUUID(prefs.getString(IndexActivity.PLAYER_UUID, null));
+        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo,true, myTableInfo);
+        gameMulticastReciever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if (gameMulticastReciever != null){
+            gameMulticastReciever.addPropertyChangeListener(this);
+        }
         /* Get table info */
+        game.initExpansions(game.getExpansionNames(), getApplicationContext());
         if (myPlayerInfo.isKing()) {
             initKing();
             /* implement ask for king
@@ -107,11 +116,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         } else {
             initPlayer();
         }
-        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo,true, myTableInfo);
-        gameMulticastReciever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        if (gameMulticastReciever != null){
-            gameMulticastReciever.addPropertyChangeListener(this);
-        }
+
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -120,6 +125,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
             }
 
         }, 0, 200);
+        turnEnded = false;
     }
 
     private void openCloseTableDialog(){
@@ -160,10 +166,18 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         endTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (game.endTurn()) {
+                if (game.endTurn(getApplicationContext())) {
                     Intent intent = new Intent(getApplicationContext(), EndTurnActivity.class);
+                    intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
                     intent.putExtra(IntentType.THIS_GAME, game);
-                    intent.putExtra(IntentType.WINNING_STRING, updateBlackCardText(game.getWinner().getWhiteCards()));
+                    intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
+                    intent.putExtra(IntentType.WINNING_STRING, game.updateBlackCardText(game.getWinner().getWhiteCards()));
+                    MulticastPackage gamePackage = new MulticastPackage(tableAddress,Message.Type.SELECTED_WINNER, game);
+                    MulticastPackage expectedResponse = new MulticastPackage(tableAddress,Message.Response.RECEIVED_WINNER);
+                    List<PlayerInfo> p = new ArrayList<PlayerInfo>(game.getPlayerList());
+                    p.remove(myPlayerInfo);
+                    HostMulticastSender sender = new HostMulticastSender(gamePackage,expectedResponse,s,group, p);
+                    sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     startActivity(intent);
                     finish();
                 }
@@ -239,15 +253,21 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         Button submitButton = (Button) findViewById(R.id.submit_button);
         submitButton.setOnClickListener(submitCards);
     }
-
     View.OnClickListener submitCards = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (game.getBlackCard().getPick() == myPlayerInfo.getSelectedCards().size()) {
                 myPlayerInfo.submitSelection();
                 MulticastPackage multicastPackage = new MulticastPackage(tableAddress, Message.Type.SUBMISSION,myPlayerInfo.getSubmission());
-                MulticastSender sender = new MulticastSender(multicastPackage,s,group);
+                MulticastPackage expectedResponse = new MulticastPackage(tableAddress, Message.Response.RECEIVED_CARDS);
+                ReliableMulticastSender sender = new ReliableMulticastSender(multicastPackage,expectedResponse,s,group);
                 sender.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+                Intent intent = new Intent(GameActivity.this, EndTurnActivity.class);
+                intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
+                intent.putExtra(IntentType.THIS_GAME, game);
+                intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
+                startActivity(intent);
+                finish();
             } else {
                 int pick = game.getBlackCard().getPick();
                 if (pick == 1){
@@ -290,7 +310,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                         }
                     }
                 }
-                String blackCardText = updateBlackCardText(myPlayerInfo.getSelectedCards());
+                String blackCardText = game.updateBlackCardText(myPlayerInfo.getSelectedCards());
                 if (blackCardText != null) {
                     TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
                     blackCardTextView.setText(Html.fromHtml(blackCardText));
@@ -340,21 +360,6 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         dialog.show();
     }
 
-    private String updateBlackCardText(List<WhiteCard> whiteCards) {
-        String[] blackText = game.getBlackCard().getText().split("_");
-        StringBuilder sb = new StringBuilder();
-        if (blackText.length>1) {
-            for (int j = 0; j < blackText.length; j++) {
-                sb.append(blackText[j]);
-                if (j < whiteCards.size()) {
-                    sb.append(whiteCards.get(j).getWord());
-                } else if (j < blackText.length-1) {
-                    sb.append("_");
-                }
-            }
-        }
-        return sb.toString();
-    }
 
     /* Method for initializing the multicast socket*/
     private void initMulticastSocket() {
@@ -441,7 +446,10 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                     public void run() {
                         myPlayerInfo.getSubmissions().add(submission);
                         submissions = myPlayerInfo.getSubmissions();
-                        blackCardAdapter.notifyDataSetChanged();
+                        blackCardAdapter.update(submissions);
+                        MulticastPackage expectedResponse = new MulticastPackage(myPlayerInfo.getDeviceAddress(), Message.Response.RECEIVED_CARDS);
+                        MulticastSender sender = new MulticastSender(expectedResponse, s, group);
+                        sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 });
 

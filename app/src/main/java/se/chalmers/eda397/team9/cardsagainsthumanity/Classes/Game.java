@@ -1,17 +1,21 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity.Classes;
 
+import android.content.Context;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
+import se.chalmers.eda397.team9.cardsagainsthumanity.util.CardHandler;
 
 /**
  * Created by Mikae on 2017-04-21.
  */
 
 public class Game implements Serializable {
+    private ArrayList<String> expansionNames;
     private List<PlayerInfo> players;
     private PlayerInfo king;
     private Submission winningSubmission;
@@ -20,34 +24,37 @@ public class Game implements Serializable {
     private Random r;
     private boolean endTurn;
 
-    public Game(ArrayList<PlayerInfo> players, ArrayList<CardExpansion> cardExpansions) {
+    public Game(ArrayList<PlayerInfo> players, ArrayList<String> cardExpansions, Context ctx) {
         r = new Random();
         this.players = players;
-        this.cardExpansions = cardExpansions;
+        this.expansionNames = cardExpansions;
         king = setKing();
-        pickBlackCard();
-        distributeWhiteCards();
+        pickBlackCard(ctx);
+        distributeWhiteCards(expansionNames, ctx);
     }
+
     public Game(ArrayList<PlayerInfo> players, ArrayList<CardExpansion> cardExpansions, PlayerInfo king, BlackCard blackCard) {
         this.players = players;
         this.cardExpansions = cardExpansions;
         this.king = king;
         this.blackCard = blackCard;
     }
-
+    public void initExpansions(ArrayList<String> expansionNames, Context ctx) {
+        cardExpansions =  CardHandler.getExpansions(expansionNames, ctx);
+    }
     //Call this method with what ever update frequency you want
     public void update() {
         giveCardsToKing();
     }
-    public boolean endTurn(){
+    public boolean endTurn(Context ctx){
         if (king.getWinner() != null){
             winningSubmission = king.getWinner();
             PlayerInfo winner = winningSubmission.getPlayer();
             winner.givePoint();
             king = setKing();
-            pickBlackCard();
+            pickBlackCard(ctx);
             resetPlayers();
-            distributeWhiteCards();
+            distributeWhiteCards(expansionNames, ctx);
             return true;
         }
         return false;
@@ -61,7 +68,8 @@ public class Game implements Serializable {
 
 
     //gives each player 10 cards from selected expansion
-    private void distributeWhiteCards() {
+    private void distributeWhiteCards(ArrayList<String> expansionNames, Context ctx) {
+        ArrayList<CardExpansion> cardExpansions= CardHandler.getExpansions(expansionNames, ctx);;
         for (PlayerInfo p : players) {
             while(p.getWhiteCards().size() < 10) {
                 CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
@@ -71,10 +79,11 @@ public class Game implements Serializable {
         }
     }
     //Selects a random black card from selected expansions
-    private void pickBlackCard() {
+    private void pickBlackCard(Context ctx) {
         //Remove temporarily all expansions which don't possess any black cards from being picked
+        ArrayList<CardExpansion> cardExpansions= CardHandler.getExpansions(expansionNames, ctx);
         List<CardExpansion> tempRemovedExp = new ArrayList<>();
-        for (CardExpansion expansion:cardExpansions)
+        for (CardExpansion expansion : cardExpansions)
         {
             if(expansion.getBlackCards().size() == 0){
                 tempRemovedExp.add(expansion);
@@ -149,5 +158,24 @@ public class Game implements Serializable {
 
     public PlayerInfo getKing() {
         return king;
+    }
+
+    public ArrayList<String> getExpansionNames() {
+        return expansionNames;
+    }
+    public String updateBlackCardText(List<WhiteCard> whiteCards) {
+        String[] blackText = getBlackCard().getText().split("_");
+        StringBuilder sb = new StringBuilder();
+        if (blackText.length>1) {
+            for (int j = 0; j < blackText.length; j++) {
+                sb.append(blackText[j]);
+                if (j < whiteCards.size()) {
+                    sb.append(whiteCards.get(j).getWord());
+                } else if (j < blackText.length-1) {
+                    sb.append("_");
+                }
+            }
+        }
+        return sb.toString();
     }
 }
