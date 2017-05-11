@@ -71,14 +71,14 @@ public class CardHandler {
             JSONArray whiteCards = data.getJSONArray("whiteCards");
             JSONArray black = expansion.getJSONArray("black");
             JSONArray white = expansion.getJSONArray("white");
-            for(int i = 0; i < black.length(); i++) {
+            for (int i = 0; i < black.length(); i++) {
                 JSONObject b = blackCards.getJSONObject(Integer.parseInt(black.get(i).toString()));
                 blackCardList.add(new BlackCard(b.getString("text"), b.getInt("pick")));
             }
-            for(int i = 0; i < white.length(); i++) {
+            for (int i = 0; i < white.length(); i++) {
                 whiteCardList.add(new WhiteCard(whiteCards.getString(Integer.parseInt(white.getString(i)))));
             }
-            return new CardExpansion(name, blackCardList,whiteCardList);
+            return new CardExpansion(name, blackCardList, whiteCardList);
         } catch (JSONException e) {
             e.printStackTrace();
         }

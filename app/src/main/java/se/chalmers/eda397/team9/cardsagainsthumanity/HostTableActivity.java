@@ -103,7 +103,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     private int p2pPort;
     private Game game;
 
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -269,8 +268,33 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
         if (receiverIsRegistered)
             unregisterReceiver(receiver);
     }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        closeConnection();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initMulticastSocket();
+        if (!receiverIsRegistered) {
+            registerReceiver(receiver, mIntentFilter);
+        }
+    }
 
+    /* Method used for closing all async tasks and socket in this activity */
+    //TODO: Concurrent modification exception
+    private void closeConnection() {
+        for (AsyncTask current : threadList) {
+            if (!current.isCancelled())
+                current.cancel(true);
+        }
+
+//        TODO: Find a way to close the socket safely
+//        if(s != null || !s.isClosed())
+//            s.close();
+    }
 
 
     /* Method for initializing the multicast socket*/
@@ -326,8 +350,8 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.menu, menu);
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("usernameFile", Context.MODE_PRIVATE);
-        String username = prefs.getString("name", null);
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences(IndexActivity.GAME_SETTINGS_FILE,  Context.MODE_PRIVATE);
+        String username = prefs.getString(IndexActivity.PLAYER_NAME, null);
         menu.findItem(R.id.profile).setTitle(username);
         return true;
     }
@@ -387,12 +411,16 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         if (propertyChangeEvent.getPropertyName().equals(Message.Response.ALL_CONFIRMED)) {
+
             
 
            /*Test
             if(myTableInfo.getPlayerList().size() == 0){
                 playerList.add(new PlayerInfo("Dummy", UUID.randomUUID().toString()));
             }*/
+
+
+            ArrayList<PlayerInfo> playerList = new ArrayList<>(myTableInfo.getPlayerList());
 
             p2pManager.discoverPeers();
             if(!gameStarted) {
