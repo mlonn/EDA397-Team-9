@@ -28,7 +28,7 @@ public class Message {
         public static final String GAME_START_CONFIRMED = "game_start_confirmed";
         public static final String ALL_CONFIRMED = "all_confirmed";
         public static final String GAME_START_DENIED = "game_start_denied";
-        public static final String RECEIVED_CARDS = "received_cards";
+        public static final String RECEIVED_SUBMISSION = "received_submission";
         public static final String RECEIVED_WINNER = "received_winner";
     }
     public static class Target {

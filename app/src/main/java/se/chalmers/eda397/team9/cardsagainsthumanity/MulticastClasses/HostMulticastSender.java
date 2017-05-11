@@ -59,7 +59,7 @@ public class HostMulticastSender extends AsyncTask {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.d("ReliableMultiSender", "Sent a " + mPackage.getPackageType() + " to " + mPackage.getTarget());
+        Log.d("HostMulticastSender", "Sent a " + mPackage.getPackageType() + " to " + mPackage.getTarget());
     }
 
     @Override
@@ -75,7 +75,7 @@ public class HostMulticastSender extends AsyncTask {
         int counter = 0;
         send();
         try {
-            s.setSoTimeout(500);
+            s.setSoTimeout(1000);
         } catch (SocketException e) {
         }
 

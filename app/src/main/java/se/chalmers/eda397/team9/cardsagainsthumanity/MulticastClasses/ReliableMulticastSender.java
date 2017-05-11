@@ -61,7 +61,7 @@ public class ReliableMulticastSender extends AsyncTask{
         }
 
         while(!isCancelled() || counter < maxCount){
-            byte[] buf = Serializer.serialize(mPackage);
+            byte[] buf = new byte[100000];
             DatagramPacket recv = new DatagramPacket(buf, buf.length);
             Object inMsg = null;
 

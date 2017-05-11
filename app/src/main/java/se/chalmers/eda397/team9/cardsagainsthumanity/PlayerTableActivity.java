@@ -105,6 +105,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         ipAdress = preferences.getString(IndexActivity.MULTICAST_IP_ADDRESS, null);
         port = preferences.getInt(IndexActivity.MULTICAST_PORT, 0);
         p2pPort = preferences.getInt(IndexActivity.P2P_PORT, 0);
+        threadList = new ArrayList<>();
 
         /* Initialize multicast */
         initMulticastSocket();
@@ -123,7 +124,7 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
 
         /* Multicast receiver */
         playerReceiver = new PlayerMulticastReceiver(multicastLock, s, group, myPlayerInfo, true,tableInfo);
-        playerReceiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        threadList.add(playerReceiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
 
         if (playerReceiver != null) {
             playerReceiver.addPropertyChangeListener(this);
@@ -153,6 +154,11 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
     @Override
     protected void onPause() {
         super.onPause();
+    }
+    @Override
+    public void finish(){
+        super.finish();
+        closeConnection();
     }
     /* Main menu */
     @Override
@@ -195,10 +201,16 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
         handler.post(new Runnable() {
             @Override
             public void run() {
-                new MulticastSender(mPackage, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                threadList.add(new MulticastSender(mPackage, s, group).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
             }
 
         });
+    }
+    private void closeConnection() {
+        for (AsyncTask current : threadList) {
+            if (!current.isCancelled())
+                current.cancel(true);
+        }
     }
 
     @Override

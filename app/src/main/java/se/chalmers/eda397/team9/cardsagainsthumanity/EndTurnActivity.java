@@ -16,6 +16,7 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.GameState;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GameMulticastReciever;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastPackage;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.MulticastSender;
@@ -48,8 +49,17 @@ public class EndTurnActivity extends AppCompatActivity implements PropertyChange
         String str = (String) getIntent().getExtras().get(IntentType.WINNING_STRING);
         blackCardText = (TextView) findViewById(R.id.textviewWinningBlackCard);
         winner = (TextView) findViewById(R.id.winnerTextView);
-        blackCardText.setText("???");
-        winner.setText("???");
+        if (str == null) {
+            blackCardText.setText("???");
+        } else {
+            blackCardText.setText(str);
+        }
+        if (game.getWinner() != null) {
+            winner.setText(game.getWinner().getPlayer().getName());
+        } else {
+            winner.setText("???");
+        }
+
 
         /*Multicast*/
         myTableInfo = (TableInfo) getIntent().getExtras().get(IntentType.THIS_TABLE);
@@ -62,7 +72,7 @@ public class EndTurnActivity extends AppCompatActivity implements PropertyChange
         /* Initialize multicast */
         initMulticastSocket();
         myPlayerInfo = game.getPlayerByUUID(prefs.getString(IndexActivity.PLAYER_UUID, null));
-        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo,true, myTableInfo);
+        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo, myTableInfo, "ENDTURNACTIVITY");
         gameMulticastReciever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         if (gameMulticastReciever != null){
             gameMulticastReciever.addPropertyChangeListener(this);
@@ -106,12 +116,12 @@ public class EndTurnActivity extends AppCompatActivity implements PropertyChange
             MulticastPackage msg = new MulticastPackage(tableAddress, Message.Response.RECEIVED_WINNER, myPlayerInfo);
             MulticastSender sender = new MulticastSender(msg, s, group);
             sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-            game = (Game) evt.getNewValue();
+            GameState newGameState = (GameState) evt.getNewValue();
+            game.setKing(newGameState.getNewKing());
+            game.setBlackCard(newGameState.getBlackCard());
+            game.setWinner(newGameState.getWinner());
             updateWinner(game.updateBlackCardText(game.getWinner().getWhiteCards()), game.getWinner().getPlayer().getName());
-            /*Handler handler = new Handler(getMainLooper());
-            handler.postDelayed(new Runnable() {
-                @Override
+            /*    @Override
                 public void run() {
                     Intent intent = new Intent(EndTurnActivity.this, GameActivity.class);
                     intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());

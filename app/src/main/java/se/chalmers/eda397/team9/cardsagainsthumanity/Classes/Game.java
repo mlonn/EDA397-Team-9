@@ -70,7 +70,7 @@ public class Game implements Serializable {
 
     //gives each player 10 cards from selected expansion
     private void distributeWhiteCards(ArrayList<String> expansionNames, Context ctx) {
-        ArrayList<CardExpansion> cardExpansions= CardHandler.getExpansions(expansionNames, ctx);;
+        ArrayList<CardExpansion> cardExpansions= CardHandler.getExpansions(expansionNames, ctx);
         for (PlayerInfo p : players) {
             while (p.getWhiteCards().size() < 10) {
                 CardExpansion exp = cardExpansions.get(r.nextInt(cardExpansions.size()));
@@ -184,7 +184,20 @@ public class Game implements Serializable {
                     sb.append("_");
                 }
             }
+        } else {
+            for (int i = 0; i < whiteCards.size(); i++) {
+                sb.append(whiteCards.get(i).getWord());
+                sb.append("\n");
+            }
         }
         return sb.toString();
+    }
+
+    public void setBlackCard(BlackCard blackCard) {
+        this.blackCard = blackCard;
+    }
+
+    public void setWinner(Submission winner) {
+        this.winningSubmission = winner;
     }
 }

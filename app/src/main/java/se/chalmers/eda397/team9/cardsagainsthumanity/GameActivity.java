@@ -11,7 +11,6 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -40,6 +39,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Game;
+import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.GameState;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.Submission;
 import se.chalmers.eda397.team9.cardsagainsthumanity.Classes.WhiteCard;
 import se.chalmers.eda397.team9.cardsagainsthumanity.MulticastClasses.GameMulticastReciever;
@@ -93,6 +93,8 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
     private Submission submission;
     private ArrayList<String> expansionNames;
     private boolean turnEnded;
+    private boolean isKing;
+    private boolean turnCanBeEnded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,11 +110,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         /* Initialize multicast */
         initMulticastSocket();
         myPlayerInfo = game.getPlayerByUUID(prefs.getString(IndexActivity.PLAYER_UUID, null));
-        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo,true, myTableInfo);
-        gameMulticastReciever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        if (gameMulticastReciever != null){
-            gameMulticastReciever.addPropertyChangeListener(this);
-        }
+        threadList = new ArrayList<>();
         /* Get table info */
 
         game.initExpansions(game.getExpansionNames(), getApplicationContext());
@@ -122,20 +120,22 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         mTableInfo = (TableInfo) getIntent().getExtras().getSerializable(IntentType.THIS_TABLE);
 
 
-        if(myPlayerInfo.isKing()) {
+        /*if(myPlayerInfo.isKing()) {
             openCloseTableDialog();
-        }
+        }*/
 
         if (myPlayerInfo.isKing()) {
             initKing();
+            isKing = true;
             /* implement ask for king
             openCloseTableDialog();*/
         } else {
             initPlayer();
+            isKing = false;
         }
 
-        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo, true, myTableInfo);
-        gameMulticastReciever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        gameMulticastReciever = new GameMulticastReciever(multicastLock, s, group, myPlayerInfo, myTableInfo, "GAMEACTIVITY");
+        threadList.add(gameMulticastReciever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
         if (gameMulticastReciever != null) {
             gameMulticastReciever.addPropertyChangeListener(this);
         }
@@ -191,24 +191,22 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         submissions = myPlayerInfo.getSubmissions();
         blackCardAdapter = new BlackCardAdapter(this, game.getBlackCard(), submissions, myPlayerInfo);
         blackCardList.setAdapter(blackCardAdapter);
-        Button endTurnButton = (Button) findViewById(R.id.btn_selectWinner);
-        endTurnButton.setOnClickListener(new View.OnClickListener() {
+        Button selectWinnerButton = (Button) findViewById(R.id.btn_selectWinner);
+        selectWinnerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (game.endTurn(getApplicationContext())) {
-                    Intent intent = new Intent(getApplicationContext(), EndTurnActivity.class);
-                    intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
-                    intent.putExtra(IntentType.THIS_GAME, game);
-                    intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
-                    intent.putExtra(IntentType.WINNING_STRING, game.updateBlackCardText(game.getWinner().getWhiteCards()));
-                    MulticastPackage gamePackage = new MulticastPackage(tableAddress,Message.Type.SELECTED_WINNER, game);
+                    turnCanBeEnded = true;
+                }
+                if (turnCanBeEnded) {
+                    ArrayList<Integer> score = new ArrayList<>();
+                    GameState newGameState = new GameState(game.getKing(), game.getWinner(), game.getBlackCard());
+                    MulticastPackage gamePackage = new MulticastPackage(tableAddress,Message.Type.SELECTED_WINNER, newGameState);
                     MulticastPackage expectedResponse = new MulticastPackage(tableAddress,Message.Response.RECEIVED_WINNER);
                     List<PlayerInfo> p = new ArrayList<PlayerInfo>(game.getPlayerList());
                     p.remove(myPlayerInfo);
-                    HostMulticastSender sender = new HostMulticastSender(gamePackage,expectedResponse,s,group, p);
+                    HostMulticastSender sender = new HostMulticastSender(gamePackage,expectedResponse,s,group,p);
                     sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    startActivity(intent);
-                    finish();
                 }
             }
         });
@@ -287,21 +285,25 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         Button submitButton = (Button) findViewById(R.id.submit_button);
         submitButton.setOnClickListener(submitCards);
     }
+     /*     PLAYER      */
     View.OnClickListener submitCards = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (game.getBlackCard().getPick() == myPlayerInfo.getSelectedCards().size()) {
                 myPlayerInfo.submitSelection();
                 MulticastPackage multicastPackage = new MulticastPackage(tableAddress, Message.Type.SUBMISSION,myPlayerInfo.getSubmission());
-                MulticastPackage expectedResponse = new MulticastPackage(tableAddress, Message.Response.RECEIVED_CARDS);
+                MulticastPackage expectedResponse = new MulticastPackage(tableAddress, Message.Response.RECEIVED_SUBMISSION);
                 ReliableMulticastSender sender = new ReliableMulticastSender(multicastPackage,expectedResponse,s,group);
-                sender.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-                Intent intent = new Intent(GameActivity.this, EndTurnActivity.class);
-                intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
-                intent.putExtra(IntentType.THIS_GAME, game);
-                intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
-                startActivity(intent);
-                finish();
+                sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                if(!turnEnded) {
+                    turnEnded = true;
+                    Intent intent = new Intent(GameActivity.this, EndTurnActivity.class);
+                    intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
+                    intent.putExtra(IntentType.THIS_GAME, game);
+                    intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
+                    startActivity(intent);
+                    finish();
+                }
             } else {
                 int pick = game.getBlackCard().getPick();
                 if (pick == 1) {
@@ -318,9 +320,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
 
         @Override
         public void onClick(View view) {
-
             ImageButton favoriteButton = (ImageButton) view; //Cast
-
             int picked = 0;
             boolean selected = false;
             for (int i = 0; i < whiteCards.size(); i++) {
@@ -394,24 +394,6 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-
-    private String updateBlackCardText(List<WhiteCard> whiteCards) {
-        String[] blackText = game.getBlackCard().getText().split("_");
-        StringBuilder sb = new StringBuilder();
-        if (blackText.length > 1) {
-            for (int j = 0; j < blackText.length; j++) {
-                sb.append(blackText[j]);
-                if (j < whiteCards.size()) {
-                    sb.append(whiteCards.get(j).getWord());
-                } else if (j < blackText.length - 1) {
-                    sb.append("_");
-                }
-            }
-        }
-        return sb.toString();
-    }
-
 
     /* Method for initializing the multicast socket*/
     private void initMulticastSocket() {
@@ -499,7 +481,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                         myPlayerInfo.getSubmissions().add(submission);
                         submissions = myPlayerInfo.getSubmissions();
                         blackCardAdapter.update(submissions);
-                        MulticastPackage expectedResponse = new MulticastPackage(myPlayerInfo.getDeviceAddress(), Message.Response.RECEIVED_CARDS);
+                        MulticastPackage expectedResponse = new MulticastPackage(myPlayerInfo.getDeviceAddress(), Message.Response.RECEIVED_SUBMISSION);
                         MulticastSender sender = new MulticastSender(expectedResponse, s, group);
                         sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
@@ -508,5 +490,34 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
 
             }
         }
+        if (evt.getPropertyName().equals(Message.Response.RECEIVED_WINNER)) {
+            if (!turnEnded && isKing) {
+                turnEnded = true;
+                Intent intent = new Intent(getApplicationContext(), EndTurnActivity.class);
+                intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
+                intent.putExtra(IntentType.THIS_GAME, game);
+                intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
+                intent.putExtra(IntentType.WINNING_STRING, game.updateBlackCardText(game.getWinner().getWhiteCards()));
+                startActivity(intent);
+                finish();
+
+            }
+        }
+    }
+    private void closeConnection() {
+        for (AsyncTask current : threadList) {
+            if (!current.isCancelled())
+                current.cancel(true);
+        }
+
+//        TODO: Find a way to close the socket safely
+//        if(s != null || !s.isClosed())
+//            s.close();
+    }
+
+    @Override
+    public void finish(){
+        super.finish();
+        //closeConnection();
     }
 }
