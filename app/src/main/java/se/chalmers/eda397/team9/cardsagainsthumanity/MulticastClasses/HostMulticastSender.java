@@ -75,11 +75,11 @@ public class HostMulticastSender extends AsyncTask {
         int counter = 0;
         send();
         try {
-            s.setSoTimeout(1000);
+            s.setSoTimeout(500);
         } catch (SocketException e) {
         }
 
-        while (!isCancelled() || counter < maxCount) {
+        while (!isCancelled() && counter < maxCount) {
             byte[] buf = new byte[10000];
             DatagramPacket recv = new DatagramPacket(buf, buf.length);
             Object inMsg = null;
@@ -92,6 +92,7 @@ public class HostMulticastSender extends AsyncTask {
                     counter++;
                     send();
                 } else {
+                    pcs.firePropertyChange(Message.Type.STOPPED_SENDING,0,1);
                     return null;
                 }
             }

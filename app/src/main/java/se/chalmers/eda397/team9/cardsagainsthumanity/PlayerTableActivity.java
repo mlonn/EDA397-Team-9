@@ -8,6 +8,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -223,13 +224,20 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                         Message.Response.GAME_START_CONFIRMED, myPlayerInfo);
                 sendPackage(mPackage);
                 if (!gameStarted) {
-                    Intent intent = new Intent(PlayerTableActivity.this.getApplicationContext(), GameActivity.class);
-                    intent.putExtra(IntentType.THIS_GAME, game);
-                    intent.putExtra(IntentType.TABLE_ADDRESS, tableInfo.getHost().getDeviceAddress());
-                    intent.putExtra(IntentType.THIS_TABLE, tableInfo);
-                    startActivity(intent);
                     gameStarted = true;
-                    finish();
+                    new Handler(getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(PlayerTableActivity.this.getApplicationContext(), GameActivity.class);
+                            intent.putExtra(IntentType.THIS_GAME, game);
+                            intent.putExtra(IntentType.TABLE_ADDRESS, tableInfo.getHost().getDeviceAddress());
+                            intent.putExtra(IntentType.THIS_TABLE, tableInfo);
+                            startActivity(intent);
+
+                            finish();
+                        }
+                    },5000);
+
                 }
                 break;
             /*case Message.Type.PLAYER_LIST:

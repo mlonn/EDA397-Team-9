@@ -104,9 +104,10 @@ public class Game implements Serializable {
     }
 
     public void setKing(PlayerInfo player) {
-        players.remove(player);
-        PlayerInfo king = setKing();
-        players.add(player);
+        for (PlayerInfo p : players) {
+            p.setKing(false);
+        }
+        player.setKing(true);
     }
 
     public PlayerInfo setKing() {

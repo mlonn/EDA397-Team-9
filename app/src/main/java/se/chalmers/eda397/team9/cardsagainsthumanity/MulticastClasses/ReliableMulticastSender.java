@@ -24,7 +24,7 @@ public class ReliableMulticastSender extends AsyncTask{
 
     public ReliableMulticastSender(MulticastPackage mPackage, MulticastPackage expectedResponse,
                                         MulticastSocket s, InetAddress group){
-        this(mPackage, expectedResponse, 5, s, group);
+        this(mPackage, expectedResponse, 10, s, group);
 
     }
 

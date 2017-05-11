@@ -16,6 +16,7 @@ public class Message {
         public static final String MY_DEVICE_ADDRESS_FOUND = "my_device_address_found";
         public static final String SUBMISSION = "submission";
         public static final String SELECTED_WINNER = "selected_winner";
+        public static final String STOPPED_SENDING = "stopped_sending";
     }
     public static class Response {
         public static final String HOST_TABLE = "host_table_info";

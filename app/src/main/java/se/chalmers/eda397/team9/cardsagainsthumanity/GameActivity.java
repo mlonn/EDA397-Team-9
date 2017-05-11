@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -119,16 +120,9 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
         fragmentManager = getSupportFragmentManager();
         mTableInfo = (TableInfo) getIntent().getExtras().getSerializable(IntentType.THIS_TABLE);
 
-
-        /*if(myPlayerInfo.isKing()) {
-            openCloseTableDialog();
-        }*/
-
         if (myPlayerInfo.isKing()) {
             initKing();
             isKing = true;
-            /* implement ask for king
-            openCloseTableDialog();*/
         } else {
             initPlayer();
             isKing = false;
@@ -297,12 +291,18 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                 sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 if(!turnEnded) {
                     turnEnded = true;
-                    Intent intent = new Intent(GameActivity.this, EndTurnActivity.class);
-                    intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
-                    intent.putExtra(IntentType.THIS_GAME, game);
-                    intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
-                    startActivity(intent);
-                    finish();
+                    new Handler(getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(GameActivity.this, EndTurnActivity.class);
+                            intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
+                            intent.putExtra(IntentType.THIS_GAME, game);
+                            intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
+                            startActivity(intent);
+                            finish();
+                        }
+                    },0);
+
                 }
             } else {
                 int pick = game.getBlackCard().getPick();
@@ -486,8 +486,6 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                         sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 });
-
-
             }
         }
         if (evt.getPropertyName().equals(Message.Response.RECEIVED_WINNER)) {
@@ -500,7 +498,18 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                 intent.putExtra(IntentType.WINNING_STRING, game.updateBlackCardText(game.getWinner().getWhiteCards()));
                 startActivity(intent);
                 finish();
-
+            }
+        }
+        if(evt.getPropertyName().equals(Message.Type.STOPPED_SENDING)){
+            if (!turnEnded && isKing) {
+                turnEnded = true;
+                Intent intent = new Intent(getApplicationContext(), EndTurnActivity.class);
+                intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
+                intent.putExtra(IntentType.THIS_GAME, game);
+                intent.putExtra(IntentType.THIS_TABLE, myTableInfo);
+                intent.putExtra(IntentType.WINNING_STRING, game.updateBlackCardText(game.getWinner().getWhiteCards()));
+                startActivity(intent);
+                finish();
             }
         }
     }

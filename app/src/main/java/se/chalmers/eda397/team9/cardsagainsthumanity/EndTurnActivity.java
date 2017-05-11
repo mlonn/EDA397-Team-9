@@ -1,10 +1,12 @@
 package se.chalmers.eda397.team9.cardsagainsthumanity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
@@ -112,16 +114,16 @@ public class EndTurnActivity extends AppCompatActivity implements PropertyChange
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(Message.Type.SELECTED_WINNER)){
-
             MulticastPackage msg = new MulticastPackage(tableAddress, Message.Response.RECEIVED_WINNER, myPlayerInfo);
             MulticastSender sender = new MulticastSender(msg, s, group);
             sender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             GameState newGameState = (GameState) evt.getNewValue();
             game.setKing(newGameState.getNewKing());
             game.setBlackCard(newGameState.getBlackCard());
-            game.setWinner(newGameState.getWinner());
-            updateWinner(game.updateBlackCardText(game.getWinner().getWhiteCards()), game.getWinner().getPlayer().getName());
-            /*    @Override
+            updateWinner(game.updateBlackCardText(newGameState.getWinner().getWhiteCards()), newGameState.getWinner().getPlayer().getName());
+
+            new Handler(getMainLooper()).postDelayed(new Runnable() {
+                @Override
                 public void run() {
                     Intent intent = new Intent(EndTurnActivity.this, GameActivity.class);
                     intent.putExtra(IntentType.TABLE_ADDRESS, myTableInfo.getHost().getDeviceAddress());
@@ -130,7 +132,7 @@ public class EndTurnActivity extends AppCompatActivity implements PropertyChange
                     startActivity(intent);
                     finish();
                 }
-            },2000);*/
+            },15000);
         }
     }
 }
