@@ -87,7 +87,7 @@ public class PlayerRowLayout extends LinearLayout {
         setMinimumWidth(screenWidth);
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
         param.setMargins(margin/2, margin, margin/2, margin); //Margins for the boxe that contain the host's name
-        param.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 2);
+        param.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1);
         setLayoutParams(param);
         textView.setWidth(screenWidth-(convertDpToPixels(90, context)));
         setBackgroundResource(R.drawable.host_row_item_background);

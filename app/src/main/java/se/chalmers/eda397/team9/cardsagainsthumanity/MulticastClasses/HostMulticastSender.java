@@ -97,7 +97,6 @@ public class HostMulticastSender extends AsyncTask {
             }
 
             if (inMsg instanceof MulticastPackage) {
-
                 String target = ((MulticastPackage) inMsg).getTarget();
                 String type = ((MulticastPackage) inMsg).getPackageType();
                 Object object = ((MulticastPackage) inMsg).getObject();

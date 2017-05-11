@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -50,6 +52,7 @@ import se.chalmers.eda397.team9.cardsagainsthumanity.P2PClasses.P2pManager;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.IntentType;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.Message;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerInfo;
+import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.PlayerStatisticsFragment;
 import se.chalmers.eda397.team9.cardsagainsthumanity.ViewClasses.TableInfo;
 import se.chalmers.eda397.team9.cardsagainsthumanity.util.BlackCardAdapter;
 
@@ -72,6 +75,9 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
     private Boolean[] selectedCards;
     private Timer timer;
     private String tableAddress;
+    private FragmentManager fragmentManager;
+    private PlayerStatisticsFragment psFragment;
+    private TableInfo mTableInfo;
     /* Multicast variables */
     private InetAddress group;
     private List<AsyncTask> threadList;
@@ -108,7 +114,13 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
             gameMulticastReciever.addPropertyChangeListener(this);
         }
         /* Get table info */
+
         game.initExpansions(game.getExpansionNames(), getApplicationContext());
+
+        /* Initialize fragment variables */
+        fragmentManager = getSupportFragmentManager();
+        mTableInfo = (TableInfo) getIntent().getExtras().getSerializable(IntentType.THIS_TABLE);
+
 
         if(myPlayerInfo.isKing()) {
             openCloseTableDialog();
@@ -167,6 +179,12 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
 
     private void initKing() {
         setContentView(R.layout.activity_king);
+        psFragment = (PlayerStatisticsFragment) fragmentManager.findFragmentById(R.id.playerFragment);
+        psFragment.addHost(mTableInfo.getHost());
+
+        for (PlayerInfo player: mTableInfo.getPlayerList()){
+            psFragment.addPlayer(player);
+        }
         TextView blackCardText = (TextView) findViewById(R.id.currentBlackCard);
         blackCardText.setText(Html.fromHtml(game.getBlackCard().getText()));
         ListView blackCardList = (ListView) findViewById(R.id.black_card_list);
@@ -198,6 +216,11 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
 
     private void initPlayer() {
         setContentView(R.layout.activity_game);
+        psFragment = (PlayerStatisticsFragment) fragmentManager.findFragmentById(R.id.playerFragment);
+        psFragment.addHost(mTableInfo.getHost());
+        for (PlayerInfo player: mTableInfo.getPlayerList()){
+            psFragment.addPlayer(player);
+        }
         LinearLayout layout = (LinearLayout) findViewById(R.id.linear);
         TextView blackCardTextView = (TextView) findViewById(R.id.textviewBlackCard);
         blackCardTextView.setText(Html.fromHtml(game.getBlackCard().getText()));
@@ -332,6 +355,7 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
 
         }
     };
+
 
     //Method that convert Pixels to DP
     /*

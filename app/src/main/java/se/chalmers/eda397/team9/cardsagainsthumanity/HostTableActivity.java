@@ -504,7 +504,6 @@ public class HostTableActivity extends AppCompatActivity implements PropertyChan
                         Message.Response.PLAYER_DISCONNECTED, null);
                 return;
             }
-
             if (PlayerInfo.findPlayerInList(connectedPlayers, player) == null) {
                 connectedPlayers.add(player);
             }
