@@ -28,6 +28,9 @@ public class ProfileActivityTest {
     public void testProfileName(){
         TextView textView = (TextView) mActivity.findViewById(R.id.textView11);
         assertNotNull(textView);
+        //
+        String username = textView.toString();
+        assertTrue(username.length()>3);
     }
 
     @After
