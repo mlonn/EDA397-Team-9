@@ -190,7 +190,8 @@ public class PlayerTableActivity extends AppCompatActivity implements PropertyCh
                 startActivity(Intent.createChooser(sharingIntent, "Share via"));
                 return true;
             case R.id.help:
-                //Do something
+                Intent helpIntent = new Intent(this, PopUpHelp.class);
+                startActivity(helpIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

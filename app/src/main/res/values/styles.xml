@@ -9,7 +9,10 @@
     </style>
 
     <style name="CardsAgainstHumanity" parent="Theme.AppCompat" />
-
     <style name="HoloTheme" parent="android:Theme.Holo.Light.DarkActionBar" />
+    <style name="AppTheme.CustomePopup">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
 
 </resources>

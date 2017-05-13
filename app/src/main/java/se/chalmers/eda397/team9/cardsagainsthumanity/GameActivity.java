@@ -452,7 +452,8 @@ public class GameActivity extends AppCompatActivity implements PropertyChangeLis
                 startActivity(Intent.createChooser(sharingIntent, "Share via"));
                 return true;
             case R.id.help:
-                //Do something
+                Intent helpIntent = new Intent(this, PopUpHelp.class);
+                startActivity(helpIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
