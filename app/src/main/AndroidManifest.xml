@@ -44,7 +44,8 @@
             android:label="@string/title_activity_player_table" />
         <activity android:name=".EndTurnActivity"></activity>
         <activity android:name=".PopUpHelp"
-            android:theme="@style/AppTheme.CustomePopup">
+            android:theme="@style/AppTheme.CustomePopup"
+            android:label="@string/title_activity_table_help">
         </activity>
     </application>
 
