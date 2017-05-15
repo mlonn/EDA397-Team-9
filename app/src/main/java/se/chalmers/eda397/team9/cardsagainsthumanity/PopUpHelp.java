@@ -22,7 +22,7 @@ public class PopUpHelp extends Activity{
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = (int) ((int) dm.widthPixels*.9);
-        int height = (int) ((int) dm.heightPixels *.7);
+        int height = (int) ((int) dm.heightPixels *.6);
         getWindow().setLayout(width,height);
     }
 
