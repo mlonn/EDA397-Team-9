@@ -1,0 +1,688 @@
+commit 5f57392a5c1faa22ad821dfe4720181020ff7fb8
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 11 16:48:24 2017 +0200
+
+    Better game
+
+commit 728a21127d237cc7f4b8b69eabd0ce458d6a0142
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 11 13:53:18 2017 +0200
+
+    end turn works
+
+commit 13fb499bc48d37578fe7a9b957a9f0c611a5cd6e
+Merge: 708a18b 6520b6d
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 11 09:21:12 2017 +0200
+
+    merge
+
+commit 708a18b8c1a0607f30a1319b0ee2ad3a2082394e
+Merge: 1099c57 186360b
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 11 09:20:34 2017 +0200
+
+    merge
+
+commit 1099c571adafc81368ade8fe6b02735b67384d50
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Wed May 10 17:24:57 2017 +0200
+
+    End turn working
+
+commit a45542c3b17cd4466188b313f44d4b1cbce395b5
+Merge: 6ffd021 fab895f
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 9 16:05:22 2017 +0200
+
+    Start game with multicast
+
+commit 6ffd021e08a8aef4bf7a401ea91ef9851fa66c5f
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 9 14:54:52 2017 +0200
+
+    only add submission if not null
+
+commit fab895f7f2dc6c8974dc8cd4fb0bb1abe7031588
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 9 14:57:47 2017 +0200
+
+    Player -> PlayerInfo
+
+commit f3cd3a4ba306ecca4f9cbaf630ac47a7e21d843b
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 9 14:54:52 2017 +0200
+
+    only add submission if not null
+
+commit f8e646fbe759b14f98b504791c11cd252bc19693
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 9 09:46:05 2017 +0200
+
+    all players get cards
+
+commit 8b0713c1a51290ca3bc7a8397e9516f5fa6f8eed
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 9 09:43:47 2017 +0200
+
+    Send submission to player with multicast, change to p2p later
+
+commit cda60be7b5b346eb249ba7d622e64241528a1c07
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Mon May 8 08:59:36 2017 +0200
+
+    Player -> PlayerInfo
+
+commit b4965ddcdbd0b3551ffeb92d8f0e58130a07ab81
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Mon May 8 08:19:07 2017 +0200
+
+    only add submission to king if not null
+
+commit 98d38ed57e6a3e8300c39888ee2663f8242b9d2a
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri May 5 19:19:53 2017 +0200
+
+    Game start for multiple players
+
+commit cb4b1a900e790b3303c2ce07245ddb2b6fe8ecbd
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri May 5 19:19:53 2017 +0200
+
+    Game start for multiple players
+
+commit 100660d01bfb0116107b29ee627bb7498970139f
+Merge: b60ccda f0d5960
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri May 5 14:51:10 2017 +0200
+
+    merge
+
+commit 1f11e248151439efda4952663266c102d78fc0bf
+Merge: 743770b 1ca6702
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri May 5 14:51:10 2017 +0200
+
+    merge
+
+commit b60ccda9c7e29723dafdef2763a0cb3304aa162f
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri May 5 14:49:51 2017 +0200
+
+    merged playerinfo/player and tableinfo/table
+
+commit 743770b6e82ead41c8f361185253fb65f282061f
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri May 5 14:49:51 2017 +0200
+
+    merged playerinfo/player and tableinfo/table
+
+commit 58b14d7823c94892b8591851662e34cf905074d6
+Merge: 03458c6 93246d8
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri May 5 12:13:07 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit d1f7703de692e9babde2ba02c686838d08c5f34a
+Merge: c7f66fb 22793ef
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri May 5 12:13:07 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit 03458c62d6a3eedcff05a16e042ca695ad61e35d
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri May 5 12:12:54 2017 +0200
+
+    Fixed connection
+
+commit c7f66fbc8903a2dce37c4dddb502502f6e5686a0
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri May 5 12:12:54 2017 +0200
+
+    Fixed connection
+
+commit 597e645d717314f20f32adfa38ad38968e72ca47
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri May 5 09:23:46 2017 +0200
+
+    Removed Ready functionality
+
+commit 22c4b9e541301d26823b2dbf7daaf6631dfac206
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri May 5 09:23:46 2017 +0200
+
+    Removed Ready functionality
+
+commit 5d3fecf9d6d81d046f54ead89f11fd3a62c5cc0f
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri May 5 09:08:55 2017 +0200
+
+    Renamed hosttableactivity
+
+commit 4a0171af19383691b9dc8e9e871bb2f62f79a986
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri May 5 09:08:55 2017 +0200
+
+    Renamed hosttableactivity
+
+commit f675ecda566fee40da595083f9ec318df9d24986
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri May 5 09:08:37 2017 +0200
+
+    Renamed hosttableactivity
+
+commit ab23f000bf118bf1866357d0a7989fadfe7cdbe7
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri May 5 09:08:37 2017 +0200
+
+    Renamed hosttableactivity
+
+commit a96fa575df77179ea2faf7298529ac184261e456
+Merge: dd182b9 4083f07
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu May 4 17:27:39 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit 34a14726731c70d6dbf3e4efa2280739228507e9
+Merge: 4d1cfa8 3aa86a2
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 4 17:27:39 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit dd182b9d324b49212c24b6d64510acd55553fea1
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu May 4 17:27:34 2017 +0200
+
+    connect updates
+
+commit 4d1cfa88f30ac800e35192d06396fdf04e9fbd76
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 4 17:27:34 2017 +0200
+
+    connect updates
+
+commit 6a303a224ec9db2504e3ac79e6e5f4a224d1299f
+Merge: ebf4d7e 9006f49
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu May 4 15:47:27 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit 6821b33bca22abcb08ca9ceff78f671a94eda7a3
+Merge: 88873aa aecefe4
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 4 15:47:27 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit ebf4d7e9ddea92586e64df62aa04746358cf23be
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu May 4 15:47:22 2017 +0200
+
+    Added black card header in king view
+
+commit 88873aa23a40d3ac9586df9e80db9be169542c06
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 4 15:47:22 2017 +0200
+
+    Added black card header in king view
+
+commit 879d43abdf3527a171d3c043b879291a4bce4354
+Merge: 621c17a 8bf4e47
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu May 4 13:34:16 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit 1dba9ab71de36dbcf1afee7a36d59ea3f5acd486
+Merge: 8e00bc9 7c799c7
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 4 13:34:16 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit 621c17af6ecb3e11245fb770cac01a84d13598a4
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu May 4 13:34:12 2017 +0200
+
+    Add end turn for king
+
+commit 8e00bc9a08a10ba078d0637687d42775992e0027
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu May 4 13:34:12 2017 +0200
+
+    Add end turn for king
+
+commit e1be2f05ab490c097424044a77dc968ae03e534c
+Merge: c2ec797 7d7651a
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue May 2 17:00:26 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit be071d2d22a5552c33900732b2990267ed6b78bb
+Merge: b5868cb 90f3baf
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 2 17:00:26 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit c2ec7973e5d8828e53d7e0dadf2efc8b9d5fc39f
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue May 2 17:00:22 2017 +0200
+
+    Select winning card
+
+commit b5868cb55d3b0a258233b9afb5c9f1c9b921b08f
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 2 17:00:22 2017 +0200
+
+    Select winning card
+
+commit 5178e210b8e9138e7318199e4c630c4fe3159fc5
+Merge: 7ae7f8c 1c42321
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue May 2 15:28:58 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit d39ab82f433112953116d8f5740905451af8682b
+Merge: e2ccf44 655d0a2
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 2 15:28:58 2017 +0200
+
+    Merge branch 'master' of github.com:mlonn/EDA397-Team-9
+
+commit 7ae7f8c1cf0761c689379695bcf267b3015a3577
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue May 2 15:28:44 2017 +0200
+
+    View black cards as king
+
+commit e2ccf44fdfd8385dfd61828f9f4d86c939f36e78
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue May 2 15:28:44 2017 +0200
+
+    View black cards as king
+
+commit 861fdbd3e46e6fbb0829920d57cebb651be4ff2b
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu Apr 27 10:44:56 2017 +0200
+
+    Fix black card
+
+commit 805d95d2ab1d0a7dac86042786e59dc8f5e5a3b0
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 27 10:44:56 2017 +0200
+
+    Fix black card
+
+commit 3a5bcd8c7a3ccc58f939a34b838109a685362fea
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Wed Apr 26 22:42:56 2017 +0200
+
+    Forces to select expansion
+
+commit b5fa73d55386b7f6405eaf1247975052f9485da3
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Wed Apr 26 22:42:56 2017 +0200
+
+    Forces to select expansion
+
+commit deeac275c4cae8587a0429489e1e335149567872
+Merge: 8764b11 04d3c28
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Wed Apr 26 22:37:59 2017 +0200
+
+    Fixed merge show White cards
+
+commit 09b629dc13e7999b7e55eef6dd20f13d39e03864
+Merge: 84a8aa4 d69ee6c
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Wed Apr 26 22:37:59 2017 +0200
+
+    Fixed merge show White cards
+
+commit 8764b119ddc76d473184e806b41620d35f98bb2b
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Wed Apr 26 22:23:38 2017 +0200
+
+    Show white card text
+
+commit 84a8aa453b8e3b30f9bc8077b33ff6708f00d17c
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Wed Apr 26 22:23:38 2017 +0200
+
+    Show white card text
+
+commit 08519618b903d6fffb33c1a413b523633e75fc6a
+Merge: 7c9fafe 06bb8f4
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue Apr 25 14:03:20 2017 +0200
+
+    Merged game logic
+
+commit 274cc34b4e44a9fa02cecb31c080e8073b7e5e0e
+Merge: 4fe521a 02cc53e
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue Apr 25 14:03:20 2017 +0200
+
+    Merged game logic
+
+commit 7c9fafed16599beef018fe4736cb7bbaff89788f
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue Apr 25 13:51:43 2017 +0200
+
+    Fixed link to game activity
+
+commit 4fe521a3f53655a2ae25f568fda2f1b11157c101
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue Apr 25 13:51:43 2017 +0200
+
+    Fixed link to game activity
+
+commit 6d51fee508d5089f02e931f6ab90f7647ff3f8f1
+Merge: 772645c 66643a9
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue Apr 25 13:42:39 2017 +0200
+
+    Merged layour to master
+
+commit 655d2f702f1c915934a8b6884866ddc9e8230bea
+Merge: 8e6935d f81e2eb
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue Apr 25 13:42:39 2017 +0200
+
+    Merged layour to master
+
+commit 06bb8f4479284fde3bf1a3033ff3abb079f92bed
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Mon Apr 24 17:47:51 2017 +0200
+
+    Improved game logic
+
+commit 02cc53e63671b76b7824e9e95d801072a3c7bcb3
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Mon Apr 24 17:47:51 2017 +0200
+
+    Improved game logic
+
+commit 40c2ae291ff3208eff851d471e7d96150dd20cd1
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Mon Apr 24 17:47:07 2017 +0200
+
+    improved game logic
+
+commit 6f135ac2b42fbc25f18442bb436a60f72fb49ad9
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Mon Apr 24 17:47:07 2017 +0200
+
+    improved game logic
+
+commit c5c8e2622326b7706eb401f9c4fda05d2e83a97e
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri Apr 21 11:56:18 2017 +0200
+
+    removed test code
+
+commit 673a1a5ef238aefb416f7314247d45860dc6699c
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri Apr 21 11:56:18 2017 +0200
+
+    removed test code
+
+commit 5898ea1eb885668d233219d02f4be5cd9a9d8b3c
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Fri Apr 21 11:55:31 2017 +0200
+
+    Creates game and gives players cards
+
+commit a7068c120f6f0c0259f68661012a0826980038ee
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Fri Apr 21 11:55:31 2017 +0200
+
+    Creates game and gives players cards
+
+commit 405c3bb95a167a228a419115087208c25b4fcc12
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu Apr 20 14:50:38 2017 +0200
+
+    updated gradle
+
+commit 7a0b940c262211de9cdacc29643639b624f2ee8d
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 20 14:50:38 2017 +0200
+
+    updated gradle
+
+commit 13eac3a280e33ed3b93b1a7eb857eecb527cb926
+Merge: 9f9860c 27694b7
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu Apr 20 13:19:42 2017 +0200
+
+    Fixed merge
+
+commit 4ea9ec910939ed823358efa995ef1f54664e8b90
+Merge: 86fdc1f 6580e1a
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 20 13:19:42 2017 +0200
+
+    Fixed merge
+
+commit 27694b7f6a18768955f7da114e019f482ab4657a
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu Apr 20 13:04:34 2017 +0200
+
+    Fixed checked expansions
+
+commit 6580e1a912071e4975a13f80a8d9a90f29566ade
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 20 13:04:34 2017 +0200
+
+    Fixed checked expansions
+
+commit a659222bbd5228e5fa4e026ea8d271b42dffc1be
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu Apr 20 12:36:12 2017 +0200
+
+    Fixed display of expansions
+
+commit c039bb60ae2b79e7a77076f3f07a997cf58365c8
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 20 12:36:12 2017 +0200
+
+    Fixed display of expansions
+
+commit f091e78ae76df329b269e6efd308feb1801f6a86
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu Apr 20 11:49:46 2017 +0200
+
+    View list of expansions
+
+commit 3cd506b0a26911b4e119fe420fdd0742e6afc905
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 20 11:49:46 2017 +0200
+
+    View list of expansions
+
+commit afdcf76fc085f5fd0812cf5b0be112f092172af5
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu Apr 20 10:36:20 2017 +0200
+
+    Handles cards and expansions from json
+
+commit 844e398187a9a19af168f23a08c456a68a477078
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 20 10:36:20 2017 +0200
+
+    Handles cards and expansions from json
+
+commit 798d5c730189316c5ebe61077a3cdd4a8c44b030
+Merge: db8ffca 4adc63b
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 6 10:39:27 2017 +0200
+
+    fixed merge
+
+commit 25767826ec83a55498df6c1db8e7526fa2ac28cc
+Merge: 1b67c82 4d768d9
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 6 10:39:27 2017 +0200
+
+    fixed merge
+
+commit db8ffca86aea43ded5e10aa0f7b83230df5e501e
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 6 10:34:23 2017 +0200
+
+    Connects to device on swipe down
+
+commit 1b67c82a2124513a7ee424690ca747b2ed092a6a
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Apr 6 10:34:23 2017 +0200
+
+    Connects to device on swipe down
+
+commit 2ae01f4a341635767840b439bda3ed359a5a96ab
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Wed Apr 5 22:52:33 2017 +0200
+
+    Devices connect now
+
+commit 58bf91aa776aa06d8e38bcb53595f7d8f26346d7
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Wed Apr 5 22:52:33 2017 +0200
+
+    Devices connect now
+
+commit d81f447bc17536e3a23fd0d96de5568aa9c50f7e
+Merge: 15f0913 f4d274d
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue Apr 4 15:35:23 2017 +0200
+
+    Merge branch 'p2pfeature'
+
+commit 78425958a1c30601dcfef129b12a7b1cdda92b72
+Merge: 17fd1f5 f280aaa
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue Apr 4 15:35:23 2017 +0200
+
+    Merge branch 'p2pfeature'
+
+commit f4d274dbef032c7f9a2c1a989aaf6036f9a44d84
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue Apr 4 15:34:43 2017 +0200
+
+    Added idea file ti git ignore
+
+commit f280aaa3aa3bc7ebfa5b713e622fdcf81bfcbb03
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue Apr 4 15:34:43 2017 +0200
+
+    Added idea file ti git ignore
+
+commit 5ece290f280fd83baca0787fdab450c5e0052adf
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Tue Mar 28 16:39:33 2017 +0200
+
+    Updates README.md
+
+commit 760b4fb9b1bc3f9a085cbaf4415edd21d1d4edc5
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Tue Mar 28 16:39:33 2017 +0200
+
+    Updates README.md
+
+commit 85e07bfd3670f839ab413cca1736682efcb845dd
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 21:41:59 2017 +0100
+
+    Addid build apk with travis
+
+commit fb6890af7325102ad6129a50dbe7d43a2393dd7f
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 21:41:59 2017 +0100
+
+    Addid build apk with travis
+
+commit 6ef65853fac34e1841277e32d408804026d8fc0b
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 20:55:12 2017 +0100
+
+    Updates readme
+
+commit c9bc3b0cec429489d92de212e121253e0ff08d2a
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 20:55:12 2017 +0100
+
+    Updates readme
+
+commit 28b4e54b1b758f380a557551ac359dd7c1bf96a9
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 20:39:39 2017 +0100
+
+    Updates Travis.yml
+
+commit ee02afbcb4d44d6b434da7e068c217f0cacc20c3
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 20:39:39 2017 +0100
+
+    Updates Travis.yml
+
+commit 54ffdcd3417ed8b8d759268281037fb3d70a5af5
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 20:24:03 2017 +0100
+
+    update travis
+
+commit 1312515b53b0d5acfd713253c4b330726e30099b
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 20:24:03 2017 +0100
+
+    update travis
+
+commit abf5dcba6b843560bfe0396a397180a3f8f72feb
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 19:02:29 2017 +0100
+
+    changed permission gradelw
+
+commit 6de9c56b65065199f324b2eb1bce83055bc8f270
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 19:02:29 2017 +0100
+
+    changed permission gradelw
+
+commit 77594b65200a26d28a2265ca8cf6f180a0f4791b
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 19:01:53 2017 +0100
+
+    Added initial android project
+
+commit 024bc4a36b28fb1533cbccee2cde915c9bade1d8
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 19:01:53 2017 +0100
+
+    Added initial android project
+
+commit a260f00122d0b7d2c471aab37f81a3b56043eeb9
+Author: Mikael Lönn <mikael@lonn.xyz>
+Date:   Thu Mar 23 16:22:30 2017 +0100
+
+    Initial Commit
+
+commit b75432a0c83433cb1ae34beb9f49e6037062c18b
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 16:22:30 2017 +0100
+
+    Initial Commit
+
+commit c58e8f3907758cd9be9dfdb2c7a4b564acd29c61
+Author: Mikael Lönn <mikael.lonn@outlook.com>
+Date:   Thu Mar 23 14:08:47 2017 +0100
+
+    Initial commit
